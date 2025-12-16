@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPM Watch Channels - Component Preview</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      margin: 0;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 0.5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;
+    }
+    
+    .description {
+      color: #666;
+      margin-bottom: 2rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;
+    }
+    
+    #vpm-watch-channels-root {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>VPM Watch Channels Component</h1>
+  <p class="description">Preview of the watch channels component with Shadow DOM encapsulation.</p>
+  
+  <div id="vpm-watch-channels-root" data-component="watch-channels"></div>
+  
+  <script>
+    (function() {
+      'use strict';
+      
+      var root = document.getElementById('vpm-watch-channels-root');
+      if (!root || root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      
+      var defaultTiles = [
+        {
+          href: "https://video.vpm.org/",
+          ariaLabel: "Watch VPM at PBS.org",
+          img: "https://assets.vpm.org/ea/65/0adf26571cd1bc944d2a53585f33/vpm-pbs-logo.jpg",
+          alt: "PBS Live Stream"
+        },
+        {
+          href: "https://www.pbs.org/livestream/",
+          ariaLabel: "Browse all PBS livestream channels",
+          img: "https://assets.vpm.org/5f/64/77a0316d454c9360c5c45f915f32/vpm-livestream.png",
+          alt: "VPM Livestream"
+        },
+        {
+          href: "https://video.vpm.org/livestream/?selected=kids-main",
+          ariaLabel: "PBS Kids - Live Stream",
+          img: "https://assets.vpm.org/c9/49/a7091c9e43e58e974ace416ec612/vpm-pbskids-webgraphic-2507.png",
+          alt: "PBS Kids Live Stream"
+        },
+        {
+          href: "https://www.youtube.com/channel/UC0G2XnXhO8SA0CGvxQUawEA",
+          ariaLabel: "VPM on YouTube Live",
+          img: "https://assets.vpm.org/b6/13/73af7896472cbe10ebb12fe1b3ae/chatgpt-image-may-15-2025-10-39-23-am.png",
+          alt: "VPM on YouTube"
+        }
+      ];
+      
+      var tilesData = root.getAttribute('data-tiles');
+      var tiles = defaultTiles;
+      
+      if (tilesData) {
+        try {
+          tiles = JSON.parse(tilesData);
+        } catch (e) {
+          console.warn('VPM Watch Channels: Invalid data-tiles JSON, using defaults');
+        }
+      }
+      
+      var shadow = root.attachShadow({ mode: 'open' });
+      
+      var rootStyles = getComputedStyle(document.documentElement);
+      var navyBlue = rootStyles.getPropertyValue('--vpm-color-navy-blue').trim() || '#003865';
+      var red = rootStyles.getPropertyValue('--vpm-color-red').trim() || '#EE2737';
+      
+      shadow.innerHTML = `
+        <style>
+          :host {
+            display: block;
+            font-family: var(--vpm-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+            color: #ffffff;
+          }
+
+          .watch-page-header {
+            background: linear-gradient(to bottom, ${navyBlue}, #0d47a1);
+            color: inherit;
+            padding: 32px 20px;
+          }
+
+          .watch-page-header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+          }
+
+          .watch-page-header h1 {
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            font-weight: 700;
+            margin: 0 0 20px;
+          }
+
+          .watch-page-tile-container {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          }
+
+          .watch-page-tile {
+            position: relative;
+            display: block;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            background-color: #002743;
+            color: inherit;
+          }
+
+          .watch-page-tile:hover,
+          .watch-page-tile:focus-visible {
+            transform: scale(1.03);
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+          }
+
+          .watch-page-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+          }
+
+          .watch-page-tile:hover img,
+          .watch-page-tile:focus-visible img {
+            transform: scale(1.05);
+          }
+
+          .live-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: ${red};
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            z-index: 1;
+          }
+
+          @media (max-width: 768px) {
+            .watch-page-tile-container {
+              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+          }
+        </style>
+        <div class="watch-page-header">
+          <div class="watch-page-header-container">
+            <h1>Watch VPM</h1>
+            <div class="watch-page-tile-container" role="list">
+              ${tiles.map(function(tile) {
+                return `
+                  <a role="listitem" class="watch-page-tile" href="${tile.href}" aria-label="${tile.ariaLabel}" target="_blank" rel="noopener">
+                    <span class="live-badge">LIVE</span>
+                    <img src="${tile.img}" alt="${tile.alt}" loading="lazy" />
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    })();
+  </script>
+</body>
+</html>
+

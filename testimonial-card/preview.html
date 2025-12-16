@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPM Testimonial Card - Component Preview</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    
+    .description {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    
+    .preview-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .preview-section h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.25rem;
+    }
+    
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>VPM Testimonial Card Component</h1>
+  <p class="description">Preview of the testimonial card component with different variants and configurations.</p>
+  
+  <!-- Default Variant -->
+  <div class="preview-section">
+    <h2>Default Variant (5 stars)</h2>
+    <div id="vpm-testimonial-root" data-variant="default" data-star-rating="5" data-theme="light">
+      <article class="vpm-testimonial">
+        <div class="vpm-testimonial__content">
+          <blockquote class="vpm-testimonial__quote">
+            <p class="vpm-testimonial__text">This is an amazing service that has transformed how we work. The quality and attention to detail is outstanding, and the team has been incredibly responsive to our needs.</p>
+          </blockquote>
+          
+          <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+          </div>
+        </div>
+        
+        <footer class="vpm-testimonial__footer">
+          <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio">
+            <img 
+              src="https://via.placeholder.com/100/005eb8/ffffff?text=JD" 
+              alt="Photo of John Doe" 
+              class="vpm-testimonial__photo"
+              width="100"
+              height="100"
+            >
+            <div class="vpm-testimonial__author-info">
+              <cite class="vpm-testimonial__author-name">John Doe</cite>
+              <p class="vpm-testimonial__author-title">Director of Operations</p>
+            </div>
+          </button>
+          
+          <div id="vpm-testimonial-bio" class="vpm-testimonial__bio" aria-hidden="true">
+            <p class="vpm-testimonial__bio-text">John Doe has over 15 years of experience in operations management and has been a valued partner since 2020. He specializes in process optimization and team leadership.</p>
+          </div>
+        </footer>
+      </article>
+    </div>
+  </div>
+  
+  <!-- Compact Variant -->
+  <div class="preview-section">
+    <h2>Compact Variant (4 stars)</h2>
+    <div id="vpm-testimonial-root-compact" data-variant="compact" data-star-rating="4" data-theme="light">
+      <article class="vpm-testimonial">
+        <div class="vpm-testimonial__content">
+          <blockquote class="vpm-testimonial__quote">
+            <p class="vpm-testimonial__text">Great service and excellent support team. Highly recommend!</p>
+          </blockquote>
+          
+          <div class="vpm-testimonial__rating" aria-label="Rating: 4 out of 5 stars">
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+          </div>
+        </div>
+        
+        <footer class="vpm-testimonial__footer">
+          <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-compact">
+            <img 
+              src="https://via.placeholder.com/100/2ecc71/ffffff?text=JS" 
+              alt="Photo of Jane Smith" 
+              class="vpm-testimonial__photo"
+              width="100"
+              height="100"
+            >
+            <div class="vpm-testimonial__author-info">
+              <cite class="vpm-testimonial__author-name">Jane Smith</cite>
+              <p class="vpm-testimonial__author-title">Marketing Manager</p>
+            </div>
+          </button>
+          
+          <div id="vpm-testimonial-bio-compact" class="vpm-testimonial__bio" aria-hidden="true">
+            <p class="vpm-testimonial__bio-text">Jane Smith leads the marketing team and has been with the company for 8 years.</p>
+          </div>
+        </footer>
+      </article>
+    </div>
+  </div>
+  
+  <!-- Featured Variant -->
+  <div class="preview-section">
+    <h2>Featured Variant (5 stars)</h2>
+    <div id="vpm-testimonial-root-featured" data-variant="featured" data-star-rating="5" data-theme="light">
+      <article class="vpm-testimonial">
+        <div class="vpm-testimonial__content">
+          <blockquote class="vpm-testimonial__quote">
+            <p class="vpm-testimonial__text">Outstanding experience from start to finish. The team went above and beyond to ensure our success. This has been a game-changer for our organization.</p>
+          </blockquote>
+          
+          <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+          </div>
+        </div>
+        
+        <footer class="vpm-testimonial__footer">
+          <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-featured">
+            <img 
+              src="https://via.placeholder.com/100/e74c3c/ffffff?text=RB" 
+              alt="Photo of Robert Brown" 
+              class="vpm-testimonial__photo"
+              width="100"
+              height="100"
+            >
+            <div class="vpm-testimonial__author-info">
+              <cite class="vpm-testimonial__author-name">Robert Brown</cite>
+              <p class="vpm-testimonial__author-title">CEO, Tech Innovations Inc.</p>
+            </div>
+          </button>
+          
+          <div id="vpm-testimonial-bio-featured" class="vpm-testimonial__bio" aria-hidden="true">
+            <p class="vpm-testimonial__bio-text">Robert Brown is the CEO of Tech Innovations Inc., a leading technology company with over 500 employees. He has been recognized as one of the top executives in the industry.</p>
+          </div>
+        </footer>
+      </article>
+    </div>
+  </div>
+  
+  <!-- Dark Theme -->
+  <div class="preview-section" style="background: #1a1a1a;">
+    <h2 style="color: #e0e0e0;">Dark Theme</h2>
+    <div id="vpm-testimonial-root-dark" data-variant="default" data-star-rating="5" data-theme="dark">
+      <article class="vpm-testimonial">
+        <div class="vpm-testimonial__content">
+          <blockquote class="vpm-testimonial__quote">
+            <p class="vpm-testimonial__text">Excellent service with a modern, intuitive interface. The dark theme is perfect for extended use.</p>
+          </blockquote>
+          
+          <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+          </div>
+        </div>
+        
+        <footer class="vpm-testimonial__footer">
+          <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-dark">
+            <img 
+              src="https://via.placeholder.com/100/005eb8/ffffff?text=AL" 
+              alt="Photo of Alice Lee" 
+              class="vpm-testimonial__photo"
+              width="100"
+              height="100"
+            >
+            <div class="vpm-testimonial__author-info">
+              <cite class="vpm-testimonial__author-name">Alice Lee</cite>
+              <p class="vpm-testimonial__author-title">UX Designer</p>
+            </div>
+          </button>
+          
+          <div id="vpm-testimonial-bio-dark" class="vpm-testimonial__bio" aria-hidden="true">
+            <p class="vpm-testimonial__bio-text">Alice Lee is a UX designer with expertise in accessibility and user-centered design principles.</p>
+          </div>
+        </footer>
+      </article>
+    </div>
+  </div>
+  
+  <!-- Multiple Cards Grid -->
+  <div class="preview-section">
+    <h2>Multiple Cards (Grid Layout)</h2>
+    <div class="preview-grid">
+      <!-- Card 1 -->
+      <div id="vpm-testimonial-root-1" data-variant="default" data-star-rating="5" data-theme="light">
+        <article class="vpm-testimonial">
+          <div class="vpm-testimonial__content">
+            <blockquote class="vpm-testimonial__quote">
+              <p class="vpm-testimonial__text">Fantastic experience! Highly recommend to anyone looking for quality service.</p>
+            </blockquote>
+            
+            <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            </div>
+          </div>
+          
+          <footer class="vpm-testimonial__footer">
+            <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-1">
+              <img 
+                src="https://via.placeholder.com/100/005eb8/ffffff?text=1" 
+                alt="Photo" 
+                class="vpm-testimonial__photo"
+                width="100"
+                height="100"
+              >
+              <div class="vpm-testimonial__author-info">
+                <cite class="vpm-testimonial__author-name">Sarah Johnson</cite>
+                <p class="vpm-testimonial__author-title">Product Manager</p>
+              </div>
+            </button>
+            
+            <div id="vpm-testimonial-bio-1" class="vpm-testimonial__bio" aria-hidden="true">
+              <p class="vpm-testimonial__bio-text">Sarah has been in product management for 10 years.</p>
+            </div>
+          </footer>
+        </article>
+      </div>
+      
+      <!-- Card 2 -->
+      <div id="vpm-testimonial-root-2" data-variant="default" data-star-rating="4" data-theme="light">
+        <article class="vpm-testimonial">
+          <div class="vpm-testimonial__content">
+            <blockquote class="vpm-testimonial__quote">
+              <p class="vpm-testimonial__text">Great value and excellent customer support throughout the process.</p>
+            </blockquote>
+            
+            <div class="vpm-testimonial__rating" aria-label="Rating: 4 out of 5 stars">
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+            </div>
+          </div>
+          
+          <footer class="vpm-testimonial__footer">
+            <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-2">
+              <img 
+                src="https://via.placeholder.com/100/2ecc71/ffffff?text=2" 
+                alt="Photo" 
+                class="vpm-testimonial__photo"
+                width="100"
+                height="100"
+              >
+              <div class="vpm-testimonial__author-info">
+                <cite class="vpm-testimonial__author-name">Mike Wilson</cite>
+                <p class="vpm-testimonial__author-title">Developer</p>
+              </div>
+            </button>
+            
+            <div id="vpm-testimonial-bio-2" class="vpm-testimonial__bio" aria-hidden="true">
+              <p class="vpm-testimonial__bio-text">Mike is a full-stack developer with expertise in modern web technologies.</p>
+            </div>
+          </footer>
+        </article>
+      </div>
+      
+      <!-- Card 3 -->
+      <div id="vpm-testimonial-root-3" data-variant="default" data-star-rating="5" data-theme="light">
+        <article class="vpm-testimonial">
+          <div class="vpm-testimonial__content">
+            <blockquote class="vpm-testimonial__quote">
+              <p class="vpm-testimonial__text">Exceeded all expectations. The team is professional and results-driven.</p>
+            </blockquote>
+            
+            <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+            </div>
+          </div>
+          
+          <footer class="vpm-testimonial__footer">
+            <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio-3">
+              <img 
+                src="https://via.placeholder.com/100/e74c3c/ffffff?text=3" 
+                alt="Photo" 
+                class="vpm-testimonial__photo"
+                width="100"
+                height="100"
+              >
+              <div class="vpm-testimonial__author-info">
+                <cite class="vpm-testimonial__author-name">Emily Davis</cite>
+                <p class="vpm-testimonial__author-title">Design Lead</p>
+              </div>
+            </button>
+            
+            <div id="vpm-testimonial-bio-3" class="vpm-testimonial__bio" aria-hidden="true">
+              <p class="vpm-testimonial__bio-text">Emily leads the design team and has won multiple awards for her work.</p>
+            </div>
+          </footer>
+        </article>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize all testimonial components
+    function initTestimonial(rootId) {
+      var root = document.getElementById(rootId);
+      if (!root || root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      
+      var trigger = root.querySelector('.vpm-testimonial__author-trigger');
+      var bio = root.querySelector('.vpm-testimonial__bio');
+      var rating = root.querySelector('.vpm-testimonial__rating');
+      
+      if (!trigger || !bio) return;
+      
+      var starRating = parseInt(root.getAttribute('data-star-rating') || '0', 10);
+      if (starRating > 0 && rating) {
+        var stars = rating.querySelectorAll('.vpm-testimonial__star');
+        stars.forEach(function(star, index) {
+          if (index < starRating) {
+            star.classList.add('vpm-testimonial__star--filled');
+          } else {
+            star.classList.remove('vpm-testimonial__star--filled');
+          }
+        });
+      }
+      
+      trigger.addEventListener('click', function() {
+        var isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        var newState = !isExpanded;
+        
+        trigger.setAttribute('aria-expanded', newState);
+        bio.setAttribute('aria-hidden', !newState);
+        
+        if (newState) {
+          bio.classList.add('vpm-testimonial__bio--expanded');
+        } else {
+          bio.classList.remove('vpm-testimonial__bio--expanded');
+        }
+      });
+      
+      trigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          trigger.click();
+        }
+      });
+    }
+    
+    // Initialize all instances
+    var testimonialIds = [
+      'vpm-testimonial-root',
+      'vpm-testimonial-root-compact',
+      'vpm-testimonial-root-featured',
+      'vpm-testimonial-root-dark',
+      'vpm-testimonial-root-1',
+      'vpm-testimonial-root-2',
+      'vpm-testimonial-root-3'
+    ];
+    
+    testimonialIds.forEach(initTestimonial);
+  </script>
+</body>
+</html>
+

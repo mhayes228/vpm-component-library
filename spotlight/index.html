@@ -1,0 +1,148 @@
+<!-- VPM Spotlight Component -->
+<!-- Copy this HTML into Brightspot CMS -->
+<div id="vpm-spotlight-root" data-github-url="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/VPM-Spotlight-Homepage/content-queue.json">
+  <section class="vpm-spotlight-section">
+    <div class="vpm-spotlight-container">
+      <h2 class="vpm-spotlight-heading">Spotlight on VPM Original Content</h2>
+      <div id="vpm-spotlight-cards" class="vpm-spotlight-cards">
+        <!-- Cards will be dynamically inserted here -->
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  var root = document.getElementById('vpm-spotlight-root');
+  if (!root || root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
+  
+  // Configuration
+  var GITHUB_JSON_URL = root.getAttribute('data-github-url') || 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/VPM-Spotlight-Homepage/content-queue.json';
+  var MAX_ACTIVE_ITEMS = 3;
+  var HIGH_PRIORITY_TAG = 'high priority';
+  
+  var contentData = [];
+  
+  // Load content from JSON file
+  function loadContent() {
+    if (typeof fetch === 'undefined') {
+      console.error('VPM Spotlight: fetch API not available');
+      showError('Unable to load content. Your browser does not support this feature.');
+      return;
+    }
+    
+    fetch(GITHUB_JSON_URL)
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Failed to load content queue');
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        contentData = data.items || [];
+        renderCards();
+      })
+      .catch(function(error) {
+        console.error('Error loading content:', error);
+        showError('Unable to load content. Please check the GitHub JSON URL configuration.');
+      });
+  }
+  
+  function showError(message) {
+    var container = document.getElementById('vpm-spotlight-cards');
+    if (container) {
+      container.innerHTML = '<p style="color: var(--vpm-color-text-muted, #666666); padding: var(--vpm-spacing-lg, 2rem);">' + message + '</p>';
+    }
+  }
+  
+  // Get active items (tagged with "high priority")
+  function getActiveItems() {
+    return contentData
+      .filter(function(item) {
+        return item.tags && item.tags.includes(HIGH_PRIORITY_TAG);
+      })
+      .sort(function(a, b) {
+        return new Date(b.dateAdded) - new Date(a.dateAdded);
+      })
+      .slice(0, MAX_ACTIVE_ITEMS);
+  }
+  
+  // Render cards to the DOM
+  function renderCards() {
+    var container = document.getElementById('vpm-spotlight-cards');
+    if (!container) {
+      return;
+    }
+    
+    var activeItems = getActiveItems();
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    if (activeItems.length === 0) {
+      container.innerHTML = '<p style="color: var(--vpm-color-text-muted, #666666); padding: var(--vpm-spacing-lg, 2rem);">No content items are currently active. Add items with the "high priority" tag to display them.</p>';
+      return;
+    }
+    
+    // Create and append cards
+    activeItems.forEach(function(item) {
+      var card = createCardElement(item);
+      container.appendChild(card);
+    });
+  }
+  
+  // Create a card element
+  function createCardElement(item) {
+    var card = document.createElement('div');
+    card.className = 'vpm-spotlight-card';
+    card.setAttribute('data-id', item.id);
+    
+    var link = document.createElement('a');
+    link.href = item.link || '#';
+    link.className = 'vpm-spotlight-card-link';
+    link.setAttribute('aria-label', 'Read more about ' + (item.title || 'content'));
+    
+    var image = document.createElement('img');
+    image.src = item.picture || '';
+    image.alt = item.title || 'Content image';
+    image.className = 'vpm-spotlight-card-image';
+    image.loading = 'lazy';
+    
+    var content = document.createElement('div');
+    content.className = 'vpm-spotlight-card-content';
+    
+    var title = document.createElement('h3');
+    title.className = 'vpm-spotlight-card-title';
+    title.textContent = item.title || '';
+    
+    var subtitle = document.createElement('p');
+    subtitle.className = 'vpm-spotlight-card-subtitle';
+    subtitle.textContent = item.subtitle || '';
+    
+    var description = document.createElement('p');
+    description.className = 'vpm-spotlight-card-description';
+    description.textContent = item.description || '';
+    
+    content.appendChild(title);
+    content.appendChild(subtitle);
+    content.appendChild(description);
+    
+    link.appendChild(image);
+    link.appendChild(content);
+    card.appendChild(link);
+    
+    return card;
+  }
+  
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadContent);
+  } else {
+    loadContent();
+  }
+})();
+</script>
+

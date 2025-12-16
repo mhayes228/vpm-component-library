@@ -1,0 +1,94 @@
+<!-- VPM Testimonial Card Component -->
+<!-- Copy this HTML into Brightspot CMS -->
+<div id="vpm-testimonial-root" data-variant="default" data-star-rating="5" data-theme="light">
+  <article class="vpm-testimonial">
+    <div class="vpm-testimonial__content">
+      <blockquote class="vpm-testimonial__quote">
+        <p class="vpm-testimonial__text">This is an amazing service that has transformed how we work. The quality and attention to detail is outstanding.</p>
+      </blockquote>
+      
+      <div class="vpm-testimonial__rating" aria-label="Rating: 5 out of 5 stars">
+        <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+        <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+        <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+        <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+        <span class="vpm-testimonial__star vpm-testimonial__star--filled" aria-hidden="true">★</span>
+      </div>
+    </div>
+    
+    <footer class="vpm-testimonial__footer">
+      <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio">
+        <img 
+          src="https://via.placeholder.com/100" 
+          alt="Photo of John Doe" 
+          class="vpm-testimonial__photo"
+          width="100"
+          height="100"
+        >
+        <div class="vpm-testimonial__author-info">
+          <cite class="vpm-testimonial__author-name">John Doe</cite>
+          <p class="vpm-testimonial__author-title">Director of Operations</p>
+        </div>
+      </button>
+      
+      <div id="vpm-testimonial-bio" class="vpm-testimonial__bio" aria-hidden="true">
+        <p class="vpm-testimonial__bio-text">John Doe has over 15 years of experience in operations management and has been a valued partner since 2020.</p>
+      </div>
+    </footer>
+  </article>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  var root = document.getElementById('vpm-testimonial-root');
+  if (!root || root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
+  
+  // Get component elements
+  var trigger = root.querySelector('.vpm-testimonial__author-trigger');
+  var bio = root.querySelector('.vpm-testimonial__bio');
+  var rating = root.querySelector('.vpm-testimonial__rating');
+  
+  if (!trigger || !bio) return;
+  
+  // Initialize star rating from data attribute
+  var starRating = parseInt(root.getAttribute('data-star-rating') || '0', 10);
+  if (starRating > 0 && rating) {
+    var stars = rating.querySelectorAll('.vpm-testimonial__star');
+    stars.forEach(function(star, index) {
+      if (index < starRating) {
+        star.classList.add('vpm-testimonial__star--filled');
+      } else {
+        star.classList.remove('vpm-testimonial__star--filled');
+      }
+    });
+  }
+  
+  // Toggle bio on author photo click
+  trigger.addEventListener('click', function() {
+    var isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+    var newState = !isExpanded;
+    
+    trigger.setAttribute('aria-expanded', newState);
+    bio.setAttribute('aria-hidden', !newState);
+    
+    if (newState) {
+      bio.classList.add('vpm-testimonial__bio--expanded');
+    } else {
+      bio.classList.remove('vpm-testimonial__bio--expanded');
+    }
+  });
+  
+  // Keyboard support
+  trigger.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      trigger.click();
+    }
+  });
+  
+})();
+</script>
+
