@@ -11,6 +11,7 @@
       "documentationPath": "../testimonial-card/README.md",
       "indexPath": "../testimonial-card/index.html",
       "shadowDomPath": "../testimonial-card/shadow-dom.html",
+      "screenshotPath": null,
       "features": ["Star ratings", "Expandable bios", "Multiple variants", "Dark theme support"]
     },
     {
@@ -24,6 +25,7 @@
       "documentationPath": "../spotlight/README.md",
       "indexPath": "../spotlight/index.html",
       "shadowDomPath": "../spotlight/shadow-dom.html",
+      "screenshotPath": null,
       "features": ["JSON data loading", "Priority filtering", "Responsive grid", "Lazy loading images"]
     },
     {
@@ -37,6 +39,7 @@
       "documentationPath": "../watch-channels/README.md",
       "indexPath": "../watch-channels/index.html",
       "shadowDomPath": "../watch-channels/shadow-dom.html",
+      "screenshotPath": null,
       "features": ["Shadow DOM encapsulation", "Channel tiles", "Live badges", "Gradient background"]
     },
     {
@@ -50,6 +53,7 @@
       "documentationPath": "../impact-testimonials/README.md",
       "indexPath": "../impact-testimonials/index.html",
       "shadowDomPath": "../impact-testimonials/shadow-dom.html",
+      "screenshotPath": null,
       "features": ["Video carousel", "Quote carousel", "Auto-advance", "Touch/swipe support", "Vimeo integration"],
       "dependencies": ["Vimeo Player API"]
     },
@@ -64,6 +68,7 @@
       "documentationPath": "../newsletter-signup/README.md",
       "indexPath": "../newsletter-signup/index.html",
       "shadowDomPath": "../newsletter-signup/shadow-dom.html",
+      "screenshotPath": null,
       "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
     }
   ]
