@@ -1,0 +1,274 @@
+<!--
+  VPM Spotlight - Shadow DOM Component
+  Copy this entire script tag and paste it into your website.
+  Usage: <vpm-spotlight data-github-url="https://raw.githubusercontent.com/USER/REPO/main/content-queue.json"></vpm-spotlight>
+-->
+<script>
+(function() {
+  'use strict';
+  
+  if (customElements.get('vpm-spotlight')) {
+    return;
+  }
+  
+  class VPMSpotlight extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: 'open' });
+      
+      const style = document.createElement('style');
+      style.textContent = `
+        :host {
+          display: block;
+          --vpm-color-bg-light: #f5f5f5;
+          --vpm-color-bg: #ffffff;
+          --vpm-color-text: #333333;
+          --vpm-color-text-muted: #666666;
+          --vpm-color-red: #EE2737;
+          --vpm-spacing-unit: 1rem;
+          --vpm-spacing-md: 1.5rem;
+          --vpm-spacing-lg: 2rem;
+          --vpm-spacing-xl: 3rem;
+          --vpm-font-size-xl: 1.25rem;
+          --vpm-font-size-2xl: 1.875rem;
+          --vpm-font-size-lg: 1.125rem;
+          --vpm-font-size-sm: 0.875rem;
+          --vpm-font-weight-bold: 700;
+          --vpm-font-weight-medium: 500;
+          --vpm-line-height-tight: 1.25;
+          --vpm-line-height-base: 1.5;
+          --vpm-border-radius-lg: 8px;
+          --vpm-transition-speed: 0.3s;
+          --vpm-transition-easing: ease-in-out;
+          --vpm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+          --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        .vpm-spotlight-section {
+          background-color: var(--vpm-color-bg-light);
+          padding: var(--vpm-spacing-xl) var(--vpm-spacing-md);
+          width: 100%;
+        }
+        
+        .vpm-spotlight-container {
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+        
+        .vpm-spotlight-heading {
+          font-size: var(--vpm-font-size-2xl);
+          font-weight: var(--vpm-font-weight-bold);
+          color: var(--vpm-color-text);
+          margin-bottom: var(--vpm-spacing-lg);
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .vpm-spotlight-cards {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: var(--vpm-spacing-md);
+          position: relative;
+        }
+        
+        .vpm-spotlight-card {
+          background-color: var(--vpm-color-bg);
+          border-radius: var(--vpm-border-radius-lg);
+          overflow: hidden;
+          box-shadow: var(--vpm-shadow);
+          transition: transform var(--vpm-transition-speed) var(--vpm-transition-easing),
+                      box-shadow var(--vpm-transition-speed) var(--vpm-transition-easing);
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .vpm-spotlight-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--vpm-shadow-md);
+        }
+        
+        .vpm-spotlight-card-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          display: block;
+        }
+        
+        .vpm-spotlight-card-content {
+          padding: var(--vpm-spacing-md);
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .vpm-spotlight-card-title {
+          font-size: var(--vpm-font-size-lg);
+          font-weight: var(--vpm-font-weight-bold);
+          color: var(--vpm-color-text);
+          margin-bottom: 0.5rem;
+          line-height: var(--vpm-line-height-tight);
+        }
+        
+        .vpm-spotlight-card-subtitle {
+          font-size: var(--vpm-font-size-sm);
+          color: var(--vpm-color-text-muted);
+          margin-bottom: 0.75rem;
+          font-weight: var(--vpm-font-weight-medium);
+        }
+        
+        .vpm-spotlight-card-description {
+          font-size: var(--vpm-font-size-sm);
+          color: var(--vpm-color-text-muted);
+          line-height: var(--vpm-line-height-base);
+          flex: 1;
+        }
+        
+        .vpm-spotlight-card-link {
+          text-decoration: none;
+          color: inherit;
+          display: block;
+          height: 100%;
+        }
+        
+        .vpm-spotlight-card-link:focus-visible {
+          outline: 2px solid var(--vpm-color-red);
+          outline-offset: 2px;
+          border-radius: var(--vpm-border-radius-lg);
+        }
+        
+        @media (max-width: 1024px) {
+          .vpm-spotlight-cards {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .vpm-spotlight-section {
+            padding: var(--vpm-spacing-lg) var(--vpm-spacing-unit);
+          }
+          
+          .vpm-spotlight-heading {
+            font-size: var(--vpm-font-size-xl);
+            margin-bottom: var(--vpm-spacing-md);
+          }
+          
+          .vpm-spotlight-cards {
+            grid-template-columns: 1fr;
+            gap: var(--vpm-spacing-unit);
+          }
+          
+          .vpm-spotlight-card-image {
+            height: 180px;
+          }
+        }
+      `;
+      
+      const template = document.createElement('template');
+      template.innerHTML = `
+        <section class="vpm-spotlight-section">
+          <div class="vpm-spotlight-container">
+            <h2 class="vpm-spotlight-heading">Spotlight on VPM Original Content</h2>
+            <div class="vpm-spotlight-cards"></div>
+          </div>
+        </section>
+      `;
+      
+      shadow.appendChild(style);
+      shadow.appendChild(template.content.cloneNode(true));
+      
+      this.initComponent(shadow);
+    }
+    
+    initComponent(shadow) {
+      const GITHUB_JSON_URL = this.getAttribute('data-github-url') || '';
+      const MAX_ACTIVE_ITEMS = 3;
+      const HIGH_PRIORITY_TAG = 'high priority';
+      const container = shadow.querySelector('.vpm-spotlight-cards');
+      
+      if (!GITHUB_JSON_URL || typeof fetch === 'undefined') {
+        if (container) {
+          container.innerHTML = '<p style="color: #666666; padding: 2rem;">Please provide a data-github-url attribute with your JSON URL.</p>';
+        }
+        return;
+      }
+      
+      fetch(GITHUB_JSON_URL)
+        .then(function(response) {
+          if (!response.ok) throw new Error('Failed to load content');
+          return response.json();
+        })
+        .then(function(data) {
+          const items = data.items || [];
+          const activeItems = items
+            .filter(function(item) {
+              return item.tags && item.tags.includes(HIGH_PRIORITY_TAG);
+            })
+            .sort(function(a, b) {
+              return new Date(b.dateAdded) - new Date(a.dateAdded);
+            })
+            .slice(0, MAX_ACTIVE_ITEMS);
+          
+          if (container) {
+            container.innerHTML = '';
+            if (activeItems.length === 0) {
+              container.innerHTML = '<p style="color: #666666; padding: 2rem;">No content items are currently active.</p>';
+              return;
+            }
+            
+            activeItems.forEach(function(item) {
+              const card = document.createElement('div');
+              card.className = 'vpm-spotlight-card';
+              
+              const link = document.createElement('a');
+              link.href = item.link || '#';
+              link.className = 'vpm-spotlight-card-link';
+              link.setAttribute('aria-label', 'Read more about ' + (item.title || 'content'));
+              
+              const image = document.createElement('img');
+              image.src = item.picture || '';
+              image.alt = item.title || 'Content image';
+              image.className = 'vpm-spotlight-card-image';
+              image.loading = 'lazy';
+              
+              const content = document.createElement('div');
+              content.className = 'vpm-spotlight-card-content';
+              
+              const title = document.createElement('h3');
+              title.className = 'vpm-spotlight-card-title';
+              title.textContent = item.title || '';
+              
+              const subtitle = document.createElement('p');
+              subtitle.className = 'vpm-spotlight-card-subtitle';
+              subtitle.textContent = item.subtitle || '';
+              
+              const description = document.createElement('p');
+              description.className = 'vpm-spotlight-card-description';
+              description.textContent = item.description || '';
+              
+              content.appendChild(title);
+              content.appendChild(subtitle);
+              content.appendChild(description);
+              
+              link.appendChild(image);
+              link.appendChild(content);
+              card.appendChild(link);
+              container.appendChild(card);
+            });
+          }
+        })
+        .catch(function(error) {
+          console.error('Error loading content:', error);
+          if (container) {
+            container.innerHTML = '<p style="color: #666666; padding: 2rem;">Unable to load content. Please check the GitHub JSON URL.</p>';
+          }
+        });
+    }
+  }
+  
+  customElements.define('vpm-spotlight', VPMSpotlight);
+})();
+</script>
+

@@ -1,0 +1,373 @@
+<!--
+  VPM Testimonial Card - Shadow DOM Component
+  Copy this entire script tag and paste it into your website.
+  Usage: <vpm-testimonial-card data-variant="default" data-star-rating="5" data-theme="light"></vpm-testimonial-card>
+-->
+<script>
+(function() {
+  'use strict';
+  
+  if (customElements.get('vpm-testimonial-card')) {
+    return; // Already defined
+  }
+  
+  class VPMTestimonialCard extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: 'open' });
+      
+      // CSS Variables and Styles
+      const style = document.createElement('style');
+      style.textContent = `
+        :host {
+          display: block;
+          --vpm-color-primary: #005eb8;
+          --vpm-color-primary-dark: #004a94;
+          --vpm-color-text: #333333;
+          --vpm-color-text-light: #666666;
+          --vpm-color-text-muted: #999999;
+          --vpm-color-bg: #ffffff;
+          --vpm-color-border: #e0e0e0;
+          --vpm-spacing-xs: 0.25rem;
+          --vpm-spacing-sm: 0.5rem;
+          --vpm-spacing-unit: 1rem;
+          --vpm-spacing-md: 1.5rem;
+          --vpm-spacing-lg: 2rem;
+          --vpm-font-size-base: 1rem;
+          --vpm-font-size-sm: 0.875rem;
+          --vpm-font-size-lg: 1.125rem;
+          --vpm-font-size-xl: 1.25rem;
+          --vpm-font-weight-semibold: 600;
+          --vpm-line-height-base: 1.5;
+          --vpm-border-width: 1px;
+          --vpm-border-radius: 4px;
+          --vpm-border-radius-lg: 8px;
+          --vpm-border-radius-full: 9999px;
+          --vpm-transition-speed: 0.3s;
+          --vpm-transition-speed-fast: 0.15s;
+          --vpm-transition-easing: ease-in-out;
+          --vpm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          --vpm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        :host([data-theme="dark"]) {
+          --vpm-color-text: #e0e0e0;
+          --vpm-color-text-light: #b0b0b0;
+          --vpm-color-text-muted: #808080;
+          --vpm-color-bg: #1a1a1a;
+          --vpm-color-border: #333333;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        .vpm-testimonial {
+          background: var(--vpm-color-bg);
+          border: var(--vpm-border-width) solid var(--vpm-color-border);
+          border-radius: var(--vpm-border-radius-lg);
+          padding: var(--vpm-spacing-lg);
+          transition: transform var(--vpm-transition-speed) var(--vpm-transition-easing),
+                      box-shadow var(--vpm-transition-speed) var(--vpm-transition-easing);
+          max-width: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          font-size: var(--vpm-font-size-base);
+          line-height: var(--vpm-line-height-base);
+          color: var(--vpm-color-text);
+        }
+        
+        .vpm-testimonial:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--vpm-shadow-lg);
+        }
+        
+        .vpm-testimonial__content {
+          margin-bottom: var(--vpm-spacing-md);
+        }
+        
+        .vpm-testimonial__quote {
+          margin: 0 0 var(--vpm-spacing-md) 0;
+          padding: 0;
+          border: none;
+        }
+        
+        .vpm-testimonial__text {
+          font-size: var(--vpm-font-size-lg);
+          line-height: var(--vpm-line-height-base);
+          color: var(--vpm-color-text);
+          margin: 0;
+          font-style: italic;
+        }
+        
+        .vpm-testimonial__rating {
+          display: flex;
+          gap: var(--vpm-spacing-xs);
+          margin-top: var(--vpm-spacing-sm);
+        }
+        
+        .vpm-testimonial__star {
+          color: var(--vpm-color-border);
+          font-size: var(--vpm-font-size-xl);
+          line-height: 1;
+          transition: color var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+        }
+        
+        .vpm-testimonial__star--filled {
+          color: #fbbf24;
+        }
+        
+        .vpm-testimonial__footer {
+          border-top: var(--vpm-border-width) solid var(--vpm-color-border);
+          padding-top: var(--vpm-spacing-md);
+          margin-top: var(--vpm-spacing-md);
+        }
+        
+        .vpm-testimonial__author-trigger {
+          display: flex;
+          align-items: center;
+          gap: var(--vpm-spacing-md);
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          width: 100%;
+          text-align: left;
+          font-family: inherit;
+          transition: opacity var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+        }
+        
+        .vpm-testimonial__author-trigger:hover {
+          opacity: 0.8;
+        }
+        
+        .vpm-testimonial__author-trigger:focus {
+          outline: 2px solid var(--vpm-color-primary);
+          outline-offset: 2px;
+          border-radius: var(--vpm-border-radius);
+        }
+        
+        .vpm-testimonial__photo {
+          width: 60px;
+          height: 60px;
+          border-radius: var(--vpm-border-radius-full);
+          object-fit: cover;
+          flex-shrink: 0;
+          border: 2px solid var(--vpm-color-border);
+        }
+        
+        .vpm-testimonial__author-info {
+          flex: 1;
+          min-width: 0;
+        }
+        
+        .vpm-testimonial__author-name {
+          display: block;
+          font-weight: var(--vpm-font-weight-semibold);
+          font-size: var(--vpm-font-size-base);
+          color: var(--vpm-color-text);
+          font-style: normal;
+          margin-bottom: var(--vpm-spacing-xs);
+        }
+        
+        .vpm-testimonial__author-title {
+          font-size: var(--vpm-font-size-sm);
+          color: var(--vpm-color-text-light);
+          margin: 0;
+        }
+        
+        .vpm-testimonial__bio {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height var(--vpm-transition-speed) var(--vpm-transition-easing),
+                      margin-top var(--vpm-transition-speed) var(--vpm-transition-easing),
+                      opacity var(--vpm-transition-speed) var(--vpm-transition-easing);
+          opacity: 0;
+          margin-top: 0;
+        }
+        
+        .vpm-testimonial__bio--expanded {
+          max-height: 200px;
+          opacity: 1;
+          margin-top: var(--vpm-spacing-md);
+        }
+        
+        .vpm-testimonial__bio-text {
+          font-size: var(--vpm-font-size-sm);
+          color: var(--vpm-color-text-light);
+          line-height: var(--vpm-line-height-base);
+          margin: 0;
+          padding-top: var(--vpm-spacing-md);
+          border-top: var(--vpm-border-width) solid var(--vpm-color-border);
+        }
+        
+        :host([data-variant="compact"]) .vpm-testimonial {
+          padding: var(--vpm-spacing-md);
+        }
+        
+        :host([data-variant="compact"]) .vpm-testimonial__text {
+          font-size: var(--vpm-font-size-base);
+        }
+        
+        :host([data-variant="compact"]) .vpm-testimonial__photo {
+          width: 50px;
+          height: 50px;
+        }
+        
+        :host([data-variant="featured"]) .vpm-testimonial {
+          border-color: var(--vpm-color-primary);
+          border-width: 2px;
+          box-shadow: var(--vpm-shadow-md);
+        }
+        
+        :host([data-variant="featured"]) .vpm-testimonial:hover {
+          box-shadow: var(--vpm-shadow-xl);
+        }
+        
+        @media (max-width: 767px) {
+          .vpm-testimonial {
+            padding: var(--vpm-spacing-md);
+          }
+          
+          .vpm-testimonial__author-trigger {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--vpm-spacing-sm);
+          }
+          
+          .vpm-testimonial__photo {
+            width: 50px;
+            height: 50px;
+          }
+          
+          .vpm-testimonial__text {
+            font-size: var(--vpm-font-size-base);
+          }
+        }
+      `;
+      
+      // HTML Template
+      const template = document.createElement('template');
+      template.innerHTML = `
+        <article class="vpm-testimonial">
+          <div class="vpm-testimonial__content">
+            <blockquote class="vpm-testimonial__quote">
+              <p class="vpm-testimonial__text"></p>
+            </blockquote>
+            
+            <div class="vpm-testimonial__rating" aria-label="Rating">
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+              <span class="vpm-testimonial__star" aria-hidden="true">★</span>
+            </div>
+          </div>
+          
+          <footer class="vpm-testimonial__footer">
+            <button class="vpm-testimonial__author-trigger" aria-expanded="false">
+              <img class="vpm-testimonial__photo" width="100" height="100" alt="">
+              <div class="vpm-testimonial__author-info">
+                <cite class="vpm-testimonial__author-name"></cite>
+                <p class="vpm-testimonial__author-title"></p>
+              </div>
+            </button>
+            
+            <div class="vpm-testimonial__bio" aria-hidden="true">
+              <p class="vpm-testimonial__bio-text"></p>
+            </div>
+          </footer>
+        </article>
+      `;
+      
+      shadow.appendChild(style);
+      shadow.appendChild(template.content.cloneNode(true));
+      
+      this.initComponent(shadow);
+    }
+    
+    initComponent(shadow) {
+      const root = shadow.host;
+      const trigger = shadow.querySelector('.vpm-testimonial__author-trigger');
+      const bio = shadow.querySelector('.vpm-testimonial__bio');
+      const rating = shadow.querySelector('.vpm-testimonial__rating');
+      const text = shadow.querySelector('.vpm-testimonial__text');
+      const photo = shadow.querySelector('.vpm-testimonial__photo');
+      const name = shadow.querySelector('.vpm-testimonial__author-name');
+      const title = shadow.querySelector('.vpm-testimonial__author-title');
+      const bioText = shadow.querySelector('.vpm-testimonial__bio-text');
+      
+      // Get data from attributes
+      const quote = root.getAttribute('data-quote') || 'This is an amazing service that has transformed how we work.';
+      const authorName = root.getAttribute('data-author-name') || 'John Doe';
+      const authorTitle = root.getAttribute('data-author-title') || 'Director of Operations';
+      const authorPhoto = root.getAttribute('data-author-photo') || 'https://via.placeholder.com/100';
+      const authorBio = root.getAttribute('data-author-bio') || '';
+      const starRating = parseInt(root.getAttribute('data-star-rating') || '5', 10);
+      
+      // Set content
+      text.textContent = quote;
+      name.textContent = authorName;
+      title.textContent = authorTitle;
+      photo.src = authorPhoto;
+      photo.alt = 'Photo of ' + authorName;
+      if (authorBio) {
+        bioText.textContent = authorBio;
+      } else {
+        bio.style.display = 'none';
+      }
+      
+      // Initialize star rating
+      if (starRating > 0 && rating) {
+        const stars = rating.querySelectorAll('.vpm-testimonial__star');
+        stars.forEach(function(star, index) {
+          if (index < starRating) {
+            star.classList.add('vpm-testimonial__star--filled');
+          }
+        });
+        rating.setAttribute('aria-label', 'Rating: ' + starRating + ' out of 5 stars');
+      }
+      
+      // Toggle bio on click
+      if (trigger && bio && authorBio) {
+        trigger.addEventListener('click', function() {
+          const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+          const newState = !isExpanded;
+          
+          trigger.setAttribute('aria-expanded', newState);
+          bio.setAttribute('aria-hidden', !newState);
+          
+          if (newState) {
+            bio.classList.add('vpm-testimonial__bio--expanded');
+          } else {
+            bio.classList.remove('vpm-testimonial__bio--expanded');
+          }
+        });
+        
+        trigger.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            trigger.click();
+          }
+        });
+      }
+    }
+  }
+  
+  customElements.define('vpm-testimonial-card', VPMTestimonialCard);
+})();
+</script>
+
+<!-- Usage Example:
+<vpm-testimonial-card 
+  data-variant="default" 
+  data-star-rating="5" 
+  data-theme="light"
+  data-quote="This is an amazing service!"
+  data-author-name="John Doe"
+  data-author-title="Director"
+  data-author-photo="https://example.com/photo.jpg"
+  data-author-bio="John has over 15 years of experience.">
+</vpm-testimonial-card>
+-->
+
