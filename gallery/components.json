@@ -69,6 +69,24 @@
       "indexPath": "../newsletter-signup/index.html",
       "shadowDomPath": "../newsletter-signup/shadow-dom.html",
       "screenshotPath": null,
+      "componentFamily": "newsletter-signup",
+      "version": "v1",
+      "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
+    },
+    {
+      "id": "newsletter-signup-v2",
+      "name": "Newsletter Signup V2",
+      "description": "An alternate version of the newsletter signup form component with MailChimp integration. Same functionality with updated namespace.",
+      "namespace": "vpm-newsletter-v2-",
+      "category": "Form",
+      "dateAdded": "2024-01-20",
+      "previewPath": "../newsletter-signup-v2/preview.html",
+      "documentationPath": "../newsletter-signup-v2/README.md",
+      "indexPath": "../newsletter-signup-v2/index.html",
+      "shadowDomPath": "../newsletter-signup-v2/shadow-dom.html",
+      "screenshotPath": null,
+      "componentFamily": "newsletter-signup",
+      "version": "v2",
       "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
     }
   ]
