@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VPM Watch Channels - Component Preview</title>
   <link rel="stylesheet" href="../shared/styles.css">
+  <script src="../shared/preview-theme.js"></script>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -118,6 +119,7 @@
             font-size: clamp(2rem, 4vw, 2.6rem);
             font-weight: 700;
             margin: 0 0 20px;
+            color: #ffffff;
           }
 
           .watch-page-tile-container {
@@ -141,9 +143,10 @@
 
           .watch-page-tile:hover,
           .watch-page-tile:focus-visible {
-            transform: scale(1.03);
-            outline: 2px solid #ffffff;
-            outline-offset: 2px;
+            transform: scale(1.08);
+            outline: 3px solid #ffffff;
+            outline-offset: 3px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
           }
 
           .watch-page-tile img {
@@ -156,7 +159,7 @@
 
           .watch-page-tile:hover img,
           .watch-page-tile:focus-visible img {
-            transform: scale(1.05);
+            transform: scale(1.1);
           }
 
           .live-badge {

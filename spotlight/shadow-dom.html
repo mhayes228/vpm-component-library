@@ -24,7 +24,9 @@
           --vpm-color-bg: #ffffff;
           --vpm-color-text: #333333;
           --vpm-color-text-muted: #666666;
+          --vpm-color-border: #e0e0e0;
           --vpm-color-red: #EE2737;
+          --vpm-color-primary: #005eb8;
           --vpm-spacing-unit: 1rem;
           --vpm-spacing-md: 1.5rem;
           --vpm-spacing-lg: 2rem;
@@ -44,6 +46,14 @@
           --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         
+        :host([data-theme="dark"]) {
+          --vpm-color-bg-light: #2a2a2a;
+          --vpm-color-bg: #1a1a1a;
+          --vpm-color-text: #e0e0e0;
+          --vpm-color-text-muted: #808080;
+          --vpm-color-border: #333333;
+        }
+        
         * {
           box-sizing: border-box;
         }
@@ -52,6 +62,7 @@
           background-color: var(--vpm-color-bg-light);
           padding: var(--vpm-spacing-xl) var(--vpm-spacing-md);
           width: 100%;
+          position: relative;
         }
         
         .vpm-spotlight-container {
@@ -164,6 +175,42 @@
             height: 180px;
           }
         }
+        
+        .vpm-theme-toggle {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid var(--vpm-color-border);
+          background: var(--vpm-color-bg);
+          color: var(--vpm-color-text);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          transition: all 0.2s ease;
+          z-index: 1000;
+          padding: 0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .vpm-theme-toggle:hover {
+          transform: scale(1.1);
+          border-color: var(--vpm-color-primary);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .vpm-theme-toggle:focus {
+          outline: 2px solid var(--vpm-color-primary);
+          outline-offset: 2px;
+        }
+        
+        .vpm-theme-toggle:active {
+          transform: scale(0.95);
+        }
       `;
       
       const template = document.createElement('template');
@@ -179,7 +226,91 @@
       shadow.appendChild(style);
       shadow.appendChild(template.content.cloneNode(true));
       
+      this.shadow = shadow;
       this.initComponent(shadow);
+    }
+    
+    connectedCallback() {
+      // Initialize theme synchronization
+      const theme = localStorage.getItem('vpm-gallery-theme') || 'dark';
+      this.setAttribute('data-theme', theme);
+      
+      // Listen for theme changes from other components
+      this.themeChangeHandler = (e) => {
+        this.setAttribute('data-theme', e.detail.theme);
+        this.updateToggleIcon(e.detail.theme);
+      };
+      window.addEventListener('vpmThemeChange', this.themeChangeHandler);
+      
+      // Add theme toggle button (only if not embedded)
+      if (!this.isEmbedded()) {
+        this.addThemeToggle();
+      }
+    }
+    
+    disconnectedCallback() {
+      // Clean up event listener
+      if (this.themeChangeHandler) {
+        window.removeEventListener('vpmThemeChange', this.themeChangeHandler);
+      }
+    }
+    
+    isEmbedded() {
+      // Check for explicit data-embedded attribute
+      if (this.hasAttribute('data-embedded')) {
+        return true;
+      }
+      
+      // Check if in iframe (embedded context)
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+    
+    addThemeToggle() {
+      const currentTheme = this.getAttribute('data-theme') || 'dark';
+      const button = document.createElement('button');
+      button.className = 'vpm-theme-toggle';
+      button.setAttribute('aria-label', 'Toggle theme');
+      button.setAttribute('type', 'button');
+      button.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+      
+      // Add to shadow DOM
+      const section = this.shadow.querySelector('.vpm-spotlight-section');
+      if (section) {
+        section.appendChild(button);
+      }
+      
+      // Store reference for updates
+      this.toggleButton = button;
+      
+      // Add click handler
+      button.addEventListener('click', () => {
+        const currentTheme = this.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Save to localStorage
+        localStorage.setItem('vpm-gallery-theme', newTheme);
+        
+        // Dispatch event for other components
+        const event = new CustomEvent('vpmThemeChange', {
+          detail: { theme: newTheme },
+          bubbles: true
+        });
+        window.dispatchEvent(event);
+        
+        // Update this component
+        this.setAttribute('data-theme', newTheme);
+        this.updateToggleIcon(newTheme);
+      });
+    }
+    
+    updateToggleIcon(theme) {
+      if (this.toggleButton) {
+        this.toggleButton.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
     }
     
     initComponent(shadow) {

@@ -58,18 +58,36 @@
       const navyBlue = '#003865';
       const red = '#EE2737';
       
+      this.shadow = shadow;
+      
       shadow.innerHTML = `
         <style>
           :host {
             display: block;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             color: #ffffff;
+            --vpm-color-primary: #005eb8;
+            --vpm-color-border: #555555;
+            --vpm-color-bg: #002743;
+            --vpm-color-text: #ffffff;
+          }
+
+          :host([data-theme="dark"]) {
+            --vpm-color-border: #555555;
+            --vpm-color-bg: #001a2e;
+          }
+
+          :host([data-theme="light"]) {
+            --vpm-color-border: #e0e0e0;
+            --vpm-color-bg: #ffffff;
+            --vpm-color-text: #333333;
           }
 
           .watch-page-header {
             background: linear-gradient(to bottom, ${navyBlue}, #0d47a1);
             color: inherit;
             padding: 32px 20px;
+            position: relative;
           }
 
           .watch-page-header-container {
@@ -82,6 +100,7 @@
             font-size: clamp(2rem, 4vw, 2.6rem);
             font-weight: 700;
             margin: 0 0 20px;
+            color: #ffffff;
           }
 
           .watch-page-tile-container {
@@ -105,9 +124,10 @@
 
           .watch-page-tile:hover,
           .watch-page-tile:focus-visible {
-            transform: scale(1.03);
-            outline: 2px solid #ffffff;
-            outline-offset: 2px;
+            transform: scale(1.08);
+            outline: 3px solid #ffffff;
+            outline-offset: 3px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
           }
 
           .watch-page-tile img {
@@ -120,7 +140,7 @@
 
           .watch-page-tile:hover img,
           .watch-page-tile:focus-visible img {
-            transform: scale(1.05);
+            transform: scale(1.1);
           }
 
           .live-badge {
@@ -136,6 +156,42 @@
             text-transform: uppercase;
             letter-spacing: 0.06em;
             z-index: 1;
+          }
+
+          .vpm-theme-toggle {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--vpm-color-border);
+            background: var(--vpm-color-bg);
+            color: var(--vpm-color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          }
+          
+          .vpm-theme-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--vpm-color-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+          }
+          
+          .vpm-theme-toggle:focus {
+            outline: 2px solid var(--vpm-color-primary);
+            outline-offset: 2px;
+          }
+          
+          .vpm-theme-toggle:active {
+            transform: scale(0.95);
           }
 
           @media (max-width: 768px) {
@@ -160,6 +216,89 @@
           </div>
         </div>
       `;
+    }
+    
+    connectedCallback() {
+      // Initialize theme synchronization
+      const theme = localStorage.getItem('vpm-gallery-theme') || 'dark';
+      this.setAttribute('data-theme', theme);
+      
+      // Listen for theme changes from other components
+      this.themeChangeHandler = (e) => {
+        this.setAttribute('data-theme', e.detail.theme);
+        this.updateToggleIcon(e.detail.theme);
+      };
+      window.addEventListener('vpmThemeChange', this.themeChangeHandler);
+      
+      // Add theme toggle button (only if not embedded)
+      if (!this.isEmbedded()) {
+        this.addThemeToggle();
+      }
+    }
+    
+    disconnectedCallback() {
+      // Clean up event listener
+      if (this.themeChangeHandler) {
+        window.removeEventListener('vpmThemeChange', this.themeChangeHandler);
+      }
+    }
+    
+    isEmbedded() {
+      // Check for explicit data-embedded attribute
+      if (this.hasAttribute('data-embedded')) {
+        return true;
+      }
+      
+      // Check if in iframe (embedded context)
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+    
+    addThemeToggle() {
+      const currentTheme = this.getAttribute('data-theme') || 'dark';
+      const button = document.createElement('button');
+      button.className = 'vpm-theme-toggle';
+      button.setAttribute('aria-label', 'Toggle theme');
+      button.setAttribute('type', 'button');
+      button.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+      
+      // Add to shadow DOM
+      const header = this.shadow.querySelector('.watch-page-header');
+      if (header) {
+        header.appendChild(button);
+      }
+      
+      // Store reference for updates
+      this.toggleButton = button;
+      
+      // Add click handler
+      button.addEventListener('click', () => {
+        const currentTheme = this.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Save to localStorage
+        localStorage.setItem('vpm-gallery-theme', newTheme);
+        
+        // Dispatch event for other components
+        const event = new CustomEvent('vpmThemeChange', {
+          detail: { theme: newTheme },
+          bubbles: true
+        });
+        window.dispatchEvent(event);
+        
+        // Update this component
+        this.setAttribute('data-theme', newTheme);
+        this.updateToggleIcon(newTheme);
+      });
+    }
+    
+    updateToggleIcon(theme) {
+      if (this.toggleButton) {
+        this.toggleButton.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
     }
   }
   

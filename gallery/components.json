@@ -5,7 +5,7 @@
       "name": "Testimonial Card",
       "description": "A flexible testimonial card component with author information, star rating, and expandable bio section.",
       "namespace": "vpm-testimonial-",
-      "category": "Content",
+      "category": "Testimonials",
       "dateAdded": "2024-01-15",
       "previewPath": "../testimonial-card/preview.html",
       "documentationPath": "../testimonial-card/README.md",
@@ -47,7 +47,7 @@
       "name": "Impact Testimonials",
       "description": "A dual carousel component featuring video testimonials and quote testimonials side-by-side with auto-advance.",
       "namespace": "vpm-impact-testimonials-",
-      "category": "Content",
+      "category": "Testimonials",
       "dateAdded": "2024-01-16",
       "previewPath": "../impact-testimonials/preview.html",
       "documentationPath": "../impact-testimonials/README.md",
@@ -62,7 +62,7 @@
       "name": "Newsletter Signup",
       "description": "A newsletter signup form component integrated with MailChimp. Features responsive design and accessibility support.",
       "namespace": "vpm-newsletter-",
-      "category": "Form",
+      "category": "Newsletter",
       "dateAdded": "2024-01-16",
       "previewPath": "../newsletter-signup/preview.html",
       "documentationPath": "../newsletter-signup/README.md",
@@ -78,7 +78,7 @@
       "name": "Newsletter Signup V2",
       "description": "An alternate version of the newsletter signup form component with MailChimp integration. Same functionality with updated namespace.",
       "namespace": "vpm-newsletter-v2-",
-      "category": "Form",
+      "category": "Newsletter",
       "dateAdded": "2024-01-20",
       "previewPath": "../newsletter-signup-v2/preview.html",
       "documentationPath": "../newsletter-signup-v2/README.md",
@@ -88,6 +88,22 @@
       "componentFamily": "newsletter-signup",
       "version": "v2",
       "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
+    },
+    {
+      "id": "newsletter-signup-v3",
+      "name": "Newsletter Signup V3",
+      "description": "Enhanced version with bold gradient background designed to stand out on white backgrounds, especially when surrounded by article posts with images.",
+      "namespace": "vpm-newsletter-v3-",
+      "category": "Newsletter",
+      "dateAdded": "2024-01-21",
+      "previewPath": "../newsletter-signup-v3/preview.html",
+      "documentationPath": "../newsletter-signup-v3/README.md",
+      "indexPath": "../newsletter-signup-v3/index.html",
+      "shadowDomPath": "../newsletter-signup-v3/shadow-dom.html",
+      "screenshotPath": null,
+      "componentFamily": "newsletter-signup",
+      "version": "v3",
+      "features": ["Bold gradient background", "Enhanced visibility", "MailChimp integration", "Responsive form", "Accessibility support"]
     }
   ]
 }

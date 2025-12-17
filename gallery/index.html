@@ -18,11 +18,20 @@
       color: white;
       padding: var(--vpm-spacing-xl) var(--vpm-spacing-md);
       box-shadow: var(--vpm-shadow-md);
+      position: relative;
     }
     
     .gallery-header-content {
       max-width: 1400px;
       margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--vpm-spacing-lg);
+    }
+    
+    .gallery-header-text {
+      flex: 1;
     }
     
     .gallery-header h1 {
@@ -196,6 +205,151 @@
       border-radius: var(--vpm-border-radius);
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .version-toggle-container {
+      display: flex;
+      gap: var(--vpm-spacing-xs);
+      padding: var(--vpm-spacing-sm) var(--vpm-spacing-md);
+      background: var(--vpm-color-bg-light);
+      border-top: var(--vpm-border-width) solid var(--vpm-color-border);
+      align-items: center;
+    }
+
+    .version-toggle-label {
+      font-size: var(--vpm-font-size-sm);
+      font-weight: var(--vpm-font-weight-semibold);
+      color: var(--vpm-color-text-muted);
+      margin-right: var(--vpm-spacing-xs);
+    }
+
+    .version-toggle-buttons {
+      display: flex;
+      gap: var(--vpm-spacing-xs);
+      flex-wrap: wrap;
+    }
+
+    .version-toggle-btn {
+      padding: var(--vpm-spacing-xs) var(--vpm-spacing-sm);
+      border: 2px solid var(--vpm-color-border);
+      background: var(--vpm-color-bg);
+      color: var(--vpm-color-text);
+      border-radius: var(--vpm-border-radius);
+      font-size: var(--vpm-font-size-sm);
+      font-weight: var(--vpm-font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .version-toggle-btn:hover {
+      border-color: var(--vpm-color-primary);
+      background: var(--vpm-color-bg-light);
+    }
+
+    .version-toggle-btn.active {
+      border-color: var(--vpm-color-primary);
+      background: var(--vpm-color-primary);
+      color: white;
+    }
+
+    .version-toggle-btn:focus {
+      outline: 2px solid var(--vpm-color-primary);
+      outline-offset: 2px;
+    }
+    
+    /* Category Filter Buttons */
+    .category-filters {
+      display: flex;
+      gap: var(--vpm-spacing-sm);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .filter-btn {
+      padding: var(--vpm-spacing-sm) var(--vpm-spacing-md);
+      border: 2px solid var(--vpm-color-border);
+      border-radius: var(--vpm-border-radius-full);
+      background: var(--vpm-color-bg);
+      color: var(--vpm-color-text);
+      font-size: var(--vpm-font-size-sm);
+      font-weight: var(--vpm-font-weight-semibold);
+      font-family: var(--vpm-font-family-base);
+      cursor: pointer;
+      transition: all var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+      line-height: 1;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--vpm-color-primary);
+      color: var(--vpm-color-primary);
+      background: var(--vpm-color-bg-light);
+    }
+    
+    .filter-btn.active {
+      background: var(--vpm-color-primary);
+      border-color: var(--vpm-color-primary);
+      color: white;
+    }
+    
+    .filter-btn:focus {
+      outline: 2px solid var(--vpm-color-primary);
+      outline-offset: 2px;
+    }
+    
+    /* Theme Toggle Button in Header */
+    .theme-toggle {
+      padding: var(--vpm-spacing-sm) var(--vpm-spacing-md);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--vpm-border-radius-full);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: var(--vpm-font-size-sm);
+      font-weight: var(--vpm-font-weight-semibold);
+      font-family: var(--vpm-font-family-base);
+      cursor: pointer;
+      transition: all var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--vpm-spacing-xs);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+    
+    .theme-toggle:hover {
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-toggle:focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
+    }
+    
+    .theme-toggle:active {
+      transform: translateY(0);
+    }
+    
+    .theme-toggle-icon {
+      font-size: var(--vpm-font-size-lg);
+      line-height: 1;
+      display: flex;
+      align-items: center;
+    }
+    
+    .theme-toggle-text {
+      font-size: var(--vpm-font-size-sm);
+      color: white;
+    }
+    
+    /* Hidden components */
+    .component-card.hidden {
+      display: none;
     }
     
     .component-actions {
@@ -396,6 +550,16 @@
     }
     
     @media (max-width: 768px) {
+      .gallery-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--vpm-spacing-md);
+      }
+      
+      .theme-toggle {
+        align-self: flex-end;
+      }
+      
       .gallery-container {
         padding: var(--vpm-spacing-lg) var(--vpm-spacing-md);
       }
@@ -451,8 +615,14 @@
 <body>
   <header class="gallery-header">
     <div class="gallery-header-content">
-      <h1>VPM Component Library</h1>
-      <p>Browse, preview, and copy components for your website</p>
+      <div class="gallery-header-text">
+        <h1>VPM Component Library</h1>
+        <p>Browse, preview, and copy components for your website</p>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-toggle-icon">🌙</span>
+        <span class="theme-toggle-text">Dark</span>
+      </button>
     </div>
   </header>
   
@@ -466,6 +636,13 @@
           <option value="date-desc">Date Added (Newest)</option>
           <option value="date-asc">Date Added (Oldest)</option>
         </select>
+      </div>
+      <div class="category-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="testimonials">Testimonials</button>
+        <button class="filter-btn" data-filter="newsletter">Newsletter</button>
+        <button class="filter-btn" data-filter="content">Content</button>
+        <button class="filter-btn" data-filter="media">Media</button>
       </div>
       <div class="component-count" id="component-count">Loading components...</div>
     </div>
@@ -516,7 +693,7 @@
             "name": "Testimonial Card",
             "description": "A flexible testimonial card component with author information, star rating, and expandable bio section.",
             "namespace": "vpm-testimonial-",
-            "category": "Content",
+            "category": "Testimonials",
             "dateAdded": "2024-01-15",
             "previewPath": "../testimonial-card/preview.html",
             "documentationPath": "../testimonial-card/README.md",
@@ -558,7 +735,7 @@
             "name": "Impact Testimonials",
             "description": "A dual carousel component featuring video testimonials and quote testimonials side-by-side with auto-advance.",
             "namespace": "vpm-impact-testimonials-",
-            "category": "Content",
+            "category": "Testimonials",
             "dateAdded": "2024-01-16",
             "previewPath": "../impact-testimonials/preview.html",
             "documentationPath": "../impact-testimonials/README.md",
@@ -573,7 +750,7 @@
             "name": "Newsletter Signup",
             "description": "A newsletter signup form component integrated with MailChimp. Features responsive design and accessibility support.",
             "namespace": "vpm-newsletter-",
-            "category": "Form",
+            "category": "Newsletter",
             "dateAdded": "2024-01-16",
             "previewPath": "../newsletter-signup/preview.html",
             "documentationPath": "../newsletter-signup/README.md",
@@ -589,7 +766,7 @@
             "name": "Newsletter Signup V2",
             "description": "An alternate version of the newsletter signup form component with MailChimp integration. Same functionality with updated namespace.",
             "namespace": "vpm-newsletter-v2-",
-            "category": "Form",
+            "category": "Newsletter",
             "dateAdded": "2024-01-20",
             "previewPath": "../newsletter-signup-v2/preview.html",
             "documentationPath": "../newsletter-signup-v2/README.md",
@@ -599,6 +776,22 @@
             "componentFamily": "newsletter-signup",
             "version": "v2",
             "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
+          },
+          {
+            "id": "newsletter-signup-v3",
+            "name": "Newsletter Signup V3",
+            "description": "Enhanced version with bold gradient background designed to stand out on white backgrounds, especially when surrounded by article posts with images.",
+            "namespace": "vpm-newsletter-v3-",
+            "category": "Newsletter",
+            "dateAdded": "2024-01-21",
+            "previewPath": "../newsletter-signup-v3/preview.html",
+            "documentationPath": "../newsletter-signup-v3/README.md",
+            "indexPath": "../newsletter-signup-v3/index.html",
+            "shadowDomPath": "../newsletter-signup-v3/shadow-dom.html",
+            "screenshotPath": null,
+            "componentFamily": "newsletter-signup",
+            "version": "v3",
+            "features": ["Bold gradient background", "Enhanced visibility", "MailChimp integration", "Responsive form", "Accessibility support"]
           }
         ]
       };
@@ -621,9 +814,28 @@
         
         grid.innerHTML = '';
         
+        // Group components by family
+        const componentGroups = {};
         sortedComponents.forEach(function(component) {
-          const card = createComponentCard(component);
-          grid.appendChild(card);
+          const family = component.componentFamily || component.id;
+          if (!componentGroups[family]) {
+            componentGroups[family] = [];
+          }
+          componentGroups[family].push(component);
+        });
+        
+        // Render each group (if multiple versions, create card with toggle)
+        Object.keys(componentGroups).forEach(function(family) {
+          const versions = componentGroups[family];
+          if (versions.length > 1) {
+            // Multiple versions - create card with version toggle
+            const card = createVersionedComponentCard(versions);
+            grid.appendChild(card);
+          } else {
+            // Single version - create regular card
+            const card = createComponentCard(versions[0]);
+            grid.appendChild(card);
+          }
         });
       }
       
@@ -668,6 +880,7 @@
       function createComponentCard(component) {
         const card = document.createElement('div');
         card.className = 'component-card';
+        card.dataset.category = (component.category || 'Content').toLowerCase();
         
         // Preview section (main focus)
         const preview = document.createElement('div');
@@ -758,6 +971,171 @@
         card.appendChild(info);
         
         return card;
+      }
+      
+      // Create versioned component card (with version toggle)
+      function createVersionedComponentCard(versions) {
+        // Sort versions by version number (v1, v2, v3, etc.)
+        versions.sort(function(a, b) {
+          const versionA = parseInt(a.version.replace('v', '')) || 0;
+          const versionB = parseInt(b.version.replace('v', '')) || 0;
+          return versionA - versionB;
+        });
+        
+        const card = document.createElement('div');
+        card.className = 'component-card';
+        card.dataset.category = (versions[0].category || 'Content').toLowerCase();
+        
+        // Default to the latest version (last in sorted array)
+        let currentVersion = versions[versions.length - 1];
+        
+        // Preview section (main focus)
+        const preview = document.createElement('div');
+        preview.className = 'component-preview';
+        preview.dataset.componentId = currentVersion.id;
+        
+        // Version toggle section
+        const versionToggle = document.createElement('div');
+        versionToggle.className = 'version-toggle-container';
+        
+        const toggleLabel = document.createElement('span');
+        toggleLabel.className = 'version-toggle-label';
+        toggleLabel.textContent = 'Version:';
+        
+        const toggleButtons = document.createElement('div');
+        toggleButtons.className = 'version-toggle-buttons';
+        
+        // Create toggle buttons for each version
+        versions.forEach(function(version, index) {
+          const btn = document.createElement('button');
+          btn.className = 'version-toggle-btn';
+          btn.textContent = version.version;
+          btn.dataset.componentId = version.id;
+          
+          // Set the latest version as active by default
+          if (index === versions.length - 1) {
+            btn.classList.add('active');
+          }
+          
+          btn.addEventListener('click', function() {
+            // Update active button
+            toggleButtons.querySelectorAll('.version-toggle-btn').forEach(function(b) {
+              b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            
+            // Update preview and info
+            const selectedVersion = versions.find(function(v) { return v.id === btn.dataset.componentId; });
+            updateComponentPreview(card, preview, info, selectedVersion);
+          });
+          
+          toggleButtons.appendChild(btn);
+        });
+        
+        versionToggle.appendChild(toggleLabel);
+        versionToggle.appendChild(toggleButtons);
+        
+        // Component info section
+        const info = document.createElement('div');
+        info.className = 'component-info';
+        
+        // Initial render with default version
+        renderComponentPreview(preview, currentVersion);
+        renderComponentInfo(info, currentVersion);
+        
+        card.appendChild(versionToggle);
+        card.appendChild(preview);
+        card.appendChild(info);
+        
+        return card;
+      }
+      
+      // Render component preview (iframe or screenshot)
+      function renderComponentPreview(preview, component) {
+        preview.innerHTML = '';
+        preview.dataset.componentId = component.id;
+        
+        // Use screenshot if available, otherwise use iframe
+        if (component.screenshotPath) {
+          preview.classList.add('has-screenshot');
+          
+          const img = document.createElement('img');
+          img.src = component.screenshotPath;
+          img.alt = component.name + ' Preview';
+          img.loading = 'lazy';
+          img.onerror = function() {
+            preview.classList.remove('has-screenshot');
+            img.style.display = 'none';
+          };
+          preview.appendChild(img);
+          
+          const iframe = document.createElement('iframe');
+          iframe.src = component.previewPath;
+          iframe.loading = 'lazy';
+          iframe.title = component.name + ' Preview';
+          iframe.className = 'component-preview-fallback';
+          iframe.setAttribute('scrolling', 'no');
+          preview.appendChild(iframe);
+          
+          iframe.addEventListener('load', function() {
+            setIframeHeight(iframe, preview);
+          });
+        } else {
+          const iframe = document.createElement('iframe');
+          iframe.src = component.previewPath;
+          iframe.loading = 'lazy';
+          iframe.title = component.name + ' Preview';
+          iframe.setAttribute('scrolling', 'no');
+          preview.appendChild(iframe);
+          
+          iframe.addEventListener('load', function() {
+            setIframeHeight(iframe, preview);
+          });
+        }
+      }
+      
+      // Render component info section
+      function renderComponentInfo(info, component) {
+        info.innerHTML = '';
+        
+        const name = document.createElement('h3');
+        name.className = 'component-name';
+        name.textContent = component.name;
+        
+        if (component.version) {
+          const versionBadge = document.createElement('span');
+          versionBadge.className = 'component-version-badge';
+          versionBadge.textContent = component.version;
+          name.appendChild(versionBadge);
+        }
+        
+        const actions = document.createElement('div');
+        actions.className = 'component-actions';
+        
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-primary';
+        copyBtn.textContent = '📋 Copy Code';
+        copyBtn.addEventListener('click', function() {
+          showCodeModal(component);
+        });
+        
+        const docLink = document.createElement('a');
+        docLink.className = 'btn btn-secondary';
+        docLink.href = component.documentationPath;
+        docLink.target = '_blank';
+        docLink.textContent = '📖 Docs';
+        
+        actions.appendChild(copyBtn);
+        actions.appendChild(docLink);
+        
+        info.appendChild(name);
+        info.appendChild(actions);
+      }
+      
+      // Update component preview and info when version changes
+      function updateComponentPreview(card, preview, info, component) {
+        renderComponentPreview(preview, component);
+        renderComponentInfo(info, component);
       }
       
       // Show code modal
@@ -868,11 +1246,59 @@
         renderComponents();
       }
       
+      // Filter components by category
+      function filterComponents(category) {
+        const cards = document.querySelectorAll('.component-card');
+        
+        cards.forEach(function(card) {
+          const cardCategory = card.dataset.category;
+          
+          if (category === 'all' || cardCategory === category) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+        
+        // Update component count
+        updateFilteredCount(category);
+      }
+      
+      // Update count to show filtered number
+      function updateFilteredCount(activeFilter) {
+        const count = document.getElementById('component-count');
+        if (!count) return;
+        
+        if (activeFilter === 'all') {
+          // Show total count
+          const families = new Set(sortedComponents.map(function(c) { 
+            return c.componentFamily || c.id; 
+          }));
+          count.textContent = families.size + ' component' + (families.size !== 1 ? 's' : '');
+        } else {
+          // Show filtered count
+          const filtered = sortedComponents.filter(function(c) { 
+            return (c.category || 'Content').toLowerCase() === activeFilter; 
+          });
+          const families = new Set(filtered.map(function(c) { 
+            return c.componentFamily || c.id; 
+          }));
+          const categoryName = activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1);
+          count.textContent = families.size + ' component' + (families.size !== 1 ? 's' : '') + 
+                             ' in ' + categoryName;
+        }
+      }
+      
       // Update component count
       function updateComponentCount() {
         const count = document.getElementById('component-count');
         if (count) {
-          count.textContent = sortedComponents.length + ' component' + (sortedComponents.length !== 1 ? 's' : '');
+          // Count unique component families instead of individual versions
+          const families = new Set(sortedComponents.map(function(c) { 
+            return c.componentFamily || c.id; 
+          }));
+          const numComponents = families.size;
+          count.textContent = numComponents + ' component' + (numComponents !== 1 ? 's' : '');
         }
       }
       
@@ -937,8 +1363,115 @@
         modalHeader.insertBefore(copyBtn, codeModalClose);
       }
       
+      // Initialize category filter buttons
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const filter = btn.dataset.filter;
+          
+          // Update active button
+          filterButtons.forEach(function(b) {
+            b.classList.remove('active');
+          });
+          btn.classList.add('active');
+          
+          // Filter components
+          filterComponents(filter);
+          
+          // Save filter preference
+          localStorage.setItem('vpm-gallery-filter', filter);
+        });
+      });
+      
       // Load components on page load
       loadComponents();
+      
+      // Apply saved filter after components are loaded
+      setTimeout(function() {
+        const savedFilter = localStorage.getItem('vpm-gallery-filter') || 'all';
+        const activeBtn = document.querySelector('.filter-btn[data-filter="' + savedFilter + '"]');
+        if (activeBtn && savedFilter !== 'all') {
+          activeBtn.click();
+        }
+      }, 100);
+      
+      // Theme Toggle Functionality
+      function initTheme() {
+        // Get saved theme or default to dark
+        const savedTheme = localStorage.getItem('vpm-gallery-theme') || 'dark';
+        applyTheme(savedTheme);
+      }
+      
+      function applyTheme(theme) {
+      // Apply theme to document
+      document.documentElement.setAttribute('data-theme', theme);
+      
+      // Update toggle button
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = themeToggle.querySelector('.theme-toggle-icon');
+      const themeText = themeToggle.querySelector('.theme-toggle-text');
+      
+      if (theme === 'dark') {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Dark';
+      } else {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light';
+      }
+      
+      // Notify all iframes of theme change
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(function(iframe) {
+        try {
+          // Post message to iframe with theme data
+          iframe.contentWindow.postMessage({
+            type: 'vpmThemeChange',
+            theme: theme
+          }, '*');
+        } catch (e) {
+          // Ignore cross-origin errors
+          console.log('Could not communicate with iframe:', e);
+        }
+      });
+    }
+      
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Save preference
+        localStorage.setItem('vpm-gallery-theme', newTheme);
+        
+        // Apply new theme
+        applyTheme(newTheme);
+      }
+      
+      // Initialize theme on page load
+      initTheme();
+      
+      // Add click handler to theme toggle button
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+      }
+      
+      // Listen for iframe load events to apply theme
+      document.addEventListener('DOMContentLoaded', function() {
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(function(iframe) {
+          iframe.addEventListener('load', function() {
+            const currentTheme = localStorage.getItem('vpm-gallery-theme') || 'dark';
+            try {
+              iframe.contentWindow.postMessage({
+                type: 'vpmThemeChange',
+                theme: currentTheme
+              }, '*');
+            } catch (e) {
+              console.log('Could not communicate with iframe:', e);
+            }
+          });
+        });
+      });
     })();
   </script>
 </body>

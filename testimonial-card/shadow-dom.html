@@ -75,6 +75,7 @@
           font-size: var(--vpm-font-size-base);
           line-height: var(--vpm-line-height-base);
           color: var(--vpm-color-text);
+          position: relative;
         }
         
         .vpm-testimonial:hover {
@@ -224,6 +225,42 @@
           box-shadow: var(--vpm-shadow-xl);
         }
         
+        .vpm-theme-toggle {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid var(--vpm-color-border);
+          background: var(--vpm-color-bg);
+          color: var(--vpm-color-text);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          transition: all 0.2s ease;
+          z-index: 1000;
+          padding: 0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .vpm-theme-toggle:hover {
+          transform: scale(1.1);
+          border-color: var(--vpm-color-primary);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .vpm-theme-toggle:focus {
+          outline: 2px solid var(--vpm-color-primary);
+          outline-offset: 2px;
+        }
+        
+        .vpm-theme-toggle:active {
+          transform: scale(0.95);
+        }
+        
         @media (max-width: 767px) {
           .vpm-testimonial {
             padding: var(--vpm-spacing-md);
@@ -283,7 +320,91 @@
       shadow.appendChild(style);
       shadow.appendChild(template.content.cloneNode(true));
       
+      this.shadow = shadow;
       this.initComponent(shadow);
+    }
+    
+    connectedCallback() {
+      // Initialize theme synchronization
+      const theme = localStorage.getItem('vpm-gallery-theme') || 'dark';
+      this.setAttribute('data-theme', theme);
+      
+      // Listen for theme changes from other components
+      this.themeChangeHandler = (e) => {
+        this.setAttribute('data-theme', e.detail.theme);
+        this.updateToggleIcon(e.detail.theme);
+      };
+      window.addEventListener('vpmThemeChange', this.themeChangeHandler);
+      
+      // Add theme toggle button (only if not embedded)
+      if (!this.isEmbedded()) {
+        this.addThemeToggle();
+      }
+    }
+    
+    disconnectedCallback() {
+      // Clean up event listener
+      if (this.themeChangeHandler) {
+        window.removeEventListener('vpmThemeChange', this.themeChangeHandler);
+      }
+    }
+    
+    isEmbedded() {
+      // Check for explicit data-embedded attribute
+      if (this.hasAttribute('data-embedded')) {
+        return true;
+      }
+      
+      // Check if in iframe (embedded context)
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+    
+    addThemeToggle() {
+      const currentTheme = this.getAttribute('data-theme') || 'dark';
+      const button = document.createElement('button');
+      button.className = 'vpm-theme-toggle';
+      button.setAttribute('aria-label', 'Toggle theme');
+      button.setAttribute('type', 'button');
+      button.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+      
+      // Add to shadow DOM
+      const article = this.shadow.querySelector('.vpm-testimonial');
+      if (article) {
+        article.appendChild(button);
+      }
+      
+      // Store reference for updates
+      this.toggleButton = button;
+      
+      // Add click handler
+      button.addEventListener('click', () => {
+        const currentTheme = this.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Save to localStorage
+        localStorage.setItem('vpm-gallery-theme', newTheme);
+        
+        // Dispatch event for other components
+        const event = new CustomEvent('vpmThemeChange', {
+          detail: { theme: newTheme },
+          bubbles: true
+        });
+        window.dispatchEvent(event);
+        
+        // Update this component
+        this.setAttribute('data-theme', newTheme);
+        this.updateToggleIcon(newTheme);
+      });
+    }
+    
+    updateToggleIcon(theme) {
+      if (this.toggleButton) {
+        this.toggleButton.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
     }
     
     initComponent(shadow) {
