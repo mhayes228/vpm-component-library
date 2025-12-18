@@ -4,11 +4,15 @@
   Usage: <vpm-newsletter-signup-v3></vpm-newsletter-signup-v3>
   Note: This component features a bold gradient background optimized to stand out on white backgrounds.
 -->
+
+<!-- EDITABLE: Root Container -->
 <div id="vpm-newsletter-signup-v3-root-shadow"></div>
 <script>
 (function() {
   'use strict';
   
+  // EDITABLE: Configuration
+  // Change rootId if you need a different root element ID
   const rootId = 'vpm-newsletter-signup-v3-root-shadow';
   const host = document.getElementById(rootId);
   if (!host || host.dataset.initialized === 'true') return;
@@ -378,9 +382,13 @@
           </aside>
 
           <div class="vpm-newsletter-v3__right">
+            <!-- EDITABLE: Heading and Subtitle -->
+            <!-- Replace heading and subtitle text below -->
             <h1 class="vpm-newsletter-v3__heading">Your morning starts here.</h1>
             <p class="vpm-newsletter-v3__sub">Stay informed on news you care about—delivered daily.</p>
 
+            <!-- EDITABLE: MailChimp Form Action URL -->
+            <!-- Replace action URL with your MailChimp form action URL -->
             <form action="https://vpm.us3.list-manage.com/subscribe/post?u=6fe41b3055c403be08140ec95&id=26497cf3ad&f_id=0016c9e1f0" method="post" id="mc-embedded-subscribe-form-v3" name="mc-embedded-subscribe-form-v3" class="validate" target="_self" novalidate>
               <div class="vpm-newsletter-v3__row">
                 <input 

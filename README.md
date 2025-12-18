@@ -226,6 +226,15 @@ A newsletter signup form component integrated with MailChimp. Features responsiv
 - **Documentation**: See `/newsletter-signup/README.md`
 - **Preview**: Open `/newsletter-signup/preview.html` in your browser
 
+### Article List
+A component that transforms Brightspot CMS's standard HTML list structure into a modern card grid layout. Perfect for displaying article lists with improved visual design while maintaining compatibility with Brightspot's native list widgets.
+
+- **Location**: `/article-list/`
+- **Namespace**: `vpm-article-list-`
+- **Features**: List transformation, responsive card grid, automatic data extraction, dark theme support
+- **Documentation**: See `/article-list/README.md`
+- **Preview**: Open `/article-list/preview.html` in your browser
+
 ## 🤝 Contributing
 
 When adding a new component:

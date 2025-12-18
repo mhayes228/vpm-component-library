@@ -1,6 +1,13 @@
 <!-- VPM Testimonial Card Component -->
 <!-- Copy this HTML into Brightspot CMS -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Change data-variant to "default", "compact", or "featured" -->
+<!-- Change data-star-rating to "1" through "5" -->
+<!-- Change data-theme to "light" or "dark" -->
 <div id="vpm-testimonial-root" data-variant="default" data-star-rating="5" data-theme="light">
+  <!-- EDITABLE: Content Area -->
+  <!-- Replace the testimonial text, author info, and bio below -->
   <article class="vpm-testimonial">
     <div class="vpm-testimonial__content">
       <blockquote class="vpm-testimonial__quote">
@@ -18,6 +25,8 @@
     
     <footer class="vpm-testimonial__footer">
       <button class="vpm-testimonial__author-trigger" aria-expanded="false" aria-controls="vpm-testimonial-bio">
+        <!-- EDITABLE: Author Image -->
+        <!-- Replace src with your author photo URL -->
         <img 
           src="https://picsum.photos/seed/testimonial-default/100/100" 
           alt="Photo of John Doe" 
@@ -26,11 +35,14 @@
           height="100"
         >
         <div class="vpm-testimonial__author-info">
+          <!-- EDITABLE: Author Name and Title -->
           <cite class="vpm-testimonial__author-name">John Doe</cite>
           <p class="vpm-testimonial__author-title">Director of Operations</p>
         </div>
       </button>
       
+      <!-- EDITABLE: Author Bio -->
+      <!-- Replace bio text below -->
       <div id="vpm-testimonial-bio" class="vpm-testimonial__bio" aria-hidden="true">
         <p class="vpm-testimonial__bio-text">John Doe has over 15 years of experience in operations management and has been a valued partner since 2020.</p>
       </div>
@@ -42,6 +54,9 @@
 (function() {
   'use strict';
   
+  // EDITABLE: Configuration Variables
+  // The component automatically reads data attributes from the root element
+  // No changes needed here unless customizing behavior
   var root = document.getElementById('vpm-testimonial-root');
   if (!root || root.dataset.initialized === 'true') return;
   root.dataset.initialized = 'true';

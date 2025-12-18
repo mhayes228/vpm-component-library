@@ -1,5 +1,9 @@
 <!-- VPM Watch Channels Component -->
 <!-- Copy this HTML into Brightspot CMS -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Optionally add data-tiles attribute with JSON array of tile objects -->
+<!-- Each tile should have: href, ariaLabel, img, alt -->
 <div id="vpm-watch-channels-root" data-component="watch-channels"></div>
 
 <script>
@@ -10,7 +14,9 @@
   if (!root || root.dataset.initialized === 'true') return;
   root.dataset.initialized = 'true';
   
-  // Default tiles configuration
+  // EDITABLE: Default Tiles Configuration
+  // Replace the defaultTiles array below with your channel tiles
+  // Each tile needs: href, ariaLabel, img, alt
   var defaultTiles = [
     {
       href: "https://video.vpm.org/",

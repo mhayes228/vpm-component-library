@@ -1,0 +1,242 @@
+<!-- VPM Article List Component -->
+<!-- Copy this HTML into Brightspot CMS -->
+<!-- Wrap your Brightspot list widget output inside this component -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Change data-variant to "grid", "compact", or "featured" -->
+<!-- Change data-columns to "1" through "4" for desktop column count -->
+<!-- Change data-theme to "light" or "dark" -->
+<div id="vpm-article-list-root" data-variant="grid" data-columns="3" data-theme="light">
+  <!-- EDITABLE: Brightspot List Content -->
+  <!-- Replace this section with your Brightspot list widget output -->
+  <!-- Example structure:
+  <ul>
+    <li>
+      <a href="/article-url">
+        <img src="/image.jpg" alt="Article title">
+        <h3>Article Title</h3>
+        <p>Article description or excerpt</p>
+        <time datetime="2024-01-15">January 15, 2024</time>
+      </a>
+    </li>
+  </ul>
+  -->
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  // EDITABLE: Configuration Variables
+  // The component automatically reads data attributes from the root element
+  // You can modify default values here if needed
+  var root = document.getElementById('vpm-article-list-root');
+  if (!root || root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
+  
+  // Configuration (read from data attributes)
+  var variant = root.getAttribute('data-variant') || 'grid';
+  var columns = parseInt(root.getAttribute('data-columns') || '3', 10);
+  var theme = root.getAttribute('data-theme') || 'light';
+  
+  // Find the list within the root container
+  var list = root.querySelector('ul, ol');
+  if (!list) {
+    console.warn('VPM Article List: No list found within component root');
+    return;
+  }
+  
+  // Extract list items
+  var listItems = list.querySelectorAll('li');
+  if (listItems.length === 0) {
+    console.warn('VPM Article List: No list items found');
+    return;
+  }
+  
+  // Create grid container
+  var gridContainer = document.createElement('div');
+  gridContainer.className = 'vpm-article-list__grid';
+  gridContainer.setAttribute('role', 'list');
+  gridContainer.setAttribute('aria-label', 'Article list');
+  
+  // Transform each list item into a card
+  listItems.forEach(function(listItem, index) {
+    var card = createCard(listItem, index);
+    if (card) {
+      gridContainer.appendChild(card);
+    }
+  });
+  
+  // Replace the original list with the grid
+  list.parentNode.replaceChild(gridContainer, list);
+  
+  // Helper function to extract article data from list item
+  function extractArticleData(listItem) {
+    var data = {
+      title: '',
+      url: '#',
+      image: null,
+      description: '',
+      date: '',
+      category: ''
+    };
+    
+    // Find link (usually wraps content or is first child)
+    var link = listItem.querySelector('a');
+    if (link) {
+      data.url = link.getAttribute('href') || '#';
+      data.title = link.textContent.trim() || link.getAttribute('title') || '';
+    }
+    
+    // Find title (h2, h3, h4, or strong tag)
+    var titleEl = listItem.querySelector('h2, h3, h4, h5, h6, strong');
+    if (titleEl) {
+      data.title = titleEl.textContent.trim() || data.title;
+    }
+    
+    // Find image
+    var img = listItem.querySelector('img');
+    if (img) {
+      data.image = {
+        src: img.getAttribute('src') || img.getAttribute('data-src') || '',
+        alt: img.getAttribute('alt') || data.title
+      };
+    }
+    
+    // Find description (p tag, or text after title)
+    var descEl = listItem.querySelector('p');
+    if (descEl && descEl.textContent.trim()) {
+      data.description = descEl.textContent.trim();
+    } else {
+      // Try to get text content excluding title and other elements
+      var textContent = listItem.textContent.trim();
+      if (titleEl) {
+        textContent = textContent.replace(titleEl.textContent.trim(), '').trim();
+      }
+      if (textContent && textContent.length > 0) {
+        data.description = textContent.substring(0, 150); // Limit description length
+      }
+    }
+    
+    // Find date (time tag or date-like text)
+    var timeEl = listItem.querySelector('time');
+    if (timeEl) {
+      data.date = timeEl.getAttribute('datetime') || timeEl.textContent.trim();
+    } else {
+      // Try to find date-like patterns in text
+      var datePattern = /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4})\b/;
+      var dateMatch = listItem.textContent.match(datePattern);
+      if (dateMatch) {
+        data.date = dateMatch[1];
+      }
+    }
+    
+    // Find category (span with class containing 'category', 'tag', 'section', etc.)
+    var categoryEl = listItem.querySelector('.category, .tag, .section, [class*="category"], [class*="tag"]');
+    if (categoryEl) {
+      data.category = categoryEl.textContent.trim();
+    }
+    
+    return data;
+  }
+  
+  // Create card element from list item
+  function createCard(listItem, index) {
+    var articleData = extractArticleData(listItem);
+    
+    // Create card container
+    var card = document.createElement('article');
+    card.className = 'vpm-article-list__card';
+    card.setAttribute('role', 'listitem');
+    
+    // Create card link
+    var cardLink = document.createElement('a');
+    cardLink.href = articleData.url;
+    cardLink.className = 'vpm-article-list__card-link';
+    cardLink.setAttribute('aria-label', 'Read article: ' + articleData.title);
+    
+    // Create card image if available
+    if (articleData.image && articleData.image.src) {
+      var cardImage = document.createElement('div');
+      cardImage.className = 'vpm-article-list__card-image-wrapper';
+      
+      var img = document.createElement('img');
+      img.src = articleData.image.src;
+      img.alt = articleData.image.alt;
+      img.className = 'vpm-article-list__card-image';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      
+      cardImage.appendChild(img);
+      cardLink.appendChild(cardImage);
+    }
+    
+    // Create card content wrapper
+    var cardContent = document.createElement('div');
+    cardContent.className = 'vpm-article-list__card-content';
+    
+    // Add category if available
+    if (articleData.category) {
+      var category = document.createElement('span');
+      category.className = 'vpm-article-list__card-category';
+      category.textContent = articleData.category;
+      cardContent.appendChild(category);
+    }
+    
+    // Add title
+    var title = document.createElement('h3');
+    title.className = 'vpm-article-list__card-title';
+    title.textContent = articleData.title || 'Untitled Article';
+    cardContent.appendChild(title);
+    
+    // Add description if available
+    if (articleData.description) {
+      var description = document.createElement('p');
+      description.className = 'vpm-article-list__card-description';
+      description.textContent = articleData.description;
+      cardContent.appendChild(description);
+    }
+    
+    // Add metadata (date)
+    if (articleData.date) {
+      var meta = document.createElement('div');
+      meta.className = 'vpm-article-list__card-meta';
+      
+      var time = document.createElement('time');
+      time.setAttribute('datetime', articleData.date);
+      time.textContent = formatDate(articleData.date);
+      
+      meta.appendChild(time);
+      cardContent.appendChild(meta);
+    }
+    
+    cardLink.appendChild(cardContent);
+    card.appendChild(cardLink);
+    
+    return card;
+  }
+  
+  // Format date for display
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    
+    try {
+      var date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // If parsing fails, return original string
+        return dateString;
+      }
+      
+      var options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    } catch (e) {
+      return dateString;
+    }
+  }
+  
+  // Apply column configuration via CSS variable
+  root.style.setProperty('--vpm-article-list-columns', columns);
+  
+})();
+</script>
+

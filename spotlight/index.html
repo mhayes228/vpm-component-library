@@ -1,8 +1,13 @@
 <!-- VPM Spotlight Component -->
 <!-- Copy this HTML into Brightspot CMS -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Replace data-github-url with your GitHub raw JSON URL -->
 <div id="vpm-spotlight-root" data-github-url="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/VPM-Spotlight-Homepage/content-queue.json">
   <section class="vpm-spotlight-section">
     <div class="vpm-spotlight-container">
+      <!-- EDITABLE: Section Heading -->
+      <!-- Replace heading text below -->
       <h2 class="vpm-spotlight-heading">Spotlight on VPM Original Content</h2>
       <div id="vpm-spotlight-cards" class="vpm-spotlight-cards">
         <!-- Cards will be dynamically inserted here -->
@@ -19,7 +24,9 @@
   if (!root || root.dataset.initialized === 'true') return;
   root.dataset.initialized = 'true';
   
-  // Configuration
+  // EDITABLE: Configuration Variables
+  // Modify MAX_ACTIVE_ITEMS to change how many items display (default: 3)
+  // Modify HIGH_PRIORITY_TAG to change the tag filter (default: 'high priority')
   var GITHUB_JSON_URL = root.getAttribute('data-github-url') || 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/VPM-Spotlight-Homepage/content-queue.json';
   var MAX_ACTIVE_ITEMS = 3;
   var HIGH_PRIORITY_TAG = 'high priority';

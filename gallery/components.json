@@ -12,7 +12,39 @@
       "indexPath": "../testimonial-card/index.html",
       "shadowDomPath": "../testimonial-card/shadow-dom.html",
       "screenshotPath": null,
-      "features": ["Star ratings", "Expandable bios", "Multiple variants", "Dark theme support"]
+      "features": ["Star ratings", "Expandable bios", "Multiple variants", "Dark theme support"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard testimonial card layout",
+          "dataAttributes": {
+            "data-variant": "default",
+            "data-star-rating": "5",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "compact",
+          "name": "Compact",
+          "description": "Compact layout with reduced spacing",
+          "dataAttributes": {
+            "data-variant": "compact",
+            "data-star-rating": "4",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "featured",
+          "name": "Featured",
+          "description": "Featured style with enhanced border",
+          "dataAttributes": {
+            "data-variant": "featured",
+            "data-star-rating": "5",
+            "data-theme": "light"
+          }
+        }
+      ]
     },
     {
       "id": "spotlight",
@@ -26,7 +58,61 @@
       "indexPath": "../spotlight/index.html",
       "shadowDomPath": "../spotlight/shadow-dom.html",
       "screenshotPath": null,
-      "features": ["JSON data loading", "Priority filtering", "Responsive grid", "Lazy loading images"]
+      "features": ["JSON data loading", "Priority filtering", "Responsive grid", "Lazy loading images"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard spotlight layout",
+          "dataAttributes": {}
+        }
+      ]
+    },
+    {
+      "id": "article-list",
+      "name": "Article List",
+      "description": "A component that transforms Brightspot CMS's standard HTML list structure into a modern card grid layout. Perfect for displaying article lists with improved visual design.",
+      "namespace": "vpm-article-list-",
+      "category": "Content",
+      "dateAdded": "2024-01-22",
+      "previewPath": "../article-list/preview.html",
+      "documentationPath": "../article-list/README.md",
+      "indexPath": "../article-list/index.html",
+      "shadowDomPath": null,
+      "screenshotPath": null,
+      "features": ["List transformation", "Responsive card grid", "Automatic data extraction", "Dark theme support", "Brightspot integration"],
+      "variants": [
+        {
+          "id": "grid",
+          "name": "Grid",
+          "description": "Standard grid layout with 3 columns",
+          "dataAttributes": {
+            "data-variant": "grid",
+            "data-columns": "3",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "compact",
+          "name": "Compact",
+          "description": "Compact layout with 2 columns",
+          "dataAttributes": {
+            "data-variant": "compact",
+            "data-columns": "2",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "featured",
+          "name": "Featured",
+          "description": "Featured style with enhanced border",
+          "dataAttributes": {
+            "data-variant": "featured",
+            "data-columns": "3",
+            "data-theme": "light"
+          }
+        }
+      ]
     },
     {
       "id": "watch-channels",
@@ -40,7 +126,15 @@
       "indexPath": "../watch-channels/index.html",
       "shadowDomPath": "../watch-channels/shadow-dom.html",
       "screenshotPath": null,
-      "features": ["Shadow DOM encapsulation", "Channel tiles", "Live badges", "Gradient background"]
+      "features": ["Shadow DOM encapsulation", "Channel tiles", "Live badges", "Gradient background"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard watch channels layout",
+          "dataAttributes": {}
+        }
+      ]
     },
     {
       "id": "impact-testimonials",
@@ -55,7 +149,15 @@
       "shadowDomPath": "../impact-testimonials/shadow-dom.html",
       "screenshotPath": null,
       "features": ["Video carousel", "Quote carousel", "Auto-advance", "Touch/swipe support", "Vimeo integration"],
-      "dependencies": ["Vimeo Player API"]
+      "dependencies": ["Vimeo Player API"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard impact testimonials layout",
+          "dataAttributes": {}
+        }
+      ]
     },
     {
       "id": "newsletter-signup",
@@ -71,7 +173,15 @@
       "screenshotPath": null,
       "componentFamily": "newsletter-signup",
       "version": "v1",
-      "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
+      "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard newsletter signup layout",
+          "dataAttributes": {}
+        }
+      ]
     },
     {
       "id": "newsletter-signup-v2",
@@ -87,7 +197,15 @@
       "screenshotPath": null,
       "componentFamily": "newsletter-signup",
       "version": "v2",
-      "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"]
+      "features": ["MailChimp integration", "Responsive form", "Accessibility support", "Error handling"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard newsletter signup V2 layout",
+          "dataAttributes": {}
+        }
+      ]
     },
     {
       "id": "newsletter-signup-v3",
@@ -103,7 +221,15 @@
       "screenshotPath": null,
       "componentFamily": "newsletter-signup",
       "version": "v3",
-      "features": ["Bold gradient background", "Enhanced visibility", "MailChimp integration", "Responsive form", "Accessibility support"]
+      "features": ["Bold gradient background", "Enhanced visibility", "MailChimp integration", "Responsive form", "Accessibility support"],
+      "variants": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Standard newsletter signup V3 layout",
+          "dataAttributes": {}
+        }
+      ]
     }
   ]
 }
