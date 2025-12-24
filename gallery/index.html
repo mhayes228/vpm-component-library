@@ -718,22 +718,36 @@
   <div class="code-modal" id="code-modal">
     <div class="code-modal-content">
       <div class="code-modal-header">
-        <h3 class="code-modal-title" id="code-modal-title">Component Code</h3>
+        <h3 class="code-modal-title" id="code-modal-title">Download & Embed</h3>
         <button class="code-modal-close" id="code-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="code-modal-body">
         <div class="code-instructions">
           <h4>How to use this component:</h4>
           <ol>
-            <li>Copy the code below</li>
-            <li>Paste it into your website's HTML (before the closing &lt;/body&gt; tag or in your CMS template)</li>
-            <li>Look for <strong>EDITABLE</strong> comments in the code to customize the component</li>
-            <li>Edit the marked sections to personalize content, URLs, and configuration</li>
-            <li>See usage examples in the code comments</li>
+            <li>Download the standalone HTML file below</li>
+            <li>Upload the HTML file to your public-facing server</li>
+            <li>Copy the iframe embed code</li>
+            <li>Paste the iframe code into your main website where you want the component to appear</li>
           </ol>
-          <p><strong>Tip:</strong> Sections marked with <span class="editable-marker">EDITABLE</span> comments are safe to modify and won't break the component.</p>
+          <p><strong>Note:</strong> Update the base URL in the iframe code to match your server location.</p>
         </div>
-        <pre class="code-block" id="code-block"></pre>
+        
+        <!-- Download Section -->
+        <div class="download-section" style="margin-bottom: var(--vpm-spacing-lg); padding: var(--vpm-spacing-md); background: var(--vpm-color-bg-light); border-radius: var(--vpm-border-radius);">
+          <h4 style="margin: 0 0 var(--vpm-spacing-sm) 0; font-size: var(--vpm-font-size-base); font-weight: var(--vpm-font-weight-semibold);">Download HTML File</h4>
+          <a id="download-link" href="#" download style="display: inline-block; padding: var(--vpm-spacing-sm) var(--vpm-spacing-md); background: var(--vpm-color-primary); color: white; text-decoration: none; border-radius: var(--vpm-border-radius); font-weight: var(--vpm-font-weight-semibold);">📥 Download Standalone HTML</a>
+          <p id="download-filename" style="margin: var(--vpm-spacing-sm) 0 0 0; font-size: var(--vpm-font-size-sm); color: var(--vpm-color-text-muted);"></p>
+        </div>
+        
+        <!-- Iframe Embed Section -->
+        <div class="iframe-section" style="margin-bottom: var(--vpm-spacing-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--vpm-spacing-sm);">
+            <h4 style="margin: 0; font-size: var(--vpm-font-size-base); font-weight: var(--vpm-font-weight-semibold);">Iframe Embed Code</h4>
+            <button id="copy-iframe-btn" class="btn btn-primary" style="padding: var(--vpm-spacing-xs) var(--vpm-spacing-sm); font-size: var(--vpm-font-size-sm);">Copy Iframe Code</button>
+          </div>
+          <pre class="code-block" id="iframe-code-block" style="margin: 0;"></pre>
+        </div>
       </div>
     </div>
   </div>
@@ -1490,43 +1504,47 @@
         }
       }
       
+      // Generate iframe embed code
+      function generateIframeCode(component, variant, baseUrl) {
+        baseUrl = baseUrl || 'https://components.vpm.org/';
+        const filename = component.id + '-' + variant.id + '.html';
+        const url = baseUrl + filename;
+        
+        return '<iframe \n  src="' + url + '" \n  title="' + component.name + ' - ' + variant.name + '"\n  width="100%" \n  height="auto" \n  frameborder="0" \n  scrolling="no"\n  loading="lazy"\n  style="border: none; min-height: 400px;">\n</iframe>';
+      }
+      
       // Show code modal
       async function showCodeModal(component, variantId) {
         variantId = variantId || 'default';
         
-        try {
-          // Try to load variant-specific code from index.html
-          const code = await generateVariantCode(component, variantId);
-          
-          const modal = document.getElementById('code-modal');
-          const modalTitle = document.getElementById('code-modal-title');
-          const codeBlock = document.getElementById('code-block');
-          
-          // Get variant name for title
-          const variants = component.variants || [{ id: 'default', name: 'Default' }];
-          const variant = variants.find(function(v) { return v.id === variantId; }) || variants[0];
-          
-          modalTitle.textContent = component.name + ' - ' + variant.name + ' Variant';
-          codeBlock.textContent = code;
-          modal.classList.add('active');
-          
-          // Scroll code block to top
-          codeBlock.scrollTop = 0;
-        } catch (error) {
-          console.error('Error loading code:', error);
-          const modal = document.getElementById('code-modal');
-          const modalTitle = document.getElementById('code-modal-title');
-          const codeBlock = document.getElementById('code-block');
-          
-          modalTitle.textContent = component.name + ' - Component Code';
-          codeBlock.textContent = 'Error: Unable to load component code.\n\n' +
-            'If you opened this file directly in your browser (file://), you need to use a local server.\n\n' +
-            'Options:\n' +
-            '1. Use a local server (e.g., Python: python -m http.server, Node: npx serve)\n' +
-            '2. Open the component file directly: ' + component.indexPath + '\n' +
-            '3. Or manually navigate to: ' + component.indexPath;
-          modal.classList.add('active');
-        }
+        const modal = document.getElementById('code-modal');
+        const modalTitle = document.getElementById('code-modal-title');
+        const downloadLink = document.getElementById('download-link');
+        const downloadFilename = document.getElementById('download-filename');
+        const iframeCodeBlock = document.getElementById('iframe-code-block');
+        
+        // Get variant name for title
+        const variants = component.variants || [{ id: 'default', name: 'Default', dataAttributes: {} }];
+        const variant = variants.find(function(v) { return v.id === variantId; }) || variants[0];
+        
+        modalTitle.textContent = component.name + ' - ' + variant.name + ' Variant';
+        
+        // Set up download link
+        const filename = component.id + '-' + variant.id + '.html';
+        const standalonePath = '../standalone/' + filename;
+        downloadLink.href = standalonePath;
+        downloadLink.download = filename;
+        downloadFilename.textContent = 'File: ' + filename;
+        
+        // Generate iframe code
+        const baseUrl = 'https://components.vpm.org/'; // Can be made configurable
+        const iframeCode = generateIframeCode(component, variant, baseUrl);
+        iframeCodeBlock.textContent = iframeCode;
+        
+        modal.classList.add('active');
+        
+        // Scroll to top
+        iframeCodeBlock.scrollTop = 0;
       }
       
       // Copy code to clipboard
@@ -1534,6 +1552,23 @@
         const codeBlock = document.getElementById('code-block');
         // Get text content, removing HTML tags from editable markers
         const code = codeBlock.innerText || codeBlock.textContent;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(function() {
+            showCopySuccess();
+          }).catch(function(err) {
+            console.error('Failed to copy:', err);
+            fallbackCopy(code);
+          });
+        } else {
+          fallbackCopy(code);
+        }
+      }
+      
+      // Copy iframe code to clipboard
+      function copyIframeCode() {
+        const iframeCodeBlock = document.getElementById('iframe-code-block');
+        const code = iframeCodeBlock.innerText || iframeCodeBlock.textContent;
         
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(code).then(function() {
@@ -1700,25 +1735,19 @@
         }
       });
       
-      // Add copy button to code block
+      // Add copy iframe button event listener
+      const copyIframeBtn = document.getElementById('copy-iframe-btn');
+      if (copyIframeBtn) {
+        copyIframeBtn.addEventListener('click', copyIframeCode);
+      }
+      
+      // Add copy button to code block (for backward compatibility)
       if (codeBlock) {
         codeBlock.addEventListener('click', function() {
           copyCodeToClipboard();
         });
         codeBlock.style.cursor = 'pointer';
         codeBlock.title = 'Click to copy code';
-      }
-      
-      // Add copy button to modal header
-      const modalHeader = document.querySelector('.code-modal-header');
-      if (modalHeader) {
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'btn btn-primary';
-        copyBtn.textContent = 'Copy Code';
-        copyBtn.style.marginLeft = 'auto';
-        copyBtn.style.marginRight = 'var(--vpm-spacing-md)';
-        copyBtn.addEventListener('click', copyCodeToClipboard);
-        modalHeader.insertBefore(copyBtn, codeModalClose);
       }
       
       // Initialize category filter buttons

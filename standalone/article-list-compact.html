@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article List - Compact</title>
+  <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    /* Component Styles */
+    :root {
+      /* Colors - VPM Brand */
+      --vpm-color-navy-blue: #003865;
+      --vpm-color-light-blue: #6CACE4;
+      --vpm-color-yellow: #E0E721;
+      --vpm-color-red: #EE2737;
+      --vpm-color-black: #101820;
+      --vpm-color-gray: #B2B4B2;
+      
+      /* Colors - Generic */
+      --vpm-color-primary: #005eb8;
+      --vpm-color-primary-dark: #004a94;
+      --vpm-color-primary-light: #0066cc;
+      --vpm-color-secondary: #2ecc71;
+      --vpm-color-secondary-dark: #27ae60;
+      --vpm-color-accent: #e74c3c;
+      --vpm-color-text: #333333;
+      --vpm-color-text-light: #666666;
+      --vpm-color-text-muted: #999999;
+      --vpm-color-bg: #ffffff;
+      --vpm-color-bg-light: #f5f5f5;
+      --vpm-color-bg-dark: #1a1a1a;
+      --vpm-color-border: #e0e0e0;
+      --vpm-color-border-dark: #333333;
+      
+      /* Spacing */
+      --vpm-spacing-xs: 0.25rem;
+      --vpm-spacing-sm: 0.5rem;
+      --vpm-spacing-unit: 1rem;
+      --vpm-spacing-md: 1.5rem;
+      --vpm-spacing-lg: 2rem;
+      --vpm-spacing-xl: 3rem;
+      --vpm-spacing-xxl: 4rem;
+      --vpm-spacing-3xl: 5rem;
+      --vpm-spacing-4xl: 6rem;
+      --vpm-spacing-5xl: 7rem;
+      
+      /* Typography */
+      --vpm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --vpm-font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --vpm-font-size-base: 1rem;
+      --vpm-font-size-sm: 0.875rem;
+      --vpm-font-size-lg: 1.125rem;
+      --vpm-font-size-xl: 1.25rem;
+      --vpm-font-size-xxl: 1.5rem;
+      --vpm-font-size-2xl: 1.875rem;
+      --vpm-font-size-3xl: 2.25rem;
+      --vpm-font-size-4xl: 3rem;
+      --vpm-font-size-5xl: 3.75rem;
+      --vpm-font-weight-normal: 400;
+      --vpm-font-weight-medium: 500;
+      --vpm-font-weight-semibold: 600;
+      --vpm-font-weight-bold: 700;
+      --vpm-line-height-base: 1.5;
+      --vpm-line-height-tight: 1.25;
+      --vpm-line-height-relaxed: 1.75;
+      
+      /* Borders & Radius */
+      --vpm-border-width: 1px;
+      --vpm-border-radius: 4px;
+      --vpm-border-radius-sm: 2px;
+      --vpm-border-radius-lg: 8px;
+      --vpm-border-radius-xl: 12px;
+      --vpm-border-radius-2xl: 16px;
+      --vpm-border-radius-3xl: 20px;
+      --vpm-border-radius-4xl: 24px;
+      --vpm-border-radius-full: 9999px;
+      
+      /* Shadows */
+      --vpm-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --vpm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --vpm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --vpm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      /* Transitions */
+      --vpm-transition-speed: 0.3s;
+      --vpm-transition-speed-fast: 0.15s;
+      --vpm-transition-speed-slow: 0.5s;
+      --vpm-transition-easing: ease-in-out;
+      
+      /* Z-index scale */
+      --vpm-z-base: 1;
+      --vpm-z-dropdown: 1000;
+      --vpm-z-sticky: 1020;
+      --vpm-z-fixed: 1030;
+      --vpm-z-modal-backdrop: 1040;
+      --vpm-z-modal: 1050;
+      --vpm-z-popover: 1060;
+      --vpm-z-tooltip: 1070;
+      
+      /* Breakpoints (for reference, use in media queries) */
+      --vpm-breakpoint-sm: 640px;
+      --vpm-breakpoint-md: 768px;
+      --vpm-breakpoint-lg: 1024px;
+      --vpm-breakpoint-xl: 1280px;
+      --vpm-breakpoint-2xl: 1536px;
+    }
+    [data-theme="dark"] {
+      --vpm-color-text: #e0e0e0;
+      --vpm-color-text-light: #b0b0b0;
+      --vpm-color-text-muted: #808080;
+      --vpm-color-bg: #1a1a1a;
+      --vpm-color-bg-light: #2a2a2a;
+      --vpm-color-bg-dark: #0a0a0a;
+      --vpm-color-border: #333333;
+      --vpm-color-border-dark: #555555;
+    }
+    [id*="-root"] {
+      box-sizing: border-box;
+      font-family: var(--vpm-font-family-base);
+      font-size: var(--vpm-font-size-base);
+      line-height: var(--vpm-line-height-base);
+      color: var(--vpm-color-text);
+    }
+    [id*="-root"] *,
+    [id*="-root"] *::before,
+    [id*="-root"] *::after {
+      box-sizing: inherit;
+    }
+    .vpm-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+    /* Component: Article List (vpm-article-list-*) */
+    /* -------------------------------------------- */
+    .vpm-article-list__grid {
+      display: grid;
+      grid-template-columns: repeat(var(--vpm-article-list-columns, 3), 1fr);
+      gap: var(--vpm-spacing-md);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .vpm-article-list__card {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--vpm-color-bg);
+      border-radius: var(--vpm-border-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--vpm-shadow);
+      transition: transform var(--vpm-transition-speed) var(--vpm-transition-easing),
+                  box-shadow var(--vpm-transition-speed) var(--vpm-transition-easing);
+      height: 100%;
+    }
+    
+    .vpm-article-list__card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--vpm-shadow-lg);
+    }
+    
+    .vpm-article-list__card-link {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+    
+    .vpm-article-list__card-link:focus {
+      outline: 2px solid var(--vpm-color-primary);
+      outline-offset: 2px;
+      border-radius: var(--vpm-border-radius-lg);
+    }
+    
+    .vpm-article-list__card-image-wrapper {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background-color: var(--vpm-color-bg-light);
+      position: relative;
+    }
+    
+    .vpm-article-list__card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform var(--vpm-transition-speed) var(--vpm-transition-easing);
+    }
+    
+    .vpm-article-list__card:hover .vpm-article-list__card-image {
+      transform: scale(1.05);
+    }
+    
+    .vpm-article-list__card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--vpm-spacing-md);
+      gap: var(--vpm-spacing-sm);
+    }
+    
+    .vpm-article-list__card-category {
+      display: inline-block;
+      font-size: var(--vpm-font-size-sm);
+      font-weight: var(--vpm-font-weight-semibold);
+      color: var(--vpm-color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--vpm-spacing-xs);
+    }
+    
+    .vpm-article-list__card-title {
+      font-size: var(--vpm-font-size-lg);
+      font-weight: var(--vpm-font-weight-bold);
+      color: var(--vpm-color-text);
+      margin: 0;
+      line-height: var(--vpm-line-height-tight);
+      font-family: var(--vpm-font-family-heading);
+    }
+    
+    .vpm-article-list__card-link:hover .vpm-article-list__card-title {
+      color: var(--vpm-color-primary);
+    }
+    
+    .vpm-article-list__card-description {
+      font-size: var(--vpm-font-size-base);
+      color: var(--vpm-color-text-light);
+      line-height: var(--vpm-line-height-base);
+      margin: 0;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .vpm-article-list__card-meta {
+      margin-top: auto;
+      padding-top: var(--vpm-spacing-sm);
+      border-top: var(--vpm-border-width) solid var(--vpm-color-border);
+    }
+    
+    .vpm-article-list__card-meta time {
+      font-size: var(--vpm-font-size-sm);
+      color: var(--vpm-color-text-muted);
+    }
+    
+    /* Variant: Compact */
+    #vpm-article-list-root[data-variant="compact"] .vpm-article-list__card-content {
+      padding: var(--vpm-spacing-sm);
+    }
+    
+    #vpm-article-list-root[data-variant="compact"] .vpm-article-list__card-image-wrapper {
+      height: 150px;
+    }
+    
+    #vpm-article-list-root[data-variant="compact"] .vpm-article-list__card-title {
+      font-size: var(--vpm-font-size-base);
+    }
+    
+    #vpm-article-list-root[data-variant="compact"] .vpm-article-list__card-description {
+      font-size: var(--vpm-font-size-sm);
+      -webkit-line-clamp: 2;
+    }
+    
+    /* Variant: Featured */
+    #vpm-article-list-root[data-variant="featured"] .vpm-article-list__card {
+      border: 2px solid var(--vpm-color-primary);
+      box-shadow: var(--vpm-shadow-md);
+    }
+    
+    #vpm-article-list-root[data-variant="featured"] .vpm-article-list__card:hover {
+      box-shadow: var(--vpm-shadow-xl);
+    }
+    
+    /* Dark Theme */
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card {
+      background-color: var(--vpm-color-bg-dark);
+      border-color: var(--vpm-color-border-dark);
+    }
+    
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card-title {
+      color: #ffffff;
+    }
+    
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card-description {
+      color: #cccccc;
+    }
+    
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card-meta {
+      border-color: var(--vpm-color-border-dark);
+    }
+    
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card-meta time {
+      color: #999999;
+    }
+    
+    #vpm-article-list-root[data-theme="dark"] .vpm-article-list__card-image-wrapper {
+      background-color: #2a2a2a;
+    }
+    
+    /* Responsive: Tablet */
+    @media (max-width: 1023px) {
+      .vpm-article-list__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Responsive: Mobile */
+    @media (max-width: 767px) {
+      .vpm-article-list__grid {
+        grid-template-columns: 1fr;
+        gap: var(--vpm-spacing-sm);
+      }
+      
+      .vpm-article-list__card-image-wrapper {
+        height: 180px;
+      }
+      
+      .vpm-article-list__card-content {
+        padding: var(--vpm-spacing-sm);
+      }
+      
+      .vpm-article-list__card-title {
+        font-size: var(--vpm-font-size-base);
+      }
+      
+      .vpm-article-list__card-description {
+        font-size: var(--vpm-font-size-sm);
+        -webkit-line-clamp: 2;
+      }
+    }
+    
+    /* Accessibility: Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .vpm-article-list__card,
+      .vpm-article-list__card-image {
+        transition: none;
+      }
+      
+      .vpm-article-list__card:hover {
+        transform: none;
+      }
+      
+      .vpm-article-list__card:hover .vpm-article-list__card-image {
+        transform: none;
+      }
+    }
+    
+    
+  </style>
+</head>
+<body>
+<!-- VPM Article List Component -->
+<!-- Copy this HTML into Brightspot CMS -->
+<!-- Wrap your Brightspot list widget output inside this component -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Change data-variant to "grid", "compact", or "featured" -->
+<!-- Change data-columns to "1" through "4" for desktop column count -->
+<!-- Change data-theme to "light" or "dark" -->
+<div id="vpm-article-list-root" data-variant="compact" data-columns="2" data-theme="light">
+  <!-- EDITABLE: Brightspot List Content -->
+  <!-- Replace this section with your Brightspot list widget output -->
+  <!-- Example structure:
+  <ul>
+    <li>
+      <a href="/article-url">
+        <img src="/image.jpg" alt="Article title">
+        <h3>Article Title</h3>
+        <p>Article description or excerpt</p>
+        <time datetime="2024-01-15">January 15, 2024</time>
+      </a>
+    </li>
+  </ul>
+  -->
+</div>
+  <script>
+    (function() {
+      'use strict';
+      
+      // EDITABLE: Configuration Variables
+      // The component automatically reads data attributes from the root element
+      // You can modify default values here if needed
+      var root = document.getElementById('vpm-article-list-root');
+      if (!root || root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      
+      // Configuration (read from data attributes)
+      var variant = root.getAttribute('data-variant') || 'grid';
+      var columns = parseInt(root.getAttribute('data-columns') || '3', 10);
+      var theme = root.getAttribute('data-theme') || 'light';
+      
+      // Find the list within the root container
+      var list = root.querySelector('ul, ol');
+      if (!list) {
+        console.warn('VPM Article List: No list found within component root');
+        return;
+      }
+      
+      // Extract list items
+      var listItems = list.querySelectorAll('li');
+      if (listItems.length === 0) {
+        console.warn('VPM Article List: No list items found');
+        return;
+      }
+      
+      // Create grid container
+      var gridContainer = document.createElement('div');
+      gridContainer.className = 'vpm-article-list__grid';
+      gridContainer.setAttribute('role', 'list');
+      gridContainer.setAttribute('aria-label', 'Article list');
+      
+      // Transform each list item into a card
+      listItems.forEach(function(listItem, index) {
+        var card = createCard(listItem, index);
+        if (card) {
+          gridContainer.appendChild(card);
+        }
+      });
+      
+      // Replace the original list with the grid
+      list.parentNode.replaceChild(gridContainer, list);
+      
+      // Helper function to extract article data from list item
+      function extractArticleData(listItem) {
+        var data = {
+          title: '',
+          url: '#',
+          image: null,
+          description: '',
+          date: '',
+          category: ''
+        };
+        
+        // Find link (usually wraps content or is first child)
+        var link = listItem.querySelector('a');
+        if (link) {
+          data.url = link.getAttribute('href') || '#';
+          data.title = link.textContent.trim() || link.getAttribute('title') || '';
+        }
+        
+        // Find title (h2, h3, h4, or strong tag)
+        var titleEl = listItem.querySelector('h2, h3, h4, h5, h6, strong');
+        if (titleEl) {
+          data.title = titleEl.textContent.trim() || data.title;
+        }
+        
+        // Find image
+        var img = listItem.querySelector('img');
+        if (img) {
+          data.image = {
+            src: img.getAttribute('src') || img.getAttribute('data-src') || '',
+            alt: img.getAttribute('alt') || data.title
+          };
+        }
+        
+        // Find description (p tag, or text after title)
+        var descEl = listItem.querySelector('p');
+        if (descEl && descEl.textContent.trim()) {
+          data.description = descEl.textContent.trim();
+        } else {
+          // Try to get text content excluding title and other elements
+          var textContent = listItem.textContent.trim();
+          if (titleEl) {
+            textContent = textContent.replace(titleEl.textContent.trim(), '').trim();
+          }
+          if (textContent && textContent.length > 0) {
+            data.description = textContent.substring(0, 150); // Limit description length
+          }
+        }
+        
+        // Find date (time tag or date-like text)
+        var timeEl = listItem.querySelector('time');
+        if (timeEl) {
+          data.date = timeEl.getAttribute('datetime') || timeEl.textContent.trim();
+        } else {
+          // Try to find date-like patterns in text
+          var datePattern = /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4})\b/;
+          var dateMatch = listItem.textContent.match(datePattern);
+          if (dateMatch) {
+            data.date = dateMatch[1];
+          }
+        }
+        
+        // Find category (span with class containing 'category', 'tag', 'section', etc.)
+        var categoryEl = listItem.querySelector('.category, .tag, .section, [class*="category"], [class*="tag"]');
+        if (categoryEl) {
+          data.category = categoryEl.textContent.trim();
+        }
+        
+        return data;
+      }
+      
+      // Create card element from list item
+      function createCard(listItem, index) {
+        var articleData = extractArticleData(listItem);
+        
+        // Create card container
+        var card = document.createElement('article');
+        card.className = 'vpm-article-list__card';
+        card.setAttribute('role', 'listitem');
+        
+        // Create card link
+        var cardLink = document.createElement('a');
+        cardLink.href = articleData.url;
+        cardLink.className = 'vpm-article-list__card-link';
+        cardLink.setAttribute('aria-label', 'Read article: ' + articleData.title);
+        
+        // Create card image if available
+        if (articleData.image && articleData.image.src) {
+          var cardImage = document.createElement('div');
+          cardImage.className = 'vpm-article-list__card-image-wrapper';
+          
+          var img = document.createElement('img');
+          img.src = articleData.image.src;
+          img.alt = articleData.image.alt;
+          img.className = 'vpm-article-list__card-image';
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          
+          cardImage.appendChild(img);
+          cardLink.appendChild(cardImage);
+        }
+        
+        // Create card content wrapper
+        var cardContent = document.createElement('div');
+        cardContent.className = 'vpm-article-list__card-content';
+        
+        // Add category if available
+        if (articleData.category) {
+          var category = document.createElement('span');
+          category.className = 'vpm-article-list__card-category';
+          category.textContent = articleData.category;
+          cardContent.appendChild(category);
+        }
+        
+        // Add title
+        var title = document.createElement('h3');
+        title.className = 'vpm-article-list__card-title';
+        title.textContent = articleData.title || 'Untitled Article';
+        cardContent.appendChild(title);
+        
+        // Add description if available
+        if (articleData.description) {
+          var description = document.createElement('p');
+          description.className = 'vpm-article-list__card-description';
+          description.textContent = articleData.description;
+          cardContent.appendChild(description);
+        }
+        
+        // Add metadata (date)
+        if (articleData.date) {
+          var meta = document.createElement('div');
+          meta.className = 'vpm-article-list__card-meta';
+          
+          var time = document.createElement('time');
+          time.setAttribute('datetime', articleData.date);
+          time.textContent = formatDate(articleData.date);
+          
+          meta.appendChild(time);
+          cardContent.appendChild(meta);
+        }
+        
+        cardLink.appendChild(cardContent);
+        card.appendChild(cardLink);
+        
+        return card;
+      }
+      
+      // Format date for display
+      function formatDate(dateString) {
+        if (!dateString) return '';
+        
+        try {
+          var date = new Date(dateString);
+          if (isNaN(date.getTime())) {
+            // If parsing fails, return original string
+            return dateString;
+          }
+          
+          var options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return date.toLocaleDateString('en-US', options);
+        } catch (e) {
+          return dateString;
+        }
+      }
+      
+      // Apply column configuration via CSS variable
+      root.style.setProperty('--vpm-article-list-columns', columns);
+      
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Channels - Default</title>
+  <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    /* Component Styles */
+    :root {
+      /* Colors - VPM Brand */
+      --vpm-color-navy-blue: #003865;
+      --vpm-color-light-blue: #6CACE4;
+      --vpm-color-yellow: #E0E721;
+      --vpm-color-red: #EE2737;
+      --vpm-color-black: #101820;
+      --vpm-color-gray: #B2B4B2;
+      
+      /* Colors - Generic */
+      --vpm-color-primary: #005eb8;
+      --vpm-color-primary-dark: #004a94;
+      --vpm-color-primary-light: #0066cc;
+      --vpm-color-secondary: #2ecc71;
+      --vpm-color-secondary-dark: #27ae60;
+      --vpm-color-accent: #e74c3c;
+      --vpm-color-text: #333333;
+      --vpm-color-text-light: #666666;
+      --vpm-color-text-muted: #999999;
+      --vpm-color-bg: #ffffff;
+      --vpm-color-bg-light: #f5f5f5;
+      --vpm-color-bg-dark: #1a1a1a;
+      --vpm-color-border: #e0e0e0;
+      --vpm-color-border-dark: #333333;
+      
+      /* Spacing */
+      --vpm-spacing-xs: 0.25rem;
+      --vpm-spacing-sm: 0.5rem;
+      --vpm-spacing-unit: 1rem;
+      --vpm-spacing-md: 1.5rem;
+      --vpm-spacing-lg: 2rem;
+      --vpm-spacing-xl: 3rem;
+      --vpm-spacing-xxl: 4rem;
+      --vpm-spacing-3xl: 5rem;
+      --vpm-spacing-4xl: 6rem;
+      --vpm-spacing-5xl: 7rem;
+      
+      /* Typography */
+      --vpm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --vpm-font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --vpm-font-size-base: 1rem;
+      --vpm-font-size-sm: 0.875rem;
+      --vpm-font-size-lg: 1.125rem;
+      --vpm-font-size-xl: 1.25rem;
+      --vpm-font-size-xxl: 1.5rem;
+      --vpm-font-size-2xl: 1.875rem;
+      --vpm-font-size-3xl: 2.25rem;
+      --vpm-font-size-4xl: 3rem;
+      --vpm-font-size-5xl: 3.75rem;
+      --vpm-font-weight-normal: 400;
+      --vpm-font-weight-medium: 500;
+      --vpm-font-weight-semibold: 600;
+      --vpm-font-weight-bold: 700;
+      --vpm-line-height-base: 1.5;
+      --vpm-line-height-tight: 1.25;
+      --vpm-line-height-relaxed: 1.75;
+      
+      /* Borders & Radius */
+      --vpm-border-width: 1px;
+      --vpm-border-radius: 4px;
+      --vpm-border-radius-sm: 2px;
+      --vpm-border-radius-lg: 8px;
+      --vpm-border-radius-xl: 12px;
+      --vpm-border-radius-2xl: 16px;
+      --vpm-border-radius-3xl: 20px;
+      --vpm-border-radius-4xl: 24px;
+      --vpm-border-radius-full: 9999px;
+      
+      /* Shadows */
+      --vpm-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --vpm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --vpm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --vpm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      /* Transitions */
+      --vpm-transition-speed: 0.3s;
+      --vpm-transition-speed-fast: 0.15s;
+      --vpm-transition-speed-slow: 0.5s;
+      --vpm-transition-easing: ease-in-out;
+      
+      /* Z-index scale */
+      --vpm-z-base: 1;
+      --vpm-z-dropdown: 1000;
+      --vpm-z-sticky: 1020;
+      --vpm-z-fixed: 1030;
+      --vpm-z-modal-backdrop: 1040;
+      --vpm-z-modal: 1050;
+      --vpm-z-popover: 1060;
+      --vpm-z-tooltip: 1070;
+      
+      /* Breakpoints (for reference, use in media queries) */
+      --vpm-breakpoint-sm: 640px;
+      --vpm-breakpoint-md: 768px;
+      --vpm-breakpoint-lg: 1024px;
+      --vpm-breakpoint-xl: 1280px;
+      --vpm-breakpoint-2xl: 1536px;
+    }
+    [data-theme="dark"] {
+      --vpm-color-text: #e0e0e0;
+      --vpm-color-text-light: #b0b0b0;
+      --vpm-color-text-muted: #808080;
+      --vpm-color-bg: #1a1a1a;
+      --vpm-color-bg-light: #2a2a2a;
+      --vpm-color-bg-dark: #0a0a0a;
+      --vpm-color-border: #333333;
+      --vpm-color-border-dark: #555555;
+    }
+    [id*="-root"] {
+      box-sizing: border-box;
+      font-family: var(--vpm-font-family-base);
+      font-size: var(--vpm-font-size-base);
+      line-height: var(--vpm-line-height-base);
+      color: var(--vpm-color-text);
+    }
+    [id*="-root"] *,
+    [id*="-root"] *::before,
+    [id*="-root"] *::after {
+      box-sizing: inherit;
+    }
+    .vpm-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body>
+<!-- VPM Watch Channels Component -->
+<!-- Copy this HTML into Brightspot CMS -->
+
+<!-- EDITABLE: Root Container Attributes -->
+<!-- Optionally add data-tiles attribute with JSON array of tile objects -->
+<!-- Each tile should have: href, ariaLabel, img, alt -->
+<div id="vpm-watch-channels-root" data-component="watch-channels"></div>
+  <script>
+    (function() {
+      'use strict';
+      
+      var root = document.getElementById('vpm-watch-channels-root');
+      if (!root || root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      
+      // EDITABLE: Default Tiles Configuration
+      // Replace the defaultTiles array below with your channel tiles
+      // Each tile needs: href, ariaLabel, img, alt
+      var defaultTiles = [
+        {
+          href: "https://video.vpm.org/",
+          ariaLabel: "Watch VPM at PBS.org",
+          img: "https://assets.vpm.org/ea/65/0adf26571cd1bc944d2a53585f33/vpm-pbs-logo.jpg",
+          alt: "PBS Live Stream"
+        },
+        {
+          href: "https://www.pbs.org/livestream/",
+          ariaLabel: "Browse all PBS livestream channels",
+          img: "https://assets.vpm.org/5f/64/77a0316d454c9360c5c45f915f32/vpm-livestream.png",
+          alt: "VPM Livestream"
+        },
+        {
+          href: "https://video.vpm.org/livestream/?selected=kids-main",
+          ariaLabel: "PBS Kids - Live Stream",
+          img: "https://assets.vpm.org/c9/49/a7091c9e43e58e974ace416ec612/vpm-pbskids-webgraphic-2507.png",
+          alt: "PBS Kids Live Stream"
+        },
+        {
+          href: "https://www.youtube.com/channel/UC0G2XnXhO8SA0CGvxQUawEA",
+          ariaLabel: "VPM on YouTube Live",
+          img: "https://assets.vpm.org/b6/13/73af7896472cbe10ebb12fe1b3ae/chatgpt-image-may-15-2025-10-39-23-am.png",
+          alt: "VPM on YouTube"
+        }
+      ];
+      
+      // Get tiles from data attribute or use defaults
+      var tilesData = root.getAttribute('data-tiles');
+      var tiles = defaultTiles;
+      
+      if (tilesData) {
+        try {
+          tiles = JSON.parse(tilesData);
+        } catch (e) {
+          console.warn('VPM Watch Channels: Invalid data-tiles JSON, using defaults');
+        }
+      }
+      
+      // Create shadow DOM
+      var shadow = root.attachShadow({ mode: 'open' });
+      
+      // Get CSS variables from host document
+      var rootStyles = getComputedStyle(document.documentElement);
+      var navyBlue = rootStyles.getPropertyValue('--vpm-color-navy-blue').trim() || '#003865';
+      var red = rootStyles.getPropertyValue('--vpm-color-red').trim() || '#EE2737';
+      
+      shadow.innerHTML = `
+        <style>
+          :host {
+            display: block;
+            font-family: var(--vpm-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+            color: #ffffff;
+          }
+    
+          .watch-page-header {
+            background: linear-gradient(to bottom, ${navyBlue}, #0d47a1);
+            color: inherit;
+            padding: 32px 20px;
+          }
+    
+          .watch-page-header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+          }
+    
+          .watch-page-header h1 {
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            font-weight: 700;
+            margin: 0 0 20px;
+            color: #ffffff;
+          }
+    
+          .watch-page-tile-container {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          }
+    
+          .watch-page-tile {
+            position: relative;
+            display: block;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            background-color: #002743;
+            color: inherit;
+          }
+    
+          .watch-page-tile:hover,
+          .watch-page-tile:focus-visible {
+            transform: scale(1.08);
+            outline: 3px solid #ffffff;
+            outline-offset: 3px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          }
+    
+          .watch-page-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+          }
+    
+          .watch-page-tile:hover img,
+          .watch-page-tile:focus-visible img {
+            transform: scale(1.1);
+          }
+    
+          .live-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: ${red};
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            z-index: 1;
+          }
+    
+          @media (max-width: 768px) {
+            .watch-page-tile-container {
+              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+          }
+        </style>
+        <div class="watch-page-header">
+          <div class="watch-page-header-container">
+            <h1>Watch VPM</h1>
+            <div class="watch-page-tile-container" role="list">
+              ${tiles.map(function(tile) {
+                return `
+                  <a role="listitem" class="watch-page-tile" href="${tile.href}" aria-label="${tile.ariaLabel}" target="_blank" rel="noopener">
+                    <span class="live-badge">LIVE</span>
+                    <img src="${tile.img}" alt="${tile.alt}" loading="lazy" />
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    })();
+  </script>
+</body>
+</html>

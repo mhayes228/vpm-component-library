@@ -81,3 +81,4 @@ To change the MailChimp list:
 - **Required**: MailChimp account and form setup
 - **Optional**: `shared/styles.css` (for non-Shadow DOM version)
 
+

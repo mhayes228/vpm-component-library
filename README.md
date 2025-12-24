@@ -9,8 +9,15 @@ A modular, portable component library for VPM's Brightspot CMS. Each component i
   /shared
     styles.css          (shared stylesheet for all components)
     utilities.js        (optional shared utilities)
+  /standalone
+    [component-id]-[variant-id].html  (standalone HTML files for iframe embedding)
+  /gallery
+    index.html         (component gallery)
+    components.json    (component metadata)
+    generate-standalone.js  (generator script)
+    config.js          (configuration)
   /[component-name]
-    index.html         (component markup for Brightspot)
+    index.html         (component markup source)
     README.md          (component documentation)
     preview.html       (standalone preview page)
 ```
@@ -45,7 +52,44 @@ Each component folder must include a README.md with:
 
 ## 🚀 Getting Started
 
-### Using a Component in Brightspot
+### Using Components via Iframe Embedding (Recommended)
+
+This library supports iframe-based embedding, where each component variant is a standalone HTML file that can be hosted on a public server and embedded via iframes.
+
+1. **Browse Components**: Open `gallery/index.html` in your browser to view all available components
+2. **Select Component & Variant**: Click on a component card and choose your desired variant
+3. **Download HTML File**: Click "📋 Copy Code" button, then download the standalone HTML file
+4. **Upload to Server**: Upload the downloaded HTML file to your public-facing server
+5. **Copy Iframe Code**: In the gallery modal, copy the iframe embed code
+6. **Update Base URL**: Edit the iframe `src` attribute to match your server location
+7. **Embed in Website**: Paste the iframe code into your main website where you want the component to appear
+
+**Example iframe code:**
+```html
+<iframe 
+  src="https://components.vpm.org/testimonial-card-default.html" 
+  title="Testimonial Card - Default"
+  width="100%" 
+  height="auto" 
+  frameborder="0" 
+  scrolling="no"
+  loading="lazy"
+  style="border: none; min-height: 400px;">
+</iframe>
+```
+
+### Generating Standalone Files
+
+To regenerate all standalone HTML files (after updating components):
+
+```bash
+cd gallery
+node generate-standalone.js
+```
+
+This will create/update all files in the `standalone/` directory.
+
+### Using a Component in Brightspot (Legacy Method)
 
 1. **Copy the HTML** from `[component-name]/index.html`
 2. **Ensure the shared stylesheet is loaded** in your page:
@@ -244,7 +288,43 @@ When adding a new component:
 3. Add styles to `shared/styles.css` with namespace prefix
 4. Create `README.md` with full documentation
 5. Create `preview.html` for standalone preview
-6. Update this README with component listing
+6. Update `gallery/components.json` with component metadata
+7. Run `node gallery/generate-standalone.js` to generate standalone files
+8. Update this README with component listing
+
+## 🔧 Iframe-Based Workflow
+
+### Overview
+
+The iframe-based workflow allows you to:
+- Host components as standalone HTML files on a public server
+- Embed components via iframes without CSS/JS conflicts
+- Update components independently without touching the main website
+- Maintain style isolation between components and the parent page
+
+### Workflow Steps
+
+1. **Generate Standalone Files**: Run `node gallery/generate-standalone.js` to create standalone HTML files
+2. **Upload Files**: Upload files from `standalone/` directory to your public server
+3. **Configure Base URL**: Update `gallery/config.js` with your server's base URL
+4. **Embed Components**: Use the iframe code provided in the gallery for each component variant
+
+### Standalone File Structure
+
+Each standalone file includes:
+- Complete HTML document structure
+- Inline CSS (component-specific styles + CSS variables)
+- Inline JavaScript (component functionality)
+- Variant-specific data attributes applied
+- Responsive viewport meta tag
+- Minimal body styling for iframe context
+
+### Configuration
+
+Edit `gallery/config.js` to customize:
+- Base URL for iframe `src` attributes
+- Default iframe attributes
+- File naming conventions
 
 ## 📄 License
 
