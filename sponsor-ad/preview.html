@@ -62,6 +62,7 @@
     .device--360 { width: 360px; }
     .device--414 { width: 414px; }
     .device--768 { width: 768px; }
+    .device--900 { width: 900px; }
     .device--1024 { width: 1024px; }
 
     /* Reproduces the current production behaviour for comparison. */
@@ -160,9 +161,49 @@
         <div class="device__label" data-readout>360px</div>
         <div class="device__body">
           <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
-               data-size="970x250" data-mobile-zone="9999999"
+               data-size="970x250" data-mobile-zone="293911"
                data-mobile-size="300x250" data-mobile-max="767"
                data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h2>Size ladder &mdash; VPM's two live zones</h2>
+    <div class="preview-note">
+      One <code>data-slots</code> ladder across three widths: zone
+      <code>1063080</code> (970&times;250) at 768px and up, zone
+      <code>293911</code> (300&times;250) below it. The 768&ndash;969px band
+      scales the leaderboard rather than dropping a rectangle into a wide
+      column.
+    </div>
+    <div class="preview-grid">
+      <div class="device device--360">
+        <div class="device__label" data-readout>360px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-label="Sponsored" data-theme="light"
+               data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},{"minWidth":0,"zone":293911,"size":"300x250"}]'>
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="device device--900">
+        <div class="device__label" data-readout>900px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-label="Sponsored" data-theme="light"
+               data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},{"minWidth":0,"zone":293911,"size":"300x250"}]'>
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="device device--1024">
+        <div class="device__label" data-readout>1024px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-label="Sponsored" data-theme="light"
+               data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},{"minWidth":0,"zone":293911,"size":"300x250"}]'>
             <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
           </div>
         </div>
@@ -192,7 +233,7 @@
   <!-- Stub AdButler so the real component script runs its normal code path. -->
   <script>
   (function () {
-    var DEMO_ZONES = { 1063080: true, 9999999: true };
+    var DEMO_ZONES = { 1063080: true, 293911: true, 7280090: true };
 
     // Builds a placeholder creative at the exact size requested, so the
     // mobile slot is not just a stretched leaderboard.
@@ -234,10 +275,14 @@
   (function () {
     'use strict';
 
+    // EDITABLE: Configuration
     var LIBRARY_SRC = 'https://servedbyadbutler.com/app.js';
     var AD_DOMAIN = 'servedbyadbutler.com';
+    // How long to wait for a creative before collapsing the reserved space.
     var EMPTY_TIMEOUT_MS = 6000;
 
+    // Load the AdButler library once per page, no matter how many ad blocks
+    // are on it.
     function loadLibrary() {
       if (window.AdButler && typeof window.AdButler.register === 'function') return;
       if (document.querySelector('script[data-vpm-adbutler]')) return;
@@ -259,20 +304,83 @@
       return [parseInt(match[1], 10), parseInt(match[2], 10)];
     }
 
-    function pickSlot(root, availableWidth) {
-      var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
-      var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+    // Reads the size ladder. Preferred form is data-slots, a JSON array of
+    // { minWidth, zone, size } tiers. The data-zone / data-mobile-zone pair is
+    // kept as a two-tier shorthand.
+    function readSlots(root) {
+      var raw = root.getAttribute('data-slots');
+      var slots = [];
 
-      if (mobileZone && availableWidth > 0 && availableWidth <= mobileMax) {
-        return {
-          zone: mobileZone,
-          size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
-        };
+      if (raw && raw.trim()) {
+        var parsed = null;
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          console.error('VPM Sponsor Ad: data-slots is not valid JSON, ' +
+                        'falling back to data-zone', e);
+        }
+        if (parsed && parsed.length) {
+          for (var i = 0; i < parsed.length; i++) {
+            var tier = parsed[i] || {};
+            var zone = parseInt(tier.zone, 10);
+            var size = parseSize(tier.size, null);
+            if (!zone || !size) {
+              console.warn('VPM Sponsor Ad: skipping a slot missing zone or size', tier);
+              continue;
+            }
+            slots.push({
+              minWidth: parseInt(tier.minWidth, 10) || 0,
+              zone: zone,
+              size: size
+            });
+          }
+        }
       }
-      return {
-        zone: parseInt(root.getAttribute('data-zone') || '', 10),
-        size: parseSize(root.getAttribute('data-size'), [970, 250])
-      };
+
+      if (!slots.length) {
+        var mainZone = parseInt(root.getAttribute('data-zone') || '', 10);
+        var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
+        var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+
+        if (mainZone) {
+          slots.push({
+            minWidth: mobileZone ? mobileMax + 1 : 0,
+            zone: mainZone,
+            size: parseSize(root.getAttribute('data-size'), [970, 250])
+          });
+        }
+        if (mobileZone) {
+          slots.push({
+            minWidth: 0,
+            zone: mobileZone,
+            size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
+          });
+        }
+      }
+
+      // Widest tier first, so the first match wins.
+      slots.sort(function (a, b) { return b.minWidth - a.minWidth; });
+      return slots;
+    }
+
+    // Which creative to request. The choice is made once, on first layout:
+    // re-registering on resize would reload the ad and double-count the
+    // impression, which is worse than a slightly-scaled creative.
+    function pickSlot(slots, availableWidth) {
+      if (!slots.length) return null;
+
+      // A container that is display:none at init measures 0. Fall back to the
+      // viewport rather than dropping to the smallest tier.
+      var width = availableWidth > 0
+        ? availableWidth
+        : (window.innerWidth || document.documentElement.clientWidth || 0);
+      if (!width) return slots[0];
+
+      for (var i = 0; i < slots.length; i++) {
+        if (width >= slots[i].minWidth) return slots[i];
+      }
+      // Narrower than every tier's minWidth: use the smallest and scale it.
+      return slots[slots.length - 1];
     }
 
     function initInstance(root) {
@@ -287,9 +395,10 @@
       }
 
       var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
-      var slot = pickSlot(root, root.clientWidth);
-      if (!publisherId || !slot.zone) {
-        console.warn('VPM Sponsor Ad: data-publisher and data-zone are required');
+      var slot = pickSlot(readSlots(root), root.clientWidth);
+      if (!publisherId || !slot) {
+        console.warn('VPM Sponsor Ad: data-publisher and at least one zone ' +
+                     '(data-slots or data-zone) are required');
         return;
       }
 
@@ -298,6 +407,7 @@
       root.style.setProperty('--vpm-sponsor-ad-w', String(nativeWidth));
       root.style.setProperty('--vpm-sponsor-ad-h', String(nativeHeight));
 
+      // Optional disclosure label.
       var labelText = root.getAttribute('data-label');
       if (labelText === null) labelText = 'Sponsored';
       if (labelText) {
@@ -307,6 +417,8 @@
         root.insertBefore(label, frame);
       }
 
+      // Scale the native-size stage down to whatever width is actually
+      // available. Never scales up past 1:1.
       function fit() {
         var available = root.clientWidth || root.offsetWidth;
         if (!available) return;
@@ -323,6 +435,7 @@
         window.addEventListener('orientationchange', fit);
       }
 
+      // Unique placement id, so the block can be used more than once per page.
       var counterKey = 'plc' + slot.zone;
       window[counterKey] = window[counterKey] || 0;
       var place = window[counterKey]++;
@@ -332,6 +445,8 @@
       placement.id = placementId;
       stage.appendChild(placement);
 
+      // Collapse the reserved space if nothing ever arrives, and restore it if
+      // a creative shows up late.
       function isFilled() {
         return placement.children.length > 0 ||
                placement.textContent.trim().length > 0;
@@ -352,6 +467,8 @@
       }
       window.setTimeout(syncEmptyState, EMPTY_TIMEOUT_MS);
 
+      // Register with AdButler. If the library is already up, call straight
+      // through; otherwise queue for it to drain on load.
       window.AdButler = window.AdButler || {};
       window.AdButler.ads = window.AdButler.ads || [];
       window.abkw = window.abkw || '';
@@ -374,6 +491,8 @@
           place: place,
           keywords: window.abkw,
           domain: AD_DOMAIN
+          // No `click` key: only add one if AdButler gives you a real click
+          // macro. A placeholder string here breaks click tracking.
         }
       };
 

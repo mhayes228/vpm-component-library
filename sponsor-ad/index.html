@@ -6,32 +6,39 @@
     cropping it with `overflow: hidden`.
   - Reserves exactly the height the scaled ad will occupy, so there is no
     layout shift when the creative arrives.
-  - Optionally requests a different AdButler zone below a breakpoint, so phones
-    can be served a real mobile creative (300x250 / 320x50) instead of a
-    shrunken leaderboard. See data-mobile-zone below.
+  - Requests a different AdButler zone per width band, so phones get a real
+    mobile creative (300x250 / 320x50) instead of a shrunken leaderboard.
+    See data-slots below. Any size that does not exactly fit its band is still
+    scaled to fit, so the ladder never needs a tier for every possible width.
   - Generates the placement div id itself, so the block can appear more than
     once on the same page.
 -->
 
 <!-- EDITABLE: Root Container Attributes
      data-publisher    AdButler account id
-     data-zone         Zone id for the default (desktop) creative
-     data-size         Native size of that creative, "WIDTHxHEIGHT"
-     data-mobile-zone  Optional zone id to request at/below the breakpoint.
-                       Leave empty to serve the desktop creative scaled down.
-     data-mobile-size  Native size of the mobile creative
-     data-mobile-max   Breakpoint in px. Widths <= this use the mobile slot.
      data-label        Disclosure text above the ad. Empty string hides it.
      data-theme        "light" or "dark" (affects the label only)
+
+     SIZE LADDER - data-slots is a JSON array of tiers. Each tier is
+     { "minWidth": px, "zone": id, "size": "WIDTHxHEIGHT" }. The widest tier
+     whose minWidth fits the available width wins. The ladder configured below
+     uses VPM's two existing zones:
+
+       zone 1063080 = 970x250 leaderboard, served at 768px and up
+       zone  293911 = 300x250 rectangle,  served below 768px
+
+     Between 768px and 970px the leaderboard is scaled (0.79 to 1.0), which
+     reads better than dropping a 300x250 into a wide column. Add a tier if a
+     728x90 zone is ever trafficked:
+       {"minWidth": 728, "zone": <id>, "size": "728x90"}
+
+     TWO-TIER SHORTHAND - used only when data-slots is absent:
+     data-zone / data-size / data-mobile-zone / data-mobile-size / data-mobile-max
 -->
 <div id="vpm-sponsor-ad-root"
      class="vpm-sponsor-ad"
      data-publisher="171178"
-     data-zone="1063080"
-     data-size="970x250"
-     data-mobile-zone=""
-     data-mobile-size="300x250"
-     data-mobile-max="767"
+     data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},{"minWidth":0,"zone":293911,"size":"300x250"}]'
      data-label="Sponsored"
      data-theme="light">
   <div class="vpm-sponsor-ad__frame">
@@ -133,23 +140,83 @@
     return [parseInt(match[1], 10), parseInt(match[2], 10)];
   }
 
+  // Reads the size ladder. Preferred form is data-slots, a JSON array of
+  // { minWidth, zone, size } tiers. The data-zone / data-mobile-zone pair is
+  // kept as a two-tier shorthand.
+  function readSlots(root) {
+    var raw = root.getAttribute('data-slots');
+    var slots = [];
+
+    if (raw && raw.trim()) {
+      var parsed = null;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        console.error('VPM Sponsor Ad: data-slots is not valid JSON, ' +
+                      'falling back to data-zone', e);
+      }
+      if (parsed && parsed.length) {
+        for (var i = 0; i < parsed.length; i++) {
+          var tier = parsed[i] || {};
+          var zone = parseInt(tier.zone, 10);
+          var size = parseSize(tier.size, null);
+          if (!zone || !size) {
+            console.warn('VPM Sponsor Ad: skipping a slot missing zone or size', tier);
+            continue;
+          }
+          slots.push({
+            minWidth: parseInt(tier.minWidth, 10) || 0,
+            zone: zone,
+            size: size
+          });
+        }
+      }
+    }
+
+    if (!slots.length) {
+      var mainZone = parseInt(root.getAttribute('data-zone') || '', 10);
+      var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
+      var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+
+      if (mainZone) {
+        slots.push({
+          minWidth: mobileZone ? mobileMax + 1 : 0,
+          zone: mainZone,
+          size: parseSize(root.getAttribute('data-size'), [970, 250])
+        });
+      }
+      if (mobileZone) {
+        slots.push({
+          minWidth: 0,
+          zone: mobileZone,
+          size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
+        });
+      }
+    }
+
+    // Widest tier first, so the first match wins.
+    slots.sort(function (a, b) { return b.minWidth - a.minWidth; });
+    return slots;
+  }
+
   // Which creative to request. The choice is made once, on first layout:
   // re-registering on resize would reload the ad and double-count the
   // impression, which is worse than a slightly-scaled creative.
-  function pickSlot(root, availableWidth) {
-    var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
-    var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+  function pickSlot(slots, availableWidth) {
+    if (!slots.length) return null;
 
-    if (mobileZone && availableWidth > 0 && availableWidth <= mobileMax) {
-      return {
-        zone: mobileZone,
-        size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
-      };
+    // A container that is display:none at init measures 0. Fall back to the
+    // viewport rather than dropping to the smallest tier.
+    var width = availableWidth > 0
+      ? availableWidth
+      : (window.innerWidth || document.documentElement.clientWidth || 0);
+    if (!width) return slots[0];
+
+    for (var i = 0; i < slots.length; i++) {
+      if (width >= slots[i].minWidth) return slots[i];
     }
-    return {
-      zone: parseInt(root.getAttribute('data-zone') || '', 10),
-      size: parseSize(root.getAttribute('data-size'), [970, 250])
-    };
+    // Narrower than every tier's minWidth: use the smallest and scale it.
+    return slots[slots.length - 1];
   }
 
   function initInstance(root) {
@@ -164,9 +231,10 @@
     }
 
     var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
-    var slot = pickSlot(root, root.clientWidth);
-    if (!publisherId || !slot.zone) {
-      console.warn('VPM Sponsor Ad: data-publisher and data-zone are required');
+    var slot = pickSlot(readSlots(root), root.clientWidth);
+    if (!publisherId || !slot) {
+      console.warn('VPM Sponsor Ad: data-publisher and at least one zone ' +
+                   '(data-slots or data-zone) are required');
       return;
     }
 

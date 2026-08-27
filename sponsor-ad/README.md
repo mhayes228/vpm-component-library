@@ -30,7 +30,7 @@ call-to-action button on the right.
 ## Features
 
 - 📐 Proportional scale-to-fit, never upscaled past 1:1
-- 📱 Optional separate AdButler zone for mobile widths
+- 📱 Size ladder &mdash; a different AdButler zone and creative size per width band
 - 🚫 Zero layout shift &mdash; reserved height always matches rendered height
 - 🧹 Collapses to zero height when a placement goes unfilled
 - 🔁 Safe to use more than once on a page (generates unique placement ids)
@@ -58,13 +58,53 @@ element if the shared stylesheet is present.
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `data-publisher` | number | (required) | AdButler account id |
+| `data-slots` | JSON | (none) | Size ladder. Array of `{ minWidth, zone, size }` tiers &mdash; see below |
+| `data-label` | string | `Sponsored` | Disclosure text. Set to `""` to hide |
+| `data-theme` | string | `light` | `light` or `dark` (affects the label only) |
+
+Two-tier shorthand, used only when `data-slots` is absent:
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
 | `data-zone` | number | (required) | Zone id for the default creative |
 | `data-size` | string | `970x250` | Native size of that creative, `WIDTHxHEIGHT` |
 | `data-mobile-zone` | number | (empty) | Zone id to request at/below the breakpoint. Empty = scale the desktop creative down |
 | `data-mobile-size` | string | `300x250` | Native size of the mobile creative |
 | `data-mobile-max` | number | `767` | Breakpoint in px. Widths &le; this use the mobile slot |
-| `data-label` | string | `Sponsored` | Disclosure text. Set to `""` to hide |
-| `data-theme` | string | `light` | `light` or `dark` (affects the label only) |
+
+### The size ladder
+
+`data-slots` takes a JSON array of tiers. Each tier names a minimum width, the
+AdButler zone to request there, and that zone's native creative size. The
+**widest tier whose `minWidth` fits the available width wins**, so list one
+tier per creative size you have trafficked:
+
+```html
+<div class="vpm-sponsor-ad"
+     data-publisher="171178"
+     data-slots='[
+       {"minWidth": 768, "zone": 1063080, "size": "970x250"},
+       {"minWidth": 0,   "zone": 293911,  "size": "300x250"}
+     ]'
+     data-label="Sponsored">
+  <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+</div>
+```
+
+Tiers do not need to cover every width. Anything that falls between a tier's
+`minWidth` and the next tier up is served that tier's creative and scaled to
+fit, so a three-tier ladder covers every screen. A width narrower than every
+tier's `minWidth` gets the smallest tier, scaled.
+
+Order does not matter &mdash; tiers are sorted widest-first internally. A tier
+missing `zone` or `size` is skipped with a console warning; malformed JSON
+falls back to the `data-zone` shorthand rather than failing to render.
+
+**Breakpoints are measured on the ad container, not the viewport.** For a
+full-width placement those are the same number. For an ad in a narrow sidebar
+or a constrained column, the container width is what matters &mdash; which is
+usually what you want, since a 300px sidebar should get the 300x250 regardless
+of how wide the screen is.
 
 ## Usage Example
 
@@ -111,20 +151,50 @@ would squash the creative *before* it gets scaled and distort its aspect ratio.
 The slot is picked once, on first layout, from the container width. It is
 deliberately **not** re-evaluated on resize: swapping zones mid-session would
 reload the ad and register a second impression. A phone rotated to landscape
-keeps its original slot and simply rescales.
+keeps its original slot and simply rescales. If the container is `display: none`
+at init and measures zero, the viewport width is used instead, so a hidden
+container does not fall through to the smallest tier.
 
-## Recommended: add a real mobile zone
+## Choosing sizes for the ladder
 
 Scaling keeps the whole creative visible, but a 970&times;250 leaderboard at
 360px renders at ~37%, so 11px legal copy lands near 4px. It is legible-ish for
-a logo-and-headline banner and useless for anything dense.
+a logo-and-headline banner and useless for anything dense. Serving a creative
+built for the width is always better than shrinking one that was not.
 
-The better fix is a dedicated mobile creative. Ask your AdButler rep (or an
-account admin) to set up a 300&times;250 or 320&times;50 zone for the same
-campaign, then set `data-mobile-zone` to that zone id and `data-mobile-size` to
-its dimensions. Everything else keeps working; mobile simply stops getting a
-shrunken leaderboard. Until that zone exists, leaving `data-mobile-zone` empty
-gives the scaled fallback.
+VPM currently has two zones trafficked on this publisher account, which is
+enough for a full ladder:
+
+| Tier | Width band | Zone | Size | Rendered |
+|------|-----------|------|------|----------|
+| Desktop | &ge; 970px | 1063080 | 970&times;250 | 1:1 |
+| Small desktop / tablet | 768&ndash;969px | 1063080 | 970&times;250 | scaled 0.79&ndash;1.0 |
+| Mobile | &lt; 768px | 293911 | 300&times;250 | 1:1 |
+
+The 768px cut is deliberate. Between 768 and 970 the leaderboard only scales to
+0.79, which stays readable and fills the column; dropping a 300&times;250 into
+a 900px-wide slot would leave two thirds of the row empty. Below 768 the
+leaderboard would fall under ~0.79 fast, so the rectangle takes over and
+renders at its native size on every phone.
+
+If a 728&times;90 zone is ever trafficked, insert it as a middle tier and the
+band above it narrows automatically:
+
+```json
+{"minWidth": 728, "zone": 0000000, "size": "728x90"}
+```
+
+On the mobile tier, the horizontal-vs-square choice depends on placement:
+
+- **300&times;250 (square-ish)** for in-article and mid-content slots &mdash;
+  what zone 293911 already is. Most widely trafficked mobile size, holds real
+  creative, earns its space. The right default here.
+- **320&times;50 (horizontal)** for headers, footers, and anything sticky,
+  where a 250px-tall block would eat the viewport. Much less room for a
+  message, so use it only where the space genuinely is not available.
+
+Any tier you do not have a zone for can simply be left out; the tier below it
+is scaled to cover that band.
 
 ## Changes from the previous inline snippet
 

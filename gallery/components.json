@@ -234,7 +234,7 @@
     {
       "id": "sponsor-ad",
       "name": "Sponsor Ad",
-      "description": "An AdButler ad placement that scales a fixed-size creative to fit small screens instead of cropping it, reserves the exact height to avoid layout shift, and can request a separate mobile zone.",
+      "description": "An AdButler ad placement that serves a different creative size per width band (leaderboard on desktop, medium rectangle on mobile), scales anything in between to fit, and reserves the exact height to avoid layout shift.",
       "namespace": "vpm-sponsor-ad-",
       "category": "Advertising",
       "dateAdded": "2026-08-27",
@@ -243,7 +243,7 @@
       "indexPath": "../sponsor-ad/index.html",
       "shadowDomPath": null,
       "screenshotPath": null,
-      "features": ["Scale-to-fit creative", "Optional mobile zone", "Zero layout shift", "Collapses when unfilled", "Multiple instances per page", "Sponsor disclosure label"],
+      "features": ["Size ladder by width band", "Scale-to-fit creative", "Zero layout shift", "Collapses when unfilled", "Multiple instances per page", "Sponsor disclosure label"],
       "dependencies": ["AdButler app.js"],
       "variants": [
         {
@@ -259,15 +259,11 @@
           }
         },
         {
-          "id": "mobile-zone",
-          "name": "Mobile Zone",
-          "description": "Requests a separate 300x250 zone at 767px and below",
+          "id": "size-ladder",
+          "name": "Size Ladder",
+          "description": "Zone 1063080 (970x250) at 768px and up, zone 293911 (300x250) below",
           "dataAttributes": {
-            "data-zone": "1063080",
-            "data-size": "970x250",
-            "data-mobile-zone": "0000000",
-            "data-mobile-size": "300x250",
-            "data-mobile-max": "767",
+            "data-slots": "[{\"minWidth\":768,\"zone\":1063080,\"size\":\"970x250\"},{\"minWidth\":0,\"zone\":293911,\"size\":\"300x250\"}]",
             "data-label": "Sponsored",
             "data-theme": "light"
           }
