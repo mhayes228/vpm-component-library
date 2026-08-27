@@ -1,0 +1,387 @@
+<!-- VPM Sponsor Ad Component - SIDEBAR RAIL (Preset B) -->
+<!-- Paste this whole block into the "Sponsor Ad - Sidebar Rail" shared module. -->
+<!--
+  The rail placement. For the in-content leaderboard, use index.html instead.
+
+  Serves the 300x600 half page on desktop viewports and the 300x250 rectangle
+  below 1024px. A 300x600 is ~600px of a ~640px phone screen, so it is never
+  served small.
+
+  Note data-basis="viewport". The rail's container is ~300px on desktop but is
+  often WIDER once the sidebar stacks on mobile, so container width cannot tell
+  "300px desktop rail" from "360px stacked-on-a-phone rail". Measuring the
+  viewport is what makes the breakpoint mean what it looks like it means.
+
+  Everything below the root element is identical to index.html. Both blocks can
+  appear on the same page; the script initialises each root once, loads the
+  AdButler library once, and generates unique placement ids.
+-->
+
+<!-- EDITABLE: Root Container Attributes
+     data-publisher    AdButler account id
+     data-basis        "viewport" - required for a rail, see the note above
+     data-label        Disclosure text above the ad. Empty string hides it.
+     data-theme        "light" or "dark" (affects the label only)
+
+     LADDER
+       >= 1024px  zone 1063081  300x600 half page
+       <  1024px  zone  293911  300x250 rectangle
+
+     To render nothing below 1024px instead of the 300x250 - requesting no ad
+     at all, so no impression is counted - replace the second tier with:
+       {"minWidth":0,"hide":true}
+
+     No id attribute: the script scopes itself by class, so this block is safe
+     to embed as a shared module that may land on a page more than once.
+-->
+<div class="vpm-sponsor-ad"
+     data-publisher="171178"
+     data-basis="viewport"
+     data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},{"minWidth":0,"zone":293911,"size":"300x250"}]'
+     data-label="Advertisement"
+     data-theme="light">
+  <div class="vpm-sponsor-ad__frame">
+    <div class="vpm-sponsor-ad__stage">
+      <!-- The placement div is created here by the script. -->
+    </div>
+  </div>
+</div>
+
+<!-- Inline copy of the .vpm-sponsor-ad rules from shared/styles.css, so the
+     block works on pages that do not load the shared stylesheet. If your page
+     already loads shared/styles.css, you can delete this <style> element. -->
+<style>
+.vpm-sponsor-ad {
+  --vpm-sponsor-ad-w: 970;
+  --vpm-sponsor-ad-h: 250;
+  --vpm-sponsor-ad-scale: 1;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--vpm-spacing-unit, 1rem) 0;
+  text-align: center;
+}
+.vpm-sponsor-ad__label {
+  display: block;
+  margin: 0 auto var(--vpm-spacing-sm, 0.5rem);
+  font-family: var(--vpm-font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vpm-color-text-muted, #999999);
+}
+.vpm-sponsor-ad__frame {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--vpm-sponsor-ad-w) * 1px);
+  height: calc(var(--vpm-sponsor-ad-h) * var(--vpm-sponsor-ad-scale) * 1px);
+  margin: 0 auto;
+  overflow: hidden;
+}
+.vpm-sponsor-ad__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--vpm-sponsor-ad-w) * 1px);
+  height: calc(var(--vpm-sponsor-ad-h) * 1px);
+  transform: scale(var(--vpm-sponsor-ad-scale));
+  transform-origin: 0 0;
+}
+.vpm-sponsor-ad__stage img,
+.vpm-sponsor-ad__stage iframe,
+.vpm-sponsor-ad__stage ins,
+.vpm-sponsor-ad__stage embed,
+.vpm-sponsor-ad__stage object {
+  max-width: none;
+  max-height: none;
+}
+.vpm-sponsor-ad__stage iframe { border: 0; }
+.vpm-sponsor-ad--empty { padding: 0; }
+.vpm-sponsor-ad--empty .vpm-sponsor-ad__label,
+.vpm-sponsor-ad--empty .vpm-sponsor-ad__frame { display: none; }
+.vpm-sponsor-ad[data-theme="dark"] .vpm-sponsor-ad__label {
+  color: var(--vpm-color-gray, #B2B4B2);
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // EDITABLE: Configuration
+  var LIBRARY_SRC = 'https://servedbyadbutler.com/app.js';
+  var AD_DOMAIN = 'servedbyadbutler.com';
+  // How long to wait for a creative before collapsing the reserved space.
+  var EMPTY_TIMEOUT_MS = 6000;
+
+  // Load the AdButler library once per page, no matter how many ad blocks
+  // are on it.
+  function loadLibrary() {
+    if (window.AdButler && typeof window.AdButler.register === 'function') return;
+    if (document.querySelector('script[data-vpm-adbutler]')) return;
+
+    var script = document.createElement('script');
+    script.async = true;
+    script.type = 'text/javascript';
+    script.src = LIBRARY_SRC;
+    script.setAttribute('data-vpm-adbutler', '');
+    script.onerror = function () {
+      console.error('VPM Sponsor Ad: failed to load the AdButler library');
+    };
+    (document.head || document.documentElement).appendChild(script);
+  }
+
+  function parseSize(value, fallback) {
+    var match = /^\s*(\d+)\s*[x*×]\s*(\d+)\s*$/i.exec(value || '');
+    if (!match) return fallback;
+    return [parseInt(match[1], 10), parseInt(match[2], 10)];
+  }
+
+  // Reads the size ladder. Preferred form is data-slots, a JSON array of
+  // { minWidth, zone, size } tiers. The data-zone / data-mobile-zone pair is
+  // kept as a two-tier shorthand.
+  function readSlots(root) {
+    var raw = root.getAttribute('data-slots');
+    var slots = [];
+
+    if (raw && raw.trim()) {
+      var parsed = null;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        console.error('VPM Sponsor Ad: data-slots is not valid JSON, ' +
+                      'falling back to data-zone', e);
+      }
+      if (parsed && parsed.length) {
+        for (var i = 0; i < parsed.length; i++) {
+          var tier = parsed[i] || {};
+          var minWidth = parseInt(tier.minWidth, 10) || 0;
+
+          // { "minWidth": n, "hide": true } renders nothing in that band and
+          // requests no ad, so no impression is counted.
+          if (tier.hide) {
+            slots.push({ minWidth: minWidth, hide: true });
+            continue;
+          }
+
+          var zone = parseInt(tier.zone, 10);
+          var size = parseSize(tier.size, null);
+          if (!zone || !size) {
+            console.warn('VPM Sponsor Ad: skipping a slot missing zone or size', tier);
+            continue;
+          }
+          slots.push({ minWidth: minWidth, zone: zone, size: size });
+        }
+      }
+    }
+
+    if (!slots.length) {
+      var mainZone = parseInt(root.getAttribute('data-zone') || '', 10);
+      var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
+      var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+
+      if (mainZone) {
+        slots.push({
+          minWidth: mobileZone ? mobileMax + 1 : 0,
+          zone: mainZone,
+          size: parseSize(root.getAttribute('data-size'), [970, 250])
+        });
+      }
+      if (mobileZone) {
+        slots.push({
+          minWidth: 0,
+          zone: mobileZone,
+          size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
+        });
+      }
+    }
+
+    // Widest tier first, so the first match wins.
+    slots.sort(function (a, b) { return b.minWidth - a.minWidth; });
+    return slots;
+  }
+
+  function viewportWidth() {
+    return window.innerWidth || document.documentElement.clientWidth || 0;
+  }
+
+  // The width that tier minWidths are compared against. Defaults to the ad's
+  // own container, which is right for a full-width in-content slot. A sidebar
+  // rail needs data-basis="viewport": its container is ~300px on desktop but
+  // can be *wider* once the sidebar stacks on mobile, so container width
+  // cannot tell those two cases apart.
+  function selectionWidth(root, containerWidth) {
+    if ((root.getAttribute('data-basis') || 'container') === 'viewport') {
+      return viewportWidth();
+    }
+    // A container that is display:none at init measures 0. Fall back to the
+    // viewport rather than dropping to the smallest tier.
+    return containerWidth > 0 ? containerWidth : viewportWidth();
+  }
+
+  // Which creative to request. The choice is made once, on first layout:
+  // re-registering on resize would reload the ad and double-count the
+  // impression, which is worse than a slightly-scaled creative.
+  function pickSlot(slots, width) {
+    if (!slots.length) return null;
+    if (!width) return slots[0];
+
+    for (var i = 0; i < slots.length; i++) {
+      if (width >= slots[i].minWidth) return slots[i];
+    }
+    // Narrower than every tier's minWidth: use the smallest and scale it.
+    return slots[slots.length - 1];
+  }
+
+  function initInstance(root) {
+    if (root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    var frame = root.querySelector('.vpm-sponsor-ad__frame');
+    var stage = root.querySelector('.vpm-sponsor-ad__stage');
+    if (!frame || !stage) {
+      console.warn('VPM Sponsor Ad: missing __frame or __stage markup');
+      return;
+    }
+
+    var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
+    var slot = pickSlot(readSlots(root), selectionWidth(root, root.clientWidth));
+    if (!publisherId || !slot) {
+      console.warn('VPM Sponsor Ad: data-publisher and at least one zone ' +
+                   '(data-slots or data-zone) are required');
+      return;
+    }
+
+    // A "hide" tier: collapse and register nothing, so no impression is
+    // counted for a placement the reader never sees.
+    if (slot.hide) {
+      root.classList.add('vpm-sponsor-ad--empty');
+      return;
+    }
+
+    var nativeWidth = slot.size[0];
+    var nativeHeight = slot.size[1];
+    root.style.setProperty('--vpm-sponsor-ad-w', String(nativeWidth));
+    root.style.setProperty('--vpm-sponsor-ad-h', String(nativeHeight));
+
+    // Optional disclosure label.
+    var labelText = root.getAttribute('data-label');
+    if (labelText === null) labelText = 'Sponsored';
+    if (labelText) {
+      var label = document.createElement('span');
+      label.className = 'vpm-sponsor-ad__label';
+      label.textContent = labelText;
+      root.insertBefore(label, frame);
+    }
+
+    // Scale the native-size stage down to whatever width is actually
+    // available. Never scales up past 1:1.
+    function fit() {
+      var available = root.clientWidth || root.offsetWidth;
+      if (!available) return;
+      var scale = Math.min(1, available / nativeWidth);
+      root.style.setProperty('--vpm-sponsor-ad-scale', String(scale));
+    }
+
+    fit();
+
+    if (typeof window.ResizeObserver === 'function') {
+      new window.ResizeObserver(fit).observe(root);
+    } else {
+      window.addEventListener('resize', fit);
+      window.addEventListener('orientationchange', fit);
+    }
+
+    // Unique placement id, so the block can be used more than once per page.
+    var counterKey = 'plc' + slot.zone;
+    window[counterKey] = window[counterKey] || 0;
+    var place = window[counterKey]++;
+    var placementId = 'placement_' + slot.zone + '_' + place;
+
+    var placement = document.createElement('div');
+    placement.id = placementId;
+    stage.appendChild(placement);
+
+    // Collapse the reserved space if nothing ever arrives, and restore it if
+    // a creative shows up late.
+    function isFilled() {
+      return placement.children.length > 0 ||
+             placement.textContent.trim().length > 0;
+    }
+
+    // Latched: once a creative has arrived, the space stays reserved. Ads are
+    // set to rotate on load and over time, and a rotation can briefly empty
+    // the placement between creatives -- without the latch that transient
+    // empty state would collapse the block to zero and re-expand it, jumping
+    // the page content on every rotation.
+    var hasFilled = false;
+
+    function syncEmptyState() {
+      if (isFilled()) {
+        hasFilled = true;
+        root.classList.remove('vpm-sponsor-ad--empty');
+        fit();
+      } else if (!hasFilled) {
+        root.classList.add('vpm-sponsor-ad--empty');
+      }
+    }
+
+    if (typeof window.MutationObserver === 'function') {
+      new window.MutationObserver(syncEmptyState)
+        .observe(placement, { childList: true, subtree: true });
+    }
+    window.setTimeout(syncEmptyState, EMPTY_TIMEOUT_MS);
+
+    // Register with AdButler. If the library is already up, call straight
+    // through; otherwise queue for it to drain on load.
+    window.AdButler = window.AdButler || {};
+    window.AdButler.ads = window.AdButler.ads || [];
+    window.abkw = window.abkw || '';
+
+    var entry = {
+      handler: function (opt) {
+        try {
+          window.AdButler.register(
+            publisherId,
+            slot.zone,
+            [nativeWidth, nativeHeight],
+            'placement_' + slot.zone + '_' + opt.place,
+            opt
+          );
+        } catch (e) {
+          console.error('VPM Sponsor Ad: error registering placement', e);
+        }
+      },
+      opt: {
+        place: place,
+        keywords: window.abkw,
+        domain: AD_DOMAIN
+        // No `click` key: only add one if AdButler gives you a real click
+        // macro. A placeholder string here breaks click tracking.
+      }
+    };
+
+    if (typeof window.AdButler.register === 'function') {
+      entry.handler(entry.opt);
+    } else {
+      window.AdButler.ads.push(entry);
+    }
+  }
+
+  function init() {
+    loadLibrary();
+    var roots = document.querySelectorAll('.vpm-sponsor-ad');
+    for (var i = 0; i < roots.length; i++) {
+      initInstance(roots[i]);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

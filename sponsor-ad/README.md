@@ -5,6 +5,19 @@ creative down to fit the available width instead of cropping it, reserves the
 exact height the scaled ad will occupy, and can request a different AdButler
 zone below a breakpoint so phones get a real mobile creative.
 
+## Files
+
+| File | What it is |
+|------|-----------|
+| `index.html` | **Preset A**, in-content leaderboard. Paste into the in-content shared module. |
+| `sidebar-rail.html` | **Preset B**, sidebar rail. Paste into the rail shared module. |
+| `preview.html` | Standalone preview with AdButler stubbed out. Not for production. |
+| `creative.svg` | Placeholder creative used by the preview only. |
+
+The two module files are byte-identical below the root element &mdash; same
+styles, same script. Only the root's `data-slots` and `data-basis` differ. Both
+can appear on the same page any number of times.
+
 ## Component Details
 
 - **Component Name**: Sponsor Ad
@@ -209,6 +222,16 @@ Duplicating the whole block &mdash; markup, `<style>` and `<script>` together
 (`script[data-vpm-adbutler]`), and each instance registers exactly one
 placement. Verified with the block pasted one, two and three times on a page:
 one register call per instance, unique placement ids, no console errors.
+
+Also verified on a realistic layout &mdash; two in-content modules in an
+article column plus a rail module &mdash; at 1280px, 1023px and 390px: correct
+zone per placement, three register calls, three unique placement ids, no
+duplicate ids, no overflow, no console errors.
+
+Each pasted block carries its own copy of the `<style>` element (~1.5KB). That
+is harmless, since the rules are identical, but if `shared/styles.css` is
+loaded site-wide you can delete the `<style>` element from both modules and
+drop the duplication entirely.
 
 ## How it works
 

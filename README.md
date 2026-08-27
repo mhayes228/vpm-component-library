@@ -242,6 +242,7 @@ An AdButler ad placement built for small screens. Scales a fixed-size creative (
 - **Namespace**: `vpm-sponsor-ad-`
 - **Features**: Scale-to-fit creative, optional mobile zone, zero layout shift, collapses when unfilled, multiple instances per page
 - **Dependencies**: AdButler `app.js` (loaded automatically)
+- **Modules**: `/sponsor-ad/index.html` (in-content leaderboard), `/sponsor-ad/sidebar-rail.html` (sidebar rail)
 - **Documentation**: See `/sponsor-ad/README.md`
 - **Preview**: Open `/sponsor-ad/preview.html` in your browser
 
