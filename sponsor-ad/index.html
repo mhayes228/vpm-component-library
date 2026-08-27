@@ -43,12 +43,16 @@
      PRESET B - sidebar rail / half page. Note data-basis="viewport": the
      rail's container is ~300px on desktop but can be WIDER once the sidebar
      stacks on mobile, so container width cannot tell those cases apart.
-     A 300x600 fills nearly a whole phone screen, so it is hidden below the
-     desktop breakpoint rather than served:
+     A 300x600 fills nearly a whole phone screen, so below the desktop
+     breakpoint the rail drops to the 300x250 rectangle instead:
 
        data-basis="viewport"
        data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},
-                    {"minWidth":0,"hide":true}]'
+                    {"minWidth":0,"zone":293911,"size":"300x250"}]'
+
+     To render nothing at all in a band instead, use a hide tier:
+       {"minWidth":0,"hide":true}
+     That requests no ad, so no impression is counted for that band.
 
      Add a tier if a 728x90 zone is ever trafficked:
        {"minWidth": 728, "zone": <id>, "size": "728x90"}
@@ -333,11 +337,19 @@
              placement.textContent.trim().length > 0;
     }
 
+    // Latched: once a creative has arrived, the space stays reserved. Ads are
+    // set to rotate on load and over time, and a rotation can briefly empty
+    // the placement between creatives -- without the latch that transient
+    // empty state would collapse the block to zero and re-expand it, jumping
+    // the page content on every rotation.
+    var hasFilled = false;
+
     function syncEmptyState() {
       if (isFilled()) {
+        hasFilled = true;
         root.classList.remove('vpm-sponsor-ad--empty');
         fit();
-      } else {
+      } else if (!hasFilled) {
         root.classList.add('vpm-sponsor-ad--empty');
       }
     }

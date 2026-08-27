@@ -169,7 +169,7 @@ a 900px-wide slot would leave two thirds of the row empty.
      data-publisher="171178"
      data-basis="viewport"
      data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},
-                  {"minWidth":0,"hide":true}]'
+                  {"minWidth":0,"zone":293911,"size":"300x250"}]'
      data-label="Advertisement">
   <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
 </div>
@@ -178,19 +178,22 @@ a 900px-wide slot would leave two thirds of the row empty.
 | Viewport | Zone | Rendered |
 |----------|------|----------|
 | &ge; 1024px | 1063081 | 300&times;600 at 1:1 (scaled if the rail is narrower) |
-| &lt; 1024px | &mdash; | Nothing rendered, nothing requested |
+| &lt; 1024px | 293911 | 300&times;250 at 1:1 |
 
 Note `data-basis="viewport"` &mdash; see above for why the rail cannot use
 container width.
 
-The alternative to hiding is falling back to 293911 (300&times;250). That works
-and is a reasonable revenue trade, but if the in-content placement is on the
-same page it *also* falls back to 293911 below 768px, so a phone would get two
-300&times;250s stacked down the article. Hiding the rail avoids that. If you
-would rather take the extra impression, swap the second tier for:
+**If both presets are on the same page, a phone requests zone 293911 twice**
+&mdash; once for the in-content slot, once for the rail. Both are legitimate
+placements and AdButler fills them independently, but with rotation-on-load
+there is nothing stopping the same creative landing in both slots at once,
+stacked down one article. Worth asking AdButler whether the zone can be set to
+avoid repeating a creative within a page, or trafficking a second 300&times;250
+zone for the rail. To sidestep it entirely, swap the rail's bottom tier for a
+hide tier:
 
 ```json
-{"minWidth": 0, "zone": 293911, "size": "300x250"}
+{"minWidth": 0, "hide": true}
 ```
 
 ### Multiple blocks on one page
@@ -239,7 +242,7 @@ On the mobile tier, the horizontal-vs-square choice depends on placement:
   where a 250px-tall block would eat the viewport. Much less room for a
   message, so use it only where the space genuinely is not available.
 - **300&times;600 (half page)** has no good phone equivalent. At 600px tall it
-  is nearly a full viewport. Hide it or fall back to 300&times;250.
+  is nearly a full viewport. Fall back to 300&times;250, or hide it.
 
 If a 728&times;90 zone is ever trafficked, insert it as a middle tier in
 Preset A and the band above it narrows automatically:
@@ -296,6 +299,16 @@ Uses `ResizeObserver` where available and falls back to `resize` /
 
 - Unfilled placements collapse after 6 seconds (`EMPTY_TIMEOUT_MS`). If a
   creative arrives later, a `MutationObserver` restores the space.
+- **The collapse is latched to the first fill.** VPM's zones rotate on load and
+  over time, and a rotation can briefly empty the placement between creatives.
+  Without the latch that transient empty state would collapse the block to zero
+  and immediately re-expand it, jumping the page content on every rotation. Once
+  a creative has rendered, the reserved space is held for the life of the page.
+- Rotation itself needs no handling here: each zone is a fixed size, so
+  swapping creatives within a zone does not change the scale. The slot is
+  picked once and never re-registered, so the component never triggers an
+  extra ad request of its own &mdash; refresh cadence and any idle cap stay
+  entirely AdButler-side.
 - AdButler sometimes injects an empty iframe for an unfilled placement. That
   counts as "filled" here, because the iframe is cross-origin and cannot be
   inspected. In that case the block keeps its reserved height.

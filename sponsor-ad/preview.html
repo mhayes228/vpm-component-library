@@ -217,24 +217,25 @@
       A separate placement, not another tier of the leaderboard. It uses
       <code>data-basis="viewport"</code> because the rail's container is ~300px
       on desktop but gets <em>wider</em> when the sidebar stacks on mobile, so
-      container width cannot distinguish the two. Below 1024px the tier is
-      <code>{"hide": true}</code>: nothing renders and no ad is requested, so
-      no impression is counted for a unit the reader never sees.
+      container width cannot distinguish the two. Below 1024px the rail drops
+      to the 300&times;250 rectangle, since a 300&times;600 is nearly a whole
+      phone screen. A <code>{"hide": true}</code> tier is available instead if
+      you would rather render nothing and request no ad in that band.
     </div>
     <div class="preview-grid">
       <div class="device device--300">
         <div class="device__label">300px sidebar &mdash; desktop viewport, serves 300&times;600</div>
         <div class="device__body">
           <div class="vpm-sponsor-ad" data-publisher="171178" data-label="Advertisement" data-theme="light"
-               data-basis="viewport" data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},{"minWidth":0,"hide":true}]'>
+               data-basis="viewport" data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},{"minWidth":0,"zone":293911,"size":"300x250"}]'>
             <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
           </div>
         </div>
       </div>
     </div>
     <p style="color:#666;font-size:0.85rem;margin-top:1rem;">
-      Narrow this window below 1024px and reload: the rail above collapses to
-      zero height and registers nothing.
+      Narrow this window below 1024px and reload: the rail above switches to
+      the 300&times;250 rectangle.
     </p>
   </div>
 
@@ -505,11 +506,19 @@
                placement.textContent.trim().length > 0;
       }
 
+      // Latched: once a creative has arrived, the space stays reserved. Ads are
+      // set to rotate on load and over time, and a rotation can briefly empty
+      // the placement between creatives -- without the latch that transient
+      // empty state would collapse the block to zero and re-expand it, jumping
+      // the page content on every rotation.
+      var hasFilled = false;
+
       function syncEmptyState() {
         if (isFilled()) {
+          hasFilled = true;
           root.classList.remove('vpm-sponsor-ad--empty');
           fit();
-        } else {
+        } else if (!hasFilled) {
           root.classList.add('vpm-sponsor-ad--empty');
         }
       }

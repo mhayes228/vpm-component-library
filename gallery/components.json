@@ -271,10 +271,10 @@
         {
           "id": "sidebar-rail",
           "name": "Sidebar Rail",
-          "description": "Preset B - zone 1063081 (300x600) on desktop viewports, hidden below 1024px",
+          "description": "Preset B - zone 1063081 (300x600) on desktop viewports, zone 293911 (300x250) below 1024px",
           "dataAttributes": {
             "data-basis": "viewport",
-            "data-slots": "[{\"minWidth\":1024,\"zone\":1063081,\"size\":\"300x600\"},{\"minWidth\":0,\"hide\":true}]",
+            "data-slots": "[{\"minWidth\":1024,\"zone\":1063081,\"size\":\"300x600\"},{\"minWidth\":0,\"zone\":293911,\"size\":\"300x250\"}]",
             "data-label": "Advertisement",
             "data-theme": "light"
           }
