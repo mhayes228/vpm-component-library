@@ -234,7 +234,7 @@
     {
       "id": "sponsor-ad",
       "name": "Sponsor Ad",
-      "description": "An AdButler ad placement that serves a different creative size per width band (leaderboard on desktop, medium rectangle on mobile), scales anything in between to fit, and reserves the exact height to avoid layout shift.",
+      "description": "An AdButler ad placement that serves a different creative size per width band (leaderboard on desktop, medium rectangle on mobile), scales anything in between to fit, can hide a band entirely, and reserves the exact height to avoid layout shift.",
       "namespace": "vpm-sponsor-ad-",
       "category": "Advertising",
       "dateAdded": "2026-08-27",
@@ -243,7 +243,7 @@
       "indexPath": "../sponsor-ad/index.html",
       "shadowDomPath": null,
       "screenshotPath": null,
-      "features": ["Size ladder by width band", "Scale-to-fit creative", "Zero layout shift", "Collapses when unfilled", "Multiple instances per page", "Sponsor disclosure label"],
+      "features": ["Size ladder by width band", "Scale-to-fit creative", "Hide a band without requesting an ad", "Container or viewport breakpoints", "Zero layout shift", "Collapses when unfilled", "Multiple instances per page"],
       "dependencies": ["AdButler app.js"],
       "variants": [
         {
@@ -259,12 +259,23 @@
           }
         },
         {
-          "id": "size-ladder",
-          "name": "Size Ladder",
-          "description": "Zone 1063080 (970x250) at 768px and up, zone 293911 (300x250) below",
+          "id": "in-content",
+          "name": "In-Content Leaderboard",
+          "description": "Preset A - zone 1063080 (970x250) at 768px and up, zone 293911 (300x250) below",
           "dataAttributes": {
             "data-slots": "[{\"minWidth\":768,\"zone\":1063080,\"size\":\"970x250\"},{\"minWidth\":0,\"zone\":293911,\"size\":\"300x250\"}]",
             "data-label": "Sponsored",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "sidebar-rail",
+          "name": "Sidebar Rail",
+          "description": "Preset B - zone 1063081 (300x600) on desktop viewports, hidden below 1024px",
+          "dataAttributes": {
+            "data-basis": "viewport",
+            "data-slots": "[{\"minWidth\":1024,\"zone\":1063081,\"size\":\"300x600\"},{\"minWidth\":0,\"hide\":true}]",
+            "data-label": "Advertisement",
             "data-theme": "light"
           }
         }

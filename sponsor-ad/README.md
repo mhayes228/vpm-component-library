@@ -31,6 +31,7 @@ call-to-action button on the right.
 
 - 📐 Proportional scale-to-fit, never upscaled past 1:1
 - 📱 Size ladder &mdash; a different AdButler zone and creative size per width band
+- 🙈 A width band can render nothing and request nothing, counting no impression
 - 🚫 Zero layout shift &mdash; reserved height always matches rendered height
 - 🧹 Collapses to zero height when a placement goes unfilled
 - 🔁 Safe to use more than once on a page (generates unique placement ids)
@@ -59,6 +60,7 @@ element if the shared stylesheet is present.
 |-----------|------|---------|-------------|
 | `data-publisher` | number | (required) | AdButler account id |
 | `data-slots` | JSON | (none) | Size ladder. Array of `{ minWidth, zone, size }` tiers &mdash; see below |
+| `data-basis` | string | `container` | `container` or `viewport` &mdash; what tier `minWidth`s are measured against |
 | `data-label` | string | `Sponsored` | Disclosure text. Set to `""` to hide |
 | `data-theme` | string | `light` | `light` or `dark` (affects the label only) |
 
@@ -100,37 +102,103 @@ Order does not matter &mdash; tiers are sorted widest-first internally. A tier
 missing `zone` or `size` is skipped with a console warning; malformed JSON
 falls back to the `data-zone` shorthand rather than failing to render.
 
-**Breakpoints are measured on the ad container, not the viewport.** For a
-full-width placement those are the same number. For an ad in a narrow sidebar
-or a constrained column, the container width is what matters &mdash; which is
-usually what you want, since a 300px sidebar should get the 300x250 regardless
-of how wide the screen is.
+### Hiding a band entirely
 
-## Usage Example
+A tier of the form `{ "minWidth": 0, "hide": true }` renders nothing in that
+band **and requests no ad**, so no impression is counted for a unit the reader
+never sees. Use it where a size has no sensible small-screen equivalent &mdash;
+a 300&times;600 half page, for instance, is nearly a whole phone screen tall.
 
-Paste into an ACF Code Block. See `index.html` for the complete block including
-the inline styles and script.
+### container vs. viewport breakpoints
+
+By default `minWidth` is compared against the **ad's own container**, which is
+right for a full-width in-content slot and handles a constrained column
+correctly.
+
+A sidebar rail needs `data-basis="viewport"` instead. Its container is ~300px
+on desktop, but once the sidebar stacks on mobile that container is often
+*wider* than 300px &mdash; so container width cannot tell "300px desktop rail"
+apart from "360px stacked-on-a-phone rail", and a container-based ladder will
+happily serve a 300&times;600 half page to a phone. Measuring the viewport
+resolves it.
+
+Rule of thumb: **in-content placements use `container`, rail placements use
+`viewport`.**
+
+## Presets
+
+VPM has three zones trafficked on publisher `171178`:
+
+| Zone | Size | Role |
+|------|------|------|
+| 1063080 | 970&times;250 | Leaderboard |
+| 293911 | 300&times;250 | Medium rectangle |
+| 1063081 | 300&times;600 | Half page |
+
+These are **two separate placements**, not one ladder. The half page is a rail
+unit; it is not another size of the leaderboard.
+
+### Preset A &mdash; in-content leaderboard
+
+The configuration shipped in `index.html`. Paste as-is.
 
 ```html
-<div id="vpm-sponsor-ad-root"
-     class="vpm-sponsor-ad"
+<div class="vpm-sponsor-ad"
      data-publisher="171178"
-     data-zone="1063080"
-     data-size="970x250"
-     data-mobile-zone=""
-     data-mobile-size="300x250"
-     data-mobile-max="767"
-     data-label="Sponsored"
-     data-theme="light">
-  <div class="vpm-sponsor-ad__frame">
-    <div class="vpm-sponsor-ad__stage"></div>
-  </div>
+     data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},
+                  {"minWidth":0,"zone":293911,"size":"300x250"}]'
+     data-label="Sponsored">
+  <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
 </div>
 ```
 
-The script finds every `.vpm-sponsor-ad` on the page, so the root `id` is
-cosmetic. **If you place more than one ad block on a page, remove the `id` from
-the extra copies** to keep the markup valid.
+| Width | Zone | Rendered |
+|-------|------|----------|
+| &ge; 970px | 1063080 | 970&times;250 at 1:1 |
+| 768&ndash;969px | 1063080 | 970&times;250 scaled 0.79&ndash;1.0 |
+| &lt; 768px | 293911 | 300&times;250 at 1:1 |
+
+The 768px cut is deliberate. Between 768 and 970 the leaderboard only scales to
+0.79, which stays readable and fills the column; dropping a 300&times;250 into
+a 900px-wide slot would leave two thirds of the row empty.
+
+### Preset B &mdash; sidebar rail / half page
+
+```html
+<div class="vpm-sponsor-ad"
+     data-publisher="171178"
+     data-basis="viewport"
+     data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},
+                  {"minWidth":0,"hide":true}]'
+     data-label="Advertisement">
+  <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+</div>
+```
+
+| Viewport | Zone | Rendered |
+|----------|------|----------|
+| &ge; 1024px | 1063081 | 300&times;600 at 1:1 (scaled if the rail is narrower) |
+| &lt; 1024px | &mdash; | Nothing rendered, nothing requested |
+
+Note `data-basis="viewport"` &mdash; see above for why the rail cannot use
+container width.
+
+The alternative to hiding is falling back to 293911 (300&times;250). That works
+and is a reasonable revenue trade, but if the in-content placement is on the
+same page it *also* falls back to 293911 below 768px, so a phone would get two
+300&times;250s stacked down the article. Hiding the rail avoids that. If you
+would rather take the extra impression, swap the second tier for:
+
+```json
+{"minWidth": 0, "zone": 293911, "size": "300x250"}
+```
+
+### Multiple blocks on one page
+
+The script initialises every `.vpm-sponsor-ad` on the page and generates unique
+placement ids, so Preset A and Preset B can both be present. **Remove the `id`
+attribute from the extra copies** &mdash; the root `id` is cosmetic and
+duplicating it is invalid HTML.
 
 ## How it works
 
@@ -155,34 +223,12 @@ keeps its original slot and simply rescales. If the container is `display: none`
 at init and measures zero, the viewport width is used instead, so a hidden
 container does not fall through to the smallest tier.
 
-## Choosing sizes for the ladder
+## Choosing sizes
 
 Scaling keeps the whole creative visible, but a 970&times;250 leaderboard at
 360px renders at ~37%, so 11px legal copy lands near 4px. It is legible-ish for
 a logo-and-headline banner and useless for anything dense. Serving a creative
 built for the width is always better than shrinking one that was not.
-
-VPM currently has two zones trafficked on this publisher account, which is
-enough for a full ladder:
-
-| Tier | Width band | Zone | Size | Rendered |
-|------|-----------|------|------|----------|
-| Desktop | &ge; 970px | 1063080 | 970&times;250 | 1:1 |
-| Small desktop / tablet | 768&ndash;969px | 1063080 | 970&times;250 | scaled 0.79&ndash;1.0 |
-| Mobile | &lt; 768px | 293911 | 300&times;250 | 1:1 |
-
-The 768px cut is deliberate. Between 768 and 970 the leaderboard only scales to
-0.79, which stays readable and fills the column; dropping a 300&times;250 into
-a 900px-wide slot would leave two thirds of the row empty. Below 768 the
-leaderboard would fall under ~0.79 fast, so the rectangle takes over and
-renders at its native size on every phone.
-
-If a 728&times;90 zone is ever trafficked, insert it as a middle tier and the
-band above it narrows automatically:
-
-```json
-{"minWidth": 728, "zone": 0000000, "size": "728x90"}
-```
 
 On the mobile tier, the horizontal-vs-square choice depends on placement:
 
@@ -192,6 +238,15 @@ On the mobile tier, the horizontal-vs-square choice depends on placement:
 - **320&times;50 (horizontal)** for headers, footers, and anything sticky,
   where a 250px-tall block would eat the viewport. Much less room for a
   message, so use it only where the space genuinely is not available.
+- **300&times;600 (half page)** has no good phone equivalent. At 600px tall it
+  is nearly a full viewport. Hide it or fall back to 300&times;250.
+
+If a 728&times;90 zone is ever trafficked, insert it as a middle tier in
+Preset A and the band above it narrows automatically:
+
+```json
+{"minWidth": 728, "zone": 0000000, "size": "728x90"}
+```
 
 Any tier you do not have a zone for can simply be left out; the tier below it
 is scaled to cover that band.

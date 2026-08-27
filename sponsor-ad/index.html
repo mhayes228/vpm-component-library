@@ -7,9 +7,10 @@
   - Reserves exactly the height the scaled ad will occupy, so there is no
     layout shift when the creative arrives.
   - Requests a different AdButler zone per width band, so phones get a real
-    mobile creative (300x250 / 320x50) instead of a shrunken leaderboard.
-    See data-slots below. Any size that does not exactly fit its band is still
-    scaled to fit, so the ladder never needs a tier for every possible width.
+    mobile creative instead of a shrunken leaderboard. See data-slots below.
+    Any size that does not exactly fit its band is still scaled to fit, so the
+    ladder never needs a tier for every possible width, and a band can be set
+    to render nothing at all.
   - Generates the placement div id itself, so the block can appear more than
     once on the same page.
 -->
@@ -19,17 +20,37 @@
      data-label        Disclosure text above the ad. Empty string hides it.
      data-theme        "light" or "dark" (affects the label only)
 
+     data-basis        "container" (default) or "viewport" - what tier
+                       minWidths are measured against. See PRESET B.
+
      SIZE LADDER - data-slots is a JSON array of tiers. Each tier is
-     { "minWidth": px, "zone": id, "size": "WIDTHxHEIGHT" }. The widest tier
-     whose minWidth fits the available width wins. The ladder configured below
-     uses VPM's two existing zones:
+     { "minWidth": px, "zone": id, "size": "WIDTHxHEIGHT" }, or
+     { "minWidth": px, "hide": true } to render nothing in that band and
+     request no ad at all. The widest tier that fits wins.
 
-       zone 1063080 = 970x250 leaderboard, served at 768px and up
-       zone  293911 = 300x250 rectangle,  served below 768px
+     VPM's trafficked zones on publisher 171178:
+       zone 1063080 = 970x250 leaderboard
+       zone  293911 = 300x250 medium rectangle
+       zone 1063081 = 300x600 half page
 
-     Between 768px and 970px the leaderboard is scaled (0.79 to 1.0), which
-     reads better than dropping a 300x250 into a wide column. Add a tier if a
-     728x90 zone is ever trafficked:
+     PRESET A - in-content / full-width leaderboard. This is what is
+     configured below. Between 768 and 970px the leaderboard scales (0.79 to
+     1.0), which reads better than dropping a 300x250 into a wide column:
+
+       data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},
+                    {"minWidth":0,"zone":293911,"size":"300x250"}]'
+
+     PRESET B - sidebar rail / half page. Note data-basis="viewport": the
+     rail's container is ~300px on desktop but can be WIDER once the sidebar
+     stacks on mobile, so container width cannot tell those cases apart.
+     A 300x600 fills nearly a whole phone screen, so it is hidden below the
+     desktop breakpoint rather than served:
+
+       data-basis="viewport"
+       data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},
+                    {"minWidth":0,"hide":true}]'
+
+     Add a tier if a 728x90 zone is ever trafficked:
        {"minWidth": 728, "zone": <id>, "size": "728x90"}
 
      TWO-TIER SHORTHAND - used only when data-slots is absent:
@@ -158,17 +179,22 @@
       if (parsed && parsed.length) {
         for (var i = 0; i < parsed.length; i++) {
           var tier = parsed[i] || {};
+          var minWidth = parseInt(tier.minWidth, 10) || 0;
+
+          // { "minWidth": n, "hide": true } renders nothing in that band and
+          // requests no ad, so no impression is counted.
+          if (tier.hide) {
+            slots.push({ minWidth: minWidth, hide: true });
+            continue;
+          }
+
           var zone = parseInt(tier.zone, 10);
           var size = parseSize(tier.size, null);
           if (!zone || !size) {
             console.warn('VPM Sponsor Ad: skipping a slot missing zone or size', tier);
             continue;
           }
-          slots.push({
-            minWidth: parseInt(tier.minWidth, 10) || 0,
-            zone: zone,
-            size: size
-          });
+          slots.push({ minWidth: minWidth, zone: zone, size: size });
         }
       }
     }
@@ -199,17 +225,29 @@
     return slots;
   }
 
+  function viewportWidth() {
+    return window.innerWidth || document.documentElement.clientWidth || 0;
+  }
+
+  // The width that tier minWidths are compared against. Defaults to the ad's
+  // own container, which is right for a full-width in-content slot. A sidebar
+  // rail needs data-basis="viewport": its container is ~300px on desktop but
+  // can be *wider* once the sidebar stacks on mobile, so container width
+  // cannot tell those two cases apart.
+  function selectionWidth(root, containerWidth) {
+    if ((root.getAttribute('data-basis') || 'container') === 'viewport') {
+      return viewportWidth();
+    }
+    // A container that is display:none at init measures 0. Fall back to the
+    // viewport rather than dropping to the smallest tier.
+    return containerWidth > 0 ? containerWidth : viewportWidth();
+  }
+
   // Which creative to request. The choice is made once, on first layout:
   // re-registering on resize would reload the ad and double-count the
   // impression, which is worse than a slightly-scaled creative.
-  function pickSlot(slots, availableWidth) {
+  function pickSlot(slots, width) {
     if (!slots.length) return null;
-
-    // A container that is display:none at init measures 0. Fall back to the
-    // viewport rather than dropping to the smallest tier.
-    var width = availableWidth > 0
-      ? availableWidth
-      : (window.innerWidth || document.documentElement.clientWidth || 0);
     if (!width) return slots[0];
 
     for (var i = 0; i < slots.length; i++) {
@@ -231,10 +269,17 @@
     }
 
     var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
-    var slot = pickSlot(readSlots(root), root.clientWidth);
+    var slot = pickSlot(readSlots(root), selectionWidth(root, root.clientWidth));
     if (!publisherId || !slot) {
       console.warn('VPM Sponsor Ad: data-publisher and at least one zone ' +
                    '(data-slots or data-zone) are required');
+      return;
+    }
+
+    // A "hide" tier: collapse and register nothing, so no impression is
+    // counted for a placement the reader never sees.
+    if (slot.hide) {
+      root.classList.add('vpm-sponsor-ad--empty');
       return;
     }
 

@@ -63,6 +63,7 @@
     .device--414 { width: 414px; }
     .device--768 { width: 768px; }
     .device--900 { width: 900px; }
+    .device--300 { width: 300px; }
     .device--1024 { width: 1024px; }
 
     /* Reproduces the current production behaviour for comparison. */
@@ -148,13 +149,12 @@
   </div>
 
   <div class="preview-section">
-    <h2>With a dedicated mobile zone</h2>
+    <h2>Two-tier shorthand (<code>data-mobile-zone</code>)</h2>
     <div class="preview-note">
-      With <code>data-mobile-zone</code> set, widths at or below
-      <code>data-mobile-max</code> request that zone at its own native size
-      instead of shrinking the leaderboard. This is the better outcome for
-      readability &mdash; a 970&times;250 at 360px renders its body copy at
-      roughly a third of its intended size.
+      The original two-attribute form, still supported for blocks that predate
+      <code>data-slots</code>. Widths at or below <code>data-mobile-max</code>
+      request the mobile zone at its native size instead of shrinking the
+      leaderboard. New blocks should use <code>data-slots</code>.
     </div>
     <div class="preview-grid">
       <div class="device device--360">
@@ -172,7 +172,7 @@
   </div>
 
   <div class="preview-section">
-    <h2>Size ladder &mdash; VPM's two live zones</h2>
+    <h2>Preset A &mdash; in-content leaderboard</h2>
     <div class="preview-note">
       One <code>data-slots</code> ladder across three widths: zone
       <code>1063080</code> (970&times;250) at 768px and up, zone
@@ -212,6 +212,33 @@
   </div>
 
   <div class="preview-section">
+    <h2>Preset B &mdash; sidebar rail, 300&times;600 half page</h2>
+    <div class="preview-note">
+      A separate placement, not another tier of the leaderboard. It uses
+      <code>data-basis="viewport"</code> because the rail's container is ~300px
+      on desktop but gets <em>wider</em> when the sidebar stacks on mobile, so
+      container width cannot distinguish the two. Below 1024px the tier is
+      <code>{"hide": true}</code>: nothing renders and no ad is requested, so
+      no impression is counted for a unit the reader never sees.
+    </div>
+    <div class="preview-grid">
+      <div class="device device--300">
+        <div class="device__label">300px sidebar &mdash; desktop viewport, serves 300&times;600</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-label="Advertisement" data-theme="light"
+               data-basis="viewport" data-slots='[{"minWidth":1024,"zone":1063081,"size":"300x600"},{"minWidth":0,"hide":true}]'>
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="color:#666;font-size:0.85rem;margin-top:1rem;">
+      Narrow this window below 1024px and reload: the rail above collapses to
+      zero height and registers nothing.
+    </p>
+  </div>
+
+  <div class="preview-section">
     <h2>Unfilled placement</h2>
     <div class="preview-note">
       When no creative arrives within the timeout the block collapses to zero
@@ -233,7 +260,8 @@
   <!-- Stub AdButler so the real component script runs its normal code path. -->
   <script>
   (function () {
-    var DEMO_ZONES = { 1063080: true, 293911: true, 7280090: true };
+    window.__registerCalls = 0;
+    var DEMO_ZONES = { 1063080: true, 293911: true, 1063081: true };
 
     // Builds a placeholder creative at the exact size requested, so the
     // mobile slot is not just a stretched leaderboard.
@@ -254,6 +282,7 @@
     window.AdButler = {
       ads: [],
       register: function (publisher, zone, size, placementId) {
+        window.__registerCalls = (window.__registerCalls || 0) + 1;
         if (!DEMO_ZONES[zone]) return; // simulates an unfilled placement
         var target = document.getElementById(placementId);
         if (!target) return;
@@ -322,17 +351,22 @@
         if (parsed && parsed.length) {
           for (var i = 0; i < parsed.length; i++) {
             var tier = parsed[i] || {};
+            var minWidth = parseInt(tier.minWidth, 10) || 0;
+
+            // { "minWidth": n, "hide": true } renders nothing in that band and
+            // requests no ad, so no impression is counted.
+            if (tier.hide) {
+              slots.push({ minWidth: minWidth, hide: true });
+              continue;
+            }
+
             var zone = parseInt(tier.zone, 10);
             var size = parseSize(tier.size, null);
             if (!zone || !size) {
               console.warn('VPM Sponsor Ad: skipping a slot missing zone or size', tier);
               continue;
             }
-            slots.push({
-              minWidth: parseInt(tier.minWidth, 10) || 0,
-              zone: zone,
-              size: size
-            });
+            slots.push({ minWidth: minWidth, zone: zone, size: size });
           }
         }
       }
@@ -363,17 +397,29 @@
       return slots;
     }
 
+    function viewportWidth() {
+      return window.innerWidth || document.documentElement.clientWidth || 0;
+    }
+
+    // The width that tier minWidths are compared against. Defaults to the ad's
+    // own container, which is right for a full-width in-content slot. A sidebar
+    // rail needs data-basis="viewport": its container is ~300px on desktop but
+    // can be *wider* once the sidebar stacks on mobile, so container width
+    // cannot tell those two cases apart.
+    function selectionWidth(root, containerWidth) {
+      if ((root.getAttribute('data-basis') || 'container') === 'viewport') {
+        return viewportWidth();
+      }
+      // A container that is display:none at init measures 0. Fall back to the
+      // viewport rather than dropping to the smallest tier.
+      return containerWidth > 0 ? containerWidth : viewportWidth();
+    }
+
     // Which creative to request. The choice is made once, on first layout:
     // re-registering on resize would reload the ad and double-count the
     // impression, which is worse than a slightly-scaled creative.
-    function pickSlot(slots, availableWidth) {
+    function pickSlot(slots, width) {
       if (!slots.length) return null;
-
-      // A container that is display:none at init measures 0. Fall back to the
-      // viewport rather than dropping to the smallest tier.
-      var width = availableWidth > 0
-        ? availableWidth
-        : (window.innerWidth || document.documentElement.clientWidth || 0);
       if (!width) return slots[0];
 
       for (var i = 0; i < slots.length; i++) {
@@ -395,10 +441,17 @@
       }
 
       var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
-      var slot = pickSlot(readSlots(root), root.clientWidth);
+      var slot = pickSlot(readSlots(root), selectionWidth(root, root.clientWidth));
       if (!publisherId || !slot) {
         console.warn('VPM Sponsor Ad: data-publisher and at least one zone ' +
                      '(data-slots or data-zone) are required');
+        return;
+      }
+
+      // A "hide" tier: collapse and register nothing, so no impression is
+      // counted for a placement the reader never sees.
+      if (slot.hide) {
+        root.classList.add('vpm-sponsor-ad--empty');
         return;
       }
 
