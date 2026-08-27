@@ -980,6 +980,52 @@
                 "dataAttributes": {}
               }
             ]
+          },
+          {
+            "id": "events",
+            "name": "Events",
+            "description": "A lifecycle-aware events component. Each event is one record that renders as an invitation before the event and automatically becomes a photo recap afterward.",
+            "namespace": "vpm-events-",
+            "category": "Content",
+            "dateAdded": "2026-08-27",
+            "previewPath": "../events/preview.html",
+            "documentationPath": "../events/README.md",
+            "indexPath": "../events/index.html",
+            "shadowDomPath": null,
+            "screenshotPath": null,
+            "features": ["Invitation and recap in one record", "Automatic state switch at event end time", "Photo gallery with accessible lightbox", "Add to calendar (.ics, no dependencies)", "Upcoming/past filter tabs", "JSON data loading", "Dark theme support"],
+            "variants": [
+              {
+                "id": "default",
+                "name": "All events",
+                "description": "Upcoming and past events with filter tabs",
+                "dataAttributes": {
+                  "data-view": "all",
+                  "data-show-filters": "true",
+                  "data-theme": "light"
+                }
+              },
+              {
+                "id": "upcoming",
+                "name": "Upcoming only",
+                "description": "Just the invitations, no filter tabs",
+                "dataAttributes": {
+                  "data-view": "upcoming",
+                  "data-show-filters": "false",
+                  "data-theme": "light"
+                }
+              },
+              {
+                "id": "past",
+                "name": "Recaps only",
+                "description": "Just past events and their photo recaps",
+                "dataAttributes": {
+                  "data-view": "past",
+                  "data-show-filters": "false",
+                  "data-theme": "light"
+                }
+              }
+            ]
           }
         ]
       };

@@ -1,0 +1,117 @@
+{
+  "$comment": "VPM Events data. One record per event. Before the event it renders as an invitation; after the end time it automatically renders as a recap. To publish a recap, fill in the `recap` object on the event that already exists — do not create a second record.",
+  "events": [
+    {
+      "id": "rva-first-fridays-2026-09",
+      "title": "RVA First Fridays",
+      "eyebrow": "Community",
+      "start": "2026-09-04T17:00:00-04:00",
+      "end": "2026-09-04T20:00:00-04:00",
+      "timeLabel": "5–8 p.m.",
+      "location": "Broad Street, Richmond, VA",
+      "status": "auto",
+      "description": "Join VPM for the return of RVA First Fridays on Broad Street. Music, art and neighbors — come say hello.",
+      "image": "",
+      "imageAlt": "",
+      "cta": {
+        "label": "Read the announcement",
+        "url": "https://www.vpm.org/announcements/2026-08-20/join-vpm-for-the-return-of-rva-first-fridays-sept-4-on-broad-st/"
+      },
+      "secondaryCta": null,
+      "recap": {
+        "headline": "",
+        "body": "",
+        "photoCredit": "",
+        "photos": [],
+        "video": null,
+        "cta": null
+      }
+    },
+    {
+      "id": "broad-new-day-2026-09",
+      "title": "Broad New Day",
+      "eyebrow": "Featured event",
+      "start": "2026-09-19T14:30:00-04:00",
+      "end": "2026-09-19T20:00:00-04:00",
+      "timeLabel": "2:30 – 8 p.m.",
+      "location": "Richmond, VA",
+      "status": "auto",
+      "description": "An afternoon and evening on Broad Street celebrating a new day for the neighborhood. Tickets are available through Eventbrite.",
+      "image": "",
+      "imageAlt": "",
+      "cta": {
+        "label": "Get tickets",
+        "url": "https://www.eventbrite.com/e/broad-new-day-tickets-1993692279276"
+      },
+      "secondaryCta": null,
+      "recap": {
+        "headline": "",
+        "body": "",
+        "photoCredit": "",
+        "photos": [],
+        "video": null,
+        "cta": null
+      }
+    },
+    {
+      "id": "sample-past-event",
+      "title": "Sample Past Event (Recap Demo)",
+      "eyebrow": "Community",
+      "start": "2026-06-06T17:00:00-04:00",
+      "end": "2026-06-06T20:00:00-04:00",
+      "timeLabel": "5–8 p.m.",
+      "location": "Broad Street, Richmond, VA",
+      "status": "auto",
+      "description": "This record exists only to demonstrate what an event looks like after its end time has passed and a recap has been filled in. Delete it before going live.",
+      "image": "",
+      "imageAlt": "",
+      "cta": {
+        "label": "Read the announcement",
+        "url": "https://www.vpm.org/"
+      },
+      "secondaryCta": null,
+      "recap": {
+        "headline": "Thanks to everyone who came out.",
+        "body": "Hundreds of neighbors joined us on Broad Street. Here are a few of our favorite moments from the evening.",
+        "photoCredit": "Photos by VPM",
+        "photos": [
+          {
+            "src": "https://placehold.co/1200x800/003865/ffffff?text=Recap+Photo+1",
+            "thumb": "https://placehold.co/600x400/003865/ffffff?text=Recap+Photo+1",
+            "alt": "Placeholder recap photo one",
+            "caption": "The crowd on Broad Street."
+          },
+          {
+            "src": "https://placehold.co/1200x800/6CACE4/101820?text=Recap+Photo+2",
+            "thumb": "https://placehold.co/600x400/6CACE4/101820?text=Recap+Photo+2",
+            "alt": "Placeholder recap photo two",
+            "caption": "Live music on the plaza."
+          },
+          {
+            "src": "https://placehold.co/1200x800/EE2737/ffffff?text=Recap+Photo+3",
+            "thumb": "https://placehold.co/600x400/EE2737/ffffff?text=Recap+Photo+3",
+            "alt": "Placeholder recap photo three",
+            "caption": "Kids at the art tables."
+          },
+          {
+            "src": "https://placehold.co/1200x800/E0E721/101820?text=Recap+Photo+4",
+            "thumb": "https://placehold.co/600x400/E0E721/101820?text=Recap+Photo+4",
+            "alt": "Placeholder recap photo four",
+            "caption": "Sunset over the block party."
+          },
+          {
+            "src": "https://placehold.co/1200x800/101820/ffffff?text=Recap+Photo+5",
+            "thumb": "https://placehold.co/600x400/101820/ffffff?text=Recap+Photo+5",
+            "alt": "Placeholder recap photo five",
+            "caption": "Volunteers at the VPM booth."
+          }
+        ],
+        "video": null,
+        "cta": {
+          "label": "See the full photo set",
+          "url": "https://www.vpm.org/"
+        }
+      }
+    }
+  ]
+}

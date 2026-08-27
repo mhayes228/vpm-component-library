@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPM Events - Component Preview</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <script src="../shared/preview-theme.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 { color: #333; margin-bottom: 0.5rem; }
+
+    .description { color: #666; margin-bottom: 2rem; }
+
+    .preview-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .preview-section h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .preview-note {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <h1>VPM Events Component</h1>
+  <p class="description">
+    One record per event. Before the event it renders as an invitation; once the end time passes
+    and a recap is filled in, the same card becomes the recap — same URL, same anchor.
+  </p>
+
+  <div class="preview-note">
+    <strong>Preview data is inline.</strong> This page ships its data in a
+    <code>&lt;script type="application/json" data-vpm-events-data&gt;</code> tag so it works from
+    <code>file://</code> with no server. In production, delete that tag and point
+    <code>data-events-url</code> at <code>events/events.json</code>.
+  </div>
+
+  <div class="preview-section">
+    <h2>Default (upcoming + past, with filters)</h2>
+
+    <div id="vpm-events-root"
+         data-view="all"
+         data-show-filters="true"
+         data-heading="VPM Events"
+         data-theme="light">
+
+      <script type="application/json" data-vpm-events-data>
+      {
+        "events": [
+          {
+            "id": "rva-first-fridays-2026-09",
+            "title": "RVA First Fridays",
+            "eyebrow": "Community",
+            "start": "2026-09-04T17:00:00-04:00",
+            "end": "2026-09-04T20:00:00-04:00",
+            "timeLabel": "5–8 p.m.",
+            "location": "Broad Street, Richmond, VA",
+            "status": "upcoming",
+            "description": "Join VPM for the return of RVA First Fridays on Broad Street. Music, art and neighbors — come say hello.",
+            "cta": {
+              "label": "Read the announcement",
+              "url": "https://www.vpm.org/announcements/2026-08-20/join-vpm-for-the-return-of-rva-first-fridays-sept-4-on-broad-st/"
+            },
+            "recap": { "photos": [] }
+          },
+          {
+            "id": "broad-new-day-2026-09",
+            "title": "Broad New Day",
+            "eyebrow": "Featured event",
+            "start": "2026-09-19T14:30:00-04:00",
+            "end": "2026-09-19T20:00:00-04:00",
+            "timeLabel": "2:30 – 8 p.m.",
+            "location": "Richmond, VA",
+            "status": "upcoming",
+            "description": "An afternoon and evening on Broad Street celebrating a new day for the neighborhood. Tickets are available through Eventbrite.",
+            "cta": {
+              "label": "Get tickets",
+              "url": "https://www.eventbrite.com/e/broad-new-day-tickets-1993692279276"
+            },
+            "recap": { "photos": [] }
+          },
+          {
+            "id": "awaiting-recap-demo",
+            "title": "Event That Just Ended",
+            "eyebrow": "Community",
+            "start": "2026-08-01T17:00:00-04:00",
+            "end": "2026-08-01T20:00:00-04:00",
+            "timeLabel": "5–8 p.m.",
+            "location": "Broad Street, Richmond, VA",
+            "status": "past",
+            "description": "This event is over but nobody has uploaded photos yet. The card says so instead of still inviting people.",
+            "cta": { "label": "Read the announcement", "url": "https://www.vpm.org/" },
+            "recap": { "photos": [] }
+          },
+          {
+            "id": "recap-demo",
+            "title": "Event With a Published Recap",
+            "eyebrow": "Community",
+            "start": "2026-06-06T17:00:00-04:00",
+            "end": "2026-06-06T20:00:00-04:00",
+            "timeLabel": "5–8 p.m.",
+            "location": "Broad Street, Richmond, VA",
+            "status": "past",
+            "description": "Original invitation copy, kept for the record.",
+            "cta": { "label": "Read the announcement", "url": "https://www.vpm.org/" },
+            "recap": {
+              "headline": "Thanks to everyone who came out.",
+              "body": "Hundreds of neighbors joined us on Broad Street. Here are a few of our favorite moments from the evening.",
+              "photoCredit": "Photos by VPM",
+              "photos": [
+                { "src": "https://placehold.co/1200x800/003865/ffffff?text=Recap+Photo+1", "thumb": "https://placehold.co/600x400/003865/ffffff?text=Recap+Photo+1", "alt": "Placeholder recap photo one", "caption": "The crowd on Broad Street." },
+                { "src": "https://placehold.co/1200x800/6CACE4/101820?text=Recap+Photo+2", "thumb": "https://placehold.co/600x400/6CACE4/101820?text=Recap+Photo+2", "alt": "Placeholder recap photo two", "caption": "Live music on the plaza." },
+                { "src": "https://placehold.co/1200x800/EE2737/ffffff?text=Recap+Photo+3", "thumb": "https://placehold.co/600x400/EE2737/ffffff?text=Recap+Photo+3", "alt": "Placeholder recap photo three", "caption": "Kids at the art tables." },
+                { "src": "https://placehold.co/1200x800/E0E721/101820?text=Recap+Photo+4", "thumb": "https://placehold.co/600x400/E0E721/101820?text=Recap+Photo+4", "alt": "Placeholder recap photo four", "caption": "Sunset over the block party." },
+                { "src": "https://placehold.co/1200x800/101820/ffffff?text=Recap+Photo+5", "thumb": "https://placehold.co/600x400/101820/ffffff?text=Recap+Photo+5", "alt": "Placeholder recap photo five", "caption": "Volunteers at the VPM booth." }
+              ],
+              "video": null,
+              "cta": { "label": "See the full photo set", "url": "https://www.vpm.org/" }
+            }
+          }
+        ]
+      }
+      </script>
+
+      <section class="vpm-events">
+        <div class="vpm-events__container">
+          <h2 class="vpm-events__heading" data-vpm-events-heading hidden></h2>
+
+          <div class="vpm-events__filters" role="tablist" aria-label="Filter events" data-vpm-events-filters hidden>
+            <button type="button" class="vpm-events__filter" role="tab" data-filter="upcoming" aria-selected="true">Upcoming</button>
+            <button type="button" class="vpm-events__filter" role="tab" data-filter="past" aria-selected="false">Past events</button>
+          </div>
+
+          <div class="vpm-events__list" data-vpm-events-list aria-live="polite">
+            <p class="vpm-events__status">Loading events…</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="vpm-events__lightbox" data-vpm-events-lightbox hidden role="dialog" aria-modal="true" aria-label="Event photo">
+        <button type="button" class="vpm-events__lightbox-close" data-vpm-events-lightbox-close aria-label="Close photo">&times;</button>
+        <button type="button" class="vpm-events__lightbox-nav vpm-events__lightbox-nav--prev" data-vpm-events-lightbox-prev aria-label="Previous photo">&#8249;</button>
+        <figure class="vpm-events__lightbox-figure">
+          <img class="vpm-events__lightbox-image" data-vpm-events-lightbox-image src="" alt="">
+          <figcaption class="vpm-events__lightbox-caption" data-vpm-events-lightbox-caption></figcaption>
+        </figure>
+        <button type="button" class="vpm-events__lightbox-nav vpm-events__lightbox-nav--next" data-vpm-events-lightbox-next aria-label="Next photo">&#8250;</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="events-component.js"></script>
+</body>
+</html>

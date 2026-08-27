@@ -1,0 +1,442 @@
+/* GENERATED FILE — do not edit.
+   Source: events/index.html <script> block. Regenerate with ./extract-js.sh */
+(function() {
+  'use strict';
+
+  var root = document.getElementById('vpm-events-root');
+  if (!root || root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
+
+  /* ---------------------------------------------------------------
+     Configuration
+     --------------------------------------------------------------- */
+  var EVENTS_URL   = root.getAttribute('data-events-url') || '';
+  var VIEW         = (root.getAttribute('data-view') || 'all').toLowerCase();
+  var SHOW_FILTERS = root.getAttribute('data-show-filters') !== 'false';
+  var HEADING      = root.getAttribute('data-heading') || '';
+
+  var listEl      = root.querySelector('[data-vpm-events-list]');
+  var headingEl   = root.querySelector('[data-vpm-events-heading]');
+  var filtersEl   = root.querySelector('[data-vpm-events-filters]');
+  var lightboxEl  = root.querySelector('[data-vpm-events-lightbox]');
+  var lbImage     = root.querySelector('[data-vpm-events-lightbox-image]');
+  var lbCaption   = root.querySelector('[data-vpm-events-lightbox-caption]');
+
+  var allEvents     = [];
+  var activeFilter  = 'upcoming';
+  var galleryPhotos = [];
+  var galleryIndex  = 0;
+  var lastFocused   = null;
+
+  /* ---------------------------------------------------------------
+     Helpers
+     --------------------------------------------------------------- */
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Only allow links we are willing to render as an href.
+  function safeUrl(value) {
+    var url = String(value == null ? '' : value).trim();
+    if (/^(https?:|mailto:|tel:|\/|#)/i.test(url)) return url;
+    return '';
+  }
+
+  function parseDate(value) {
+    if (!value) return null;
+    var date = new Date(value);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Is the event over? "status" wins if it is explicitly set; otherwise compare to the end time.
+  function isPast(event) {
+    var status = (event.status || 'auto').toLowerCase();
+    if (status === 'past') return true;
+    if (status === 'upcoming') return false;
+    var end = parseDate(event.end) || parseDate(event.start);
+    if (!end) return false;
+    return end.getTime() < Date.now();
+  }
+
+  function hasRecap(event) {
+    var recap = event.recap || {};
+    var photos = recap.photos || [];
+    return Boolean(recap.headline || recap.body || photos.length || recap.video);
+  }
+
+  function toICSDate(date) {
+    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  }
+
+  // RFC 5545 TEXT values: backslash, semicolon, comma and newlines must be escaped.
+  function icsText(value) {
+    return String(value == null ? '' : value)
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\r?\n/g, '\\n');
+  }
+
+  // RFC 5545 content lines are folded at 75 octets, continuations start with a space.
+  function icsFold(line) {
+    if (line.length <= 73) return line;
+    var out = line.slice(0, 73);
+    var rest = line.slice(73);
+    while (rest.length) {
+      out += '\r\n ' + rest.slice(0, 72);
+      rest = rest.slice(72);
+    }
+    return out;
+  }
+
+  /* ---------------------------------------------------------------
+     Rendering
+     --------------------------------------------------------------- */
+  function dateBadge(event) {
+    var start = parseDate(event.start);
+    if (!start) return '';
+    return '' +
+      '<div class="vpm-events__date" aria-hidden="true">' +
+        '<span class="vpm-events__date-month">' + esc(MONTHS[start.getMonth()]) + '</span>' +
+        '<span class="vpm-events__date-day">' + esc(start.getDate()) + '</span>' +
+        '<span class="vpm-events__date-year">' + esc(start.getFullYear()) + '</span>' +
+      '</div>';
+  }
+
+  function readableDate(event) {
+    var start = parseDate(event.start);
+    if (!start) return '';
+    return DAYS[start.getDay()] + ', ' + MONTHS[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
+  }
+
+  function metaBlock(event) {
+    var rows = '';
+    var dateText = readableDate(event);
+    if (dateText) {
+      rows += '<li class="vpm-events__meta-item"><span class="vpm-events__meta-label">Date</span>' + esc(dateText) + '</li>';
+    }
+    if (event.timeLabel) {
+      rows += '<li class="vpm-events__meta-item"><span class="vpm-events__meta-label">Time</span>' + esc(event.timeLabel) + '</li>';
+    }
+    if (event.location) {
+      rows += '<li class="vpm-events__meta-item"><span class="vpm-events__meta-label">Where</span>' + esc(event.location) + '</li>';
+    }
+    return rows ? '<ul class="vpm-events__meta">' + rows + '</ul>' : '';
+  }
+
+  function ctaButton(cta, modifier) {
+    if (!cta || !cta.label) return '';
+    var url = safeUrl(cta.url);
+    if (!url) return '';
+    var external = /^https?:/i.test(url) && url.indexOf('vpm.org') === -1;
+    return '<a class="vpm-events__button' + (modifier ? ' ' + modifier : '') + '" href="' + esc(url) + '"' +
+      (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + esc(cta.label) + '</a>';
+  }
+
+  function upcomingBody(event) {
+    var html = '';
+    html += metaBlock(event);
+    if (event.description) {
+      html += '<p class="vpm-events__description">' + esc(event.description) + '</p>';
+    }
+    html += '<div class="vpm-events__actions">';
+    html += ctaButton(event.cta, 'vpm-events__button--primary');
+    html += ctaButton(event.secondaryCta, 'vpm-events__button--secondary');
+    if (parseDate(event.start)) {
+      html += '<button type="button" class="vpm-events__button vpm-events__button--ghost" data-vpm-events-ics="' + esc(event.id) + '">Add to calendar</button>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function galleryMarkup(event) {
+    var photos = (event.recap && event.recap.photos) || [];
+    if (!photos.length) return '';
+    var items = photos.map(function(photo, index) {
+      var src = safeUrl(photo.thumb || photo.src);
+      if (!src) return '';
+      return '' +
+        '<button type="button" class="vpm-events__photo" data-vpm-events-photo="' + esc(event.id) + '" data-photo-index="' + index + '">' +
+          '<img src="' + esc(src) + '" alt="' + esc(photo.alt || '') + '" loading="lazy">' +
+        '</button>';
+    }).join('');
+    return '<div class="vpm-events__gallery">' + items + '</div>';
+  }
+
+  function videoMarkup(event) {
+    var video = event.recap && event.recap.video;
+    if (!video) return '';
+    var src = safeUrl(typeof video === 'string' ? video : video.embedUrl);
+    if (!src) return '';
+    var title = (typeof video === 'object' && video.title) || (event.title + ' video');
+    return '' +
+      '<div class="vpm-events__video">' +
+        '<iframe src="' + esc(src) + '" title="' + esc(title) + '" frameborder="0" ' +
+        'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' +
+      '</div>';
+  }
+
+  function recapBody(event) {
+    var recap = event.recap || {};
+    var html = '';
+    html += metaBlock(event);
+    if (recap.headline) {
+      html += '<p class="vpm-events__recap-headline">' + esc(recap.headline) + '</p>';
+    }
+    html += '<p class="vpm-events__description">' + esc(recap.body || event.description || '') + '</p>';
+    html += videoMarkup(event);
+    html += galleryMarkup(event);
+    if (recap.photoCredit) {
+      html += '<p class="vpm-events__credit">' + esc(recap.photoCredit) + '</p>';
+    }
+    html += '<div class="vpm-events__actions">';
+    html += ctaButton(recap.cta, 'vpm-events__button--primary');
+    html += '</div>';
+    return html;
+  }
+
+  // An event that is over but has no recap yet: say so plainly rather than
+  // showing an invitation to something that already happened.
+  function awaitingRecapBody(event) {
+    var html = metaBlock(event);
+    if (event.description) {
+      html += '<p class="vpm-events__description">' + esc(event.description) + '</p>';
+    }
+    html += '<p class="vpm-events__status vpm-events__status--inline">Photos and a recap are on the way.</p>';
+    return html;
+  }
+
+  function cardMarkup(event) {
+    var past = isPast(event);
+    var recapReady = past && hasRecap(event);
+    var state = past ? (recapReady ? 'recap' : 'awaiting-recap') : 'upcoming';
+    var image = safeUrl(event.image);
+
+    var badge = recapReady ? 'Recap' : (past ? 'Past event' : 'Upcoming');
+
+    var media = '';
+    if (recapReady && event.recap.photos && event.recap.photos.length) {
+      // The recap leads with its gallery, so skip the promo image.
+      media = '';
+    } else if (image) {
+      media = '<div class="vpm-events__media"><img src="' + esc(image) + '" alt="' + esc(event.imageAlt || '') + '" loading="lazy"></div>';
+    }
+
+    var body = recapReady ? recapBody(event) : (past ? awaitingRecapBody(event) : upcomingBody(event));
+
+    return '' +
+      '<article class="vpm-events__card" data-state="' + esc(state) + '" data-event-id="' + esc(event.id) + '" id="event-' + esc(event.id) + '">' +
+        media +
+        '<div class="vpm-events__body">' +
+          '<div class="vpm-events__header">' +
+            dateBadge(event) +
+            '<div class="vpm-events__titles">' +
+              '<p class="vpm-events__eyebrow">' +
+                '<span class="vpm-events__badge" data-state="' + esc(state) + '">' + esc(badge) + '</span>' +
+                (event.eyebrow ? '<span class="vpm-events__eyebrow-text">' + esc(event.eyebrow) + '</span>' : '') +
+              '</p>' +
+              '<h3 class="vpm-events__title">' + esc(event.title) + '</h3>' +
+            '</div>' +
+          '</div>' +
+          body +
+        '</div>' +
+      '</article>';
+  }
+
+  function visibleEvents() {
+    var upcoming = allEvents.filter(function(event) { return !isPast(event); });
+    var past = allEvents.filter(isPast);
+
+    upcoming.sort(function(a, b) { return (parseDate(a.start) || 0) - (parseDate(b.start) || 0); });
+    past.sort(function(a, b) { return (parseDate(b.start) || 0) - (parseDate(a.start) || 0); });
+
+    if (VIEW === 'upcoming') return upcoming;
+    if (VIEW === 'past') return past;
+    return activeFilter === 'past' ? past : upcoming;
+  }
+
+  function render() {
+    var events = visibleEvents();
+
+    if (!events.length) {
+      listEl.innerHTML = '<p class="vpm-events__status">' +
+        (activeFilter === 'past' && VIEW === 'all' ? 'No past events to show yet.' : 'No upcoming events right now. Check back soon.') +
+        '</p>';
+      return;
+    }
+
+    listEl.innerHTML = events.map(cardMarkup).join('');
+  }
+
+  function syncFilters() {
+    if (!SHOW_FILTERS || VIEW !== 'all') return;
+
+    var hasUpcoming = allEvents.some(function(event) { return !isPast(event); });
+    var hasPast = allEvents.some(isPast);
+    if (!hasUpcoming || !hasPast) return;
+
+    activeFilter = hasUpcoming ? 'upcoming' : 'past';
+    filtersEl.hidden = false;
+
+    Array.prototype.forEach.call(filtersEl.querySelectorAll('[data-filter]'), function(button) {
+      button.setAttribute('aria-selected', String(button.getAttribute('data-filter') === activeFilter));
+      button.addEventListener('click', function() {
+        activeFilter = button.getAttribute('data-filter');
+        Array.prototype.forEach.call(filtersEl.querySelectorAll('[data-filter]'), function(other) {
+          other.setAttribute('aria-selected', String(other === button));
+        });
+        render();
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Add to calendar (.ics, generated in the browser — no dependencies)
+     --------------------------------------------------------------- */
+  function downloadICS(event) {
+    var start = parseDate(event.start);
+    var end = parseDate(event.end) || new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//VPM//Events//EN',
+      'BEGIN:VEVENT',
+      'UID:' + event.id + '@vpm.org',
+      'DTSTART:' + toICSDate(start),
+      'DTEND:' + toICSDate(end),
+      'SUMMARY:' + icsText(event.title || 'VPM Event'),
+      'DESCRIPTION:' + icsText(event.description),
+      'LOCATION:' + icsText(event.location),
+      'URL:' + icsText((event.cta && event.cta.url) || ''),
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+
+    var blob = new Blob([lines.map(icsFold).join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = event.id + '.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  /* ---------------------------------------------------------------
+     Lightbox
+     --------------------------------------------------------------- */
+  function showPhoto(index) {
+    if (!galleryPhotos.length) return;
+    galleryIndex = (index + galleryPhotos.length) % galleryPhotos.length;
+    var photo = galleryPhotos[galleryIndex];
+    lbImage.src = safeUrl(photo.src || photo.thumb);
+    lbImage.alt = photo.alt || '';
+    lbCaption.textContent = photo.caption || '';
+  }
+
+  function openLightbox(eventId, index) {
+    var event = allEvents.filter(function(item) { return item.id === eventId; })[0];
+    if (!event || !event.recap || !event.recap.photos) return;
+    galleryPhotos = event.recap.photos;
+    lastFocused = document.activeElement;
+    lightboxEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    showPhoto(index);
+    root.querySelector('[data-vpm-events-lightbox-close]').focus();
+  }
+
+  function closeLightbox() {
+    lightboxEl.hidden = true;
+    lbImage.src = '';
+    document.body.style.overflow = '';
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  root.querySelector('[data-vpm-events-lightbox-close]').addEventListener('click', closeLightbox);
+  root.querySelector('[data-vpm-events-lightbox-prev]').addEventListener('click', function() { showPhoto(galleryIndex - 1); });
+  root.querySelector('[data-vpm-events-lightbox-next]').addEventListener('click', function() { showPhoto(galleryIndex + 1); });
+  lightboxEl.addEventListener('click', function(e) { if (e.target === lightboxEl) closeLightbox(); });
+
+  document.addEventListener('keydown', function(e) {
+    if (lightboxEl.hidden) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showPhoto(galleryIndex - 1);
+    if (e.key === 'ArrowRight') showPhoto(galleryIndex + 1);
+  });
+
+  /* ---------------------------------------------------------------
+     Delegated clicks (cards are re-rendered, so bind once on the list)
+     --------------------------------------------------------------- */
+  listEl.addEventListener('click', function(e) {
+    var photoBtn = e.target.closest ? e.target.closest('[data-vpm-events-photo]') : null;
+    if (photoBtn) {
+      openLightbox(photoBtn.getAttribute('data-vpm-events-photo'), parseInt(photoBtn.getAttribute('data-photo-index'), 10) || 0);
+      return;
+    }
+    var icsBtn = e.target.closest ? e.target.closest('[data-vpm-events-ics]') : null;
+    if (icsBtn) {
+      var id = icsBtn.getAttribute('data-vpm-events-ics');
+      var event = allEvents.filter(function(item) { return item.id === id; })[0];
+      if (event) downloadICS(event);
+    }
+  });
+
+  /* ---------------------------------------------------------------
+     Boot
+     --------------------------------------------------------------- */
+  function start(data) {
+    allEvents = (data && data.events) || [];
+    if (HEADING) {
+      headingEl.textContent = HEADING;
+      headingEl.hidden = false;
+    }
+    syncFilters();
+    render();
+  }
+
+  function loadEvents() {
+    // Inline data wins: drop a <script type="application/json" data-vpm-events-data> inside
+    // the root and the component will use it instead of fetching.
+    var inline = root.querySelector('[data-vpm-events-data]');
+    if (inline) {
+      try {
+        start(JSON.parse(inline.textContent));
+        return;
+      } catch (error) {
+        console.error('VPM Events: inline JSON could not be parsed', error);
+      }
+    }
+
+    if (!EVENTS_URL || typeof fetch === 'undefined') {
+      listEl.innerHTML = '<p class="vpm-events__status">Events could not be loaded. Check the data-events-url setting.</p>';
+      return;
+    }
+
+    fetch(EVENTS_URL, { cache: 'no-cache' })
+      .then(function(response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+      })
+      .then(start)
+      .catch(function(error) {
+        console.error('VPM Events: unable to load events', error);
+        listEl.innerHTML = '<p class="vpm-events__status">Events could not be loaded right now.</p>';
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadEvents);
+  } else {
+    loadEvents();
+  }
+})();

@@ -235,6 +235,16 @@ A component that transforms Brightspot CMS's standard HTML list structure into a
 - **Documentation**: See `/article-list/README.md`
 - **Preview**: Open `/article-list/preview.html` in your browser
 
+### Events
+A lifecycle-aware events component. Each event is a single record that renders as an invitation before the event, then automatically becomes a photo recap once the end time has passed — same card, same URL, same anchor.
+
+- **Location**: `/events/`
+- **Namespace**: `vpm-events-`
+- **Features**: Invitation/recap in one record, automatic state switch, photo gallery with lightbox, add-to-calendar (.ics), upcoming/past filters, JSON data loading, dark theme support
+- **Data**: `/events/events.json`
+- **Documentation**: See `/events/README.md`
+- **Preview**: Open `/events/preview.html` in your browser
+
 ## 🤝 Contributing
 
 When adding a new component:
