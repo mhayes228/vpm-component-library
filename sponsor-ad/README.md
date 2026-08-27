@@ -196,14 +196,12 @@ a 900px-wide slot would leave two thirds of the row empty.
 Note `data-basis="viewport"` &mdash; see above for why the rail cannot use
 container width.
 
-**If both presets are on the same page, a phone requests zone 293911 twice**
-&mdash; once for the in-content slot, once for the rail. Both are legitimate
-placements and AdButler fills them independently, but with rotation-on-load
-there is nothing stopping the same creative landing in both slots at once,
-stacked down one article. Worth asking AdButler whether the zone can be set to
-avoid repeating a creative within a page, or trafficking a second 300&times;250
-zone for the rail. To sidestep it entirely, swap the rail's bottom tier for a
-hide tier:
+On a phone, every 300&times;250 slot on the page requests zone 293911 &mdash;
+the in-content blocks and the rail alike. Since the zone rotates on load,
+the same creative can land in more than one slot at once. **This is known and
+accepted**; no configuration is needed. If that ever changes, the rail's bottom
+tier can be swapped for a hide tier, which renders nothing and requests no ad
+below the breakpoint:
 
 ```json
 {"minWidth": 0, "hide": true}
