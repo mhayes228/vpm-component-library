@@ -9,7 +9,7 @@ zone below a breakpoint so phones get a real mobile creative.
 
 - **Component Name**: Sponsor Ad
 - **Namespace**: `vpm-sponsor-ad-`
-- **Root ID**: `vpm-sponsor-ad-root`
+- **Root ID**: none by design &mdash; see *Multiple blocks on one page*
 
 ## The problem this solves
 
@@ -198,10 +198,17 @@ hide tier:
 
 ### Multiple blocks on one page
 
-The script initialises every `.vpm-sponsor-ad` on the page and generates unique
-placement ids, so Preset A and Preset B can both be present. **Remove the `id`
-attribute from the extra copies** &mdash; the root `id` is cosmetic and
-duplicating it is invalid HTML.
+Unlike the other components in this library, the root element carries **no
+`id`**. The script scopes itself by class and generates unique placement ids
+per instance, so the same block can be embedded as a shared module that lands
+on a page more than once without producing duplicate ids.
+
+Duplicating the whole block &mdash; markup, `<style>` and `<script>` together
+&mdash; is safe. Re-running the script is a no-op on already-initialised roots
+(`data-initialized`), the AdButler library is loaded once per page
+(`script[data-vpm-adbutler]`), and each instance registers exactly one
+placement. Verified with the block pasted one, two and three times on a page:
+one register call per instance, unique placement ids, no console errors.
 
 ## How it works
 

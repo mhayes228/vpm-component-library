@@ -1374,8 +1374,8 @@
   display: none;
 }
 
-/* Dark theme */
-#vpm-sponsor-ad-root[data-theme="dark"] .vpm-sponsor-ad__label,
+/* Dark theme (class-scoped: the block carries no id, so it can be embedded
+   as a shared module more than once on a page) */
 .vpm-sponsor-ad[data-theme="dark"] .vpm-sponsor-ad__label {
   color: var(--vpm-color-gray, #B2B4B2);
 }

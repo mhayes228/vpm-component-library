@@ -60,8 +60,10 @@
      TWO-TIER SHORTHAND - used only when data-slots is absent:
      data-zone / data-size / data-mobile-zone / data-mobile-size / data-mobile-max
 -->
-<div id="vpm-sponsor-ad-root"
-     class="vpm-sponsor-ad"
+<!-- No id attribute: the script scopes itself by class, and this block is
+     meant to be embedded as a shared module that may land on a page more than
+     once. A repeated id would be invalid HTML. -->
+<div class="vpm-sponsor-ad"
      data-publisher="171178"
      data-slots='[{"minWidth":768,"zone":1063080,"size":"970x250"},{"minWidth":0,"zone":293911,"size":"300x250"}]'
      data-label="Sponsored"
