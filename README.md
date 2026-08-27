@@ -235,6 +235,16 @@ A component that transforms Brightspot CMS's standard HTML list structure into a
 - **Documentation**: See `/article-list/README.md`
 - **Preview**: Open `/article-list/preview.html` in your browser
 
+### Sponsor Ad
+An AdButler ad placement built for small screens. Scales a fixed-size creative (e.g. 970x250) down to fit the viewport instead of cropping it, reserves the exact height to avoid layout shift, and can request a separate AdButler zone below a breakpoint.
+
+- **Location**: `/sponsor-ad/`
+- **Namespace**: `vpm-sponsor-ad-`
+- **Features**: Scale-to-fit creative, optional mobile zone, zero layout shift, collapses when unfilled, multiple instances per page
+- **Dependencies**: AdButler `app.js` (loaded automatically)
+- **Documentation**: See `/sponsor-ad/README.md`
+- **Preview**: Open `/sponsor-ad/preview.html` in your browser
+
 ## 🤝 Contributing
 
 When adding a new component:

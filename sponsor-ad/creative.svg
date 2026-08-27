@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="970" height="250" viewBox="0 0 970 250" role="img" aria-label="Demo sponsor creative">
+  <rect width="970" height="250" fill="#003865"/>
+  <rect x="0" y="0" width="8" height="250" fill="#E0E721"/>
+  <text x="48" y="86" font-family="Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff">Demo Sponsor Creative</text>
+  <text x="48" y="132" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#6CACE4">970 &#215; 250 leaderboard &#8212; placeholder for preview only</text>
+  <text x="48" y="196" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#B2B4B2">This 11px line is here on purpose: at 360px the whole banner scales to about 37%, rendering it near 4px.</text>
+  <rect x="740" y="96" width="182" height="52" rx="26" fill="#E0E721"/>
+  <text x="831" y="129" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#003865" text-anchor="middle">Learn More</text>
+</svg>

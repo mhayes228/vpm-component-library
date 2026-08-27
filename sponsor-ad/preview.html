@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPM Sponsor Ad - Component Preview</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <script src="../shared/preview-theme.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 { color: #333; margin-bottom: 0.5rem; }
+    .description { color: #666; margin-bottom: 2rem; }
+    .preview-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .preview-section h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .preview-note {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #1565c0;
+    }
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .device {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .device__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #666;
+      padding: 0.5rem 0.75rem;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+    }
+    .device__body { padding: 0 0.75rem; }
+    .device--360 { width: 360px; }
+    .device--414 { width: 414px; }
+    .device--768 { width: 768px; }
+    .device--1024 { width: 1024px; }
+
+    /* Reproduces the current production behaviour for comparison. */
+    .legacy-wrapper { text-align: center; padding: 20px; max-width: 100%; overflow: hidden; }
+    .legacy-inner { display: inline-block; max-width: 970px; width: 100%; }
+
+    /* Many WordPress themes ship this. It is why the creative needs an
+       explicit `max-width: none` escape hatch. */
+    .theme-reset img { max-width: 100%; height: auto; }
+  </style>
+</head>
+<body class="theme-reset">
+  <h1>VPM Sponsor Ad</h1>
+  <p class="description">
+    A fixed-size AdButler creative that scales to fit narrow screens instead of
+    being cropped, with the correct height reserved up front.
+  </p>
+
+  <div class="preview-note">
+    <strong>Preview only:</strong> AdButler is stubbed out on this page with a
+    fake 970&times;250 creative so the responsive behaviour can be inspected
+    without serving real ads. Resize the window or use device emulation to
+    watch the scale change.
+  </div>
+
+  <div class="preview-section">
+    <h2>Before &mdash; current production markup at 360px</h2>
+    <div class="preview-grid">
+      <div class="device device--360">
+        <div class="device__label">360px &mdash; cropped by overflow: hidden</div>
+        <div class="device__body">
+          <div class="legacy-wrapper">
+            <div class="legacy-inner">
+              <img src="creative.svg" width="970" height="250" alt="Demo creative"
+                   style="max-width:none;height:250px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h2>After &mdash; scaled to fit</h2>
+    <div class="preview-grid">
+      <div class="device device--360">
+        <div class="device__label" data-readout>360px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
+               data-size="970x250" data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="device device--414">
+        <div class="device__label" data-readout>414px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
+               data-size="970x250" data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="device device--768">
+        <div class="device__label" data-readout>768px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
+               data-size="970x250" data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="device device--1024">
+        <div class="device__label" data-readout>1024px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
+               data-size="970x250" data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h2>With a dedicated mobile zone</h2>
+    <div class="preview-note">
+      With <code>data-mobile-zone</code> set, widths at or below
+      <code>data-mobile-max</code> request that zone at its own native size
+      instead of shrinking the leaderboard. This is the better outcome for
+      readability &mdash; a 970&times;250 at 360px renders its body copy at
+      roughly a third of its intended size.
+    </div>
+    <div class="preview-grid">
+      <div class="device device--360">
+        <div class="device__label" data-readout>360px</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1063080"
+               data-size="970x250" data-mobile-zone="9999999"
+               data-mobile-size="300x250" data-mobile-max="767"
+               data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h2>Unfilled placement</h2>
+    <div class="preview-note">
+      When no creative arrives within the timeout the block collapses to zero
+      height rather than leaving a gap. This instance uses an unstubbed zone.
+    </div>
+    <div class="preview-grid">
+      <div class="device device--360">
+        <div class="device__label">360px &mdash; collapses after 6s</div>
+        <div class="device__body">
+          <div class="vpm-sponsor-ad" data-publisher="171178" data-zone="1"
+               data-size="970x250" data-label="Sponsored" data-theme="light">
+            <div class="vpm-sponsor-ad__frame"><div class="vpm-sponsor-ad__stage"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stub AdButler so the real component script runs its normal code path. -->
+  <script>
+  (function () {
+    var DEMO_ZONES = { 1063080: true, 9999999: true };
+
+    // Builds a placeholder creative at the exact size requested, so the
+    // mobile slot is not just a stretched leaderboard.
+    function demoCreative(w, h) {
+      var svg =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">' +
+        '<rect width="' + w + '" height="' + h + '" fill="#003865"/>' +
+        '<rect width="8" height="' + h + '" fill="#E0E721"/>' +
+        '<text x="' + (w / 2) + '" y="' + (h / 2 - 6) + '" text-anchor="middle" ' +
+        'font-family="Helvetica, Arial, sans-serif" font-size="' + Math.round(Math.min(w, h) / 7) +
+        '" font-weight="700" fill="#ffffff">Demo Creative</text>' +
+        '<text x="' + (w / 2) + '" y="' + (h / 2 + 22) + '" text-anchor="middle" ' +
+        'font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#6CACE4">' +
+        w + ' &#215; ' + h + '</text>' +
+        '</svg>';
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+    window.AdButler = {
+      ads: [],
+      register: function (publisher, zone, size, placementId) {
+        if (!DEMO_ZONES[zone]) return; // simulates an unfilled placement
+        var target = document.getElementById(placementId);
+        if (!target) return;
+        // Real AdButler serves an iframe; an <img> is close enough to show
+        // how a native-size creative behaves inside the scaled stage.
+        var img = document.createElement('img');
+        img.src = demoCreative(size[0], size[1]);
+        img.width = size[0];
+        img.height = size[1];
+        img.alt = 'Demo sponsor creative';
+        target.appendChild(img);
+      }
+    };
+  })();
+  </script>
+
+  <!-- Component styles + script, copied from index.html. -->
+  <script>
+  (function () {
+    'use strict';
+
+    var LIBRARY_SRC = 'https://servedbyadbutler.com/app.js';
+    var AD_DOMAIN = 'servedbyadbutler.com';
+    var EMPTY_TIMEOUT_MS = 6000;
+
+    function loadLibrary() {
+      if (window.AdButler && typeof window.AdButler.register === 'function') return;
+      if (document.querySelector('script[data-vpm-adbutler]')) return;
+
+      var script = document.createElement('script');
+      script.async = true;
+      script.type = 'text/javascript';
+      script.src = LIBRARY_SRC;
+      script.setAttribute('data-vpm-adbutler', '');
+      script.onerror = function () {
+        console.error('VPM Sponsor Ad: failed to load the AdButler library');
+      };
+      (document.head || document.documentElement).appendChild(script);
+    }
+
+    function parseSize(value, fallback) {
+      var match = /^\s*(\d+)\s*[x*×]\s*(\d+)\s*$/i.exec(value || '');
+      if (!match) return fallback;
+      return [parseInt(match[1], 10), parseInt(match[2], 10)];
+    }
+
+    function pickSlot(root, availableWidth) {
+      var mobileZone = parseInt(root.getAttribute('data-mobile-zone') || '', 10);
+      var mobileMax = parseInt(root.getAttribute('data-mobile-max') || '767', 10);
+
+      if (mobileZone && availableWidth > 0 && availableWidth <= mobileMax) {
+        return {
+          zone: mobileZone,
+          size: parseSize(root.getAttribute('data-mobile-size'), [300, 250])
+        };
+      }
+      return {
+        zone: parseInt(root.getAttribute('data-zone') || '', 10),
+        size: parseSize(root.getAttribute('data-size'), [970, 250])
+      };
+    }
+
+    function initInstance(root) {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+
+      var frame = root.querySelector('.vpm-sponsor-ad__frame');
+      var stage = root.querySelector('.vpm-sponsor-ad__stage');
+      if (!frame || !stage) {
+        console.warn('VPM Sponsor Ad: missing __frame or __stage markup');
+        return;
+      }
+
+      var publisherId = parseInt(root.getAttribute('data-publisher') || '', 10);
+      var slot = pickSlot(root, root.clientWidth);
+      if (!publisherId || !slot.zone) {
+        console.warn('VPM Sponsor Ad: data-publisher and data-zone are required');
+        return;
+      }
+
+      var nativeWidth = slot.size[0];
+      var nativeHeight = slot.size[1];
+      root.style.setProperty('--vpm-sponsor-ad-w', String(nativeWidth));
+      root.style.setProperty('--vpm-sponsor-ad-h', String(nativeHeight));
+
+      var labelText = root.getAttribute('data-label');
+      if (labelText === null) labelText = 'Sponsored';
+      if (labelText) {
+        var label = document.createElement('span');
+        label.className = 'vpm-sponsor-ad__label';
+        label.textContent = labelText;
+        root.insertBefore(label, frame);
+      }
+
+      function fit() {
+        var available = root.clientWidth || root.offsetWidth;
+        if (!available) return;
+        var scale = Math.min(1, available / nativeWidth);
+        root.style.setProperty('--vpm-sponsor-ad-scale', String(scale));
+      }
+
+      fit();
+
+      if (typeof window.ResizeObserver === 'function') {
+        new window.ResizeObserver(fit).observe(root);
+      } else {
+        window.addEventListener('resize', fit);
+        window.addEventListener('orientationchange', fit);
+      }
+
+      var counterKey = 'plc' + slot.zone;
+      window[counterKey] = window[counterKey] || 0;
+      var place = window[counterKey]++;
+      var placementId = 'placement_' + slot.zone + '_' + place;
+
+      var placement = document.createElement('div');
+      placement.id = placementId;
+      stage.appendChild(placement);
+
+      function isFilled() {
+        return placement.children.length > 0 ||
+               placement.textContent.trim().length > 0;
+      }
+
+      function syncEmptyState() {
+        if (isFilled()) {
+          root.classList.remove('vpm-sponsor-ad--empty');
+          fit();
+        } else {
+          root.classList.add('vpm-sponsor-ad--empty');
+        }
+      }
+
+      if (typeof window.MutationObserver === 'function') {
+        new window.MutationObserver(syncEmptyState)
+          .observe(placement, { childList: true, subtree: true });
+      }
+      window.setTimeout(syncEmptyState, EMPTY_TIMEOUT_MS);
+
+      window.AdButler = window.AdButler || {};
+      window.AdButler.ads = window.AdButler.ads || [];
+      window.abkw = window.abkw || '';
+
+      var entry = {
+        handler: function (opt) {
+          try {
+            window.AdButler.register(
+              publisherId,
+              slot.zone,
+              [nativeWidth, nativeHeight],
+              'placement_' + slot.zone + '_' + opt.place,
+              opt
+            );
+          } catch (e) {
+            console.error('VPM Sponsor Ad: error registering placement', e);
+          }
+        },
+        opt: {
+          place: place,
+          keywords: window.abkw,
+          domain: AD_DOMAIN
+        }
+      };
+
+      if (typeof window.AdButler.register === 'function') {
+        entry.handler(entry.opt);
+      } else {
+        window.AdButler.ads.push(entry);
+      }
+    }
+
+    function init() {
+      loadLibrary();
+      var roots = document.querySelectorAll('.vpm-sponsor-ad');
+      for (var i = 0; i < roots.length; i++) {
+        initInstance(roots[i]);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+  <!-- Preview-only: show the live scale and reserved height on each device label. -->
+  <script>
+  (function () {
+    function update() {
+      var labels = document.querySelectorAll('.device__label[data-readout]');
+      for (var i = 0; i < labels.length; i++) {
+        var device = labels[i].parentNode;
+        var root = device.querySelector('.vpm-sponsor-ad');
+        if (!root) continue;
+        var base = labels[i].getAttribute('data-base');
+        if (base === null) {
+          base = labels[i].textContent.trim();
+          labels[i].setAttribute('data-base', base);
+        }
+        var scale = parseFloat(root.style.getPropertyValue('--vpm-sponsor-ad-scale') || '1');
+        var h = root.querySelector('.vpm-sponsor-ad__frame').getBoundingClientRect().height;
+        var native = root.style.getPropertyValue('--vpm-sponsor-ad-w') || '970';
+        labels[i].textContent = base + ' \u2014 ' + native + 'px creative at ' +
+          scale.toFixed(3) + ', reserving ' + Math.round(h) + 'px';
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { setTimeout(update, 50); });
+    } else {
+      setTimeout(update, 50);
+    }
+    window.addEventListener('resize', update);
+  })();
+  </script>
+</body>
+</html>

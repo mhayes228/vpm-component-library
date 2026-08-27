@@ -230,7 +230,49 @@
           "dataAttributes": {}
         }
       ]
+    },
+    {
+      "id": "sponsor-ad",
+      "name": "Sponsor Ad",
+      "description": "An AdButler ad placement that scales a fixed-size creative to fit small screens instead of cropping it, reserves the exact height to avoid layout shift, and can request a separate mobile zone.",
+      "namespace": "vpm-sponsor-ad-",
+      "category": "Advertising",
+      "dateAdded": "2026-08-27",
+      "previewPath": "../sponsor-ad/preview.html",
+      "documentationPath": "../sponsor-ad/README.md",
+      "indexPath": "../sponsor-ad/index.html",
+      "shadowDomPath": null,
+      "screenshotPath": null,
+      "features": ["Scale-to-fit creative", "Optional mobile zone", "Zero layout shift", "Collapses when unfilled", "Multiple instances per page", "Sponsor disclosure label"],
+      "dependencies": ["AdButler app.js"],
+      "variants": [
+        {
+          "id": "scaled",
+          "name": "Scaled",
+          "description": "Single 970x250 zone, scaled down on narrow screens",
+          "dataAttributes": {
+            "data-zone": "1063080",
+            "data-size": "970x250",
+            "data-mobile-zone": "",
+            "data-label": "Sponsored",
+            "data-theme": "light"
+          }
+        },
+        {
+          "id": "mobile-zone",
+          "name": "Mobile Zone",
+          "description": "Requests a separate 300x250 zone at 767px and below",
+          "dataAttributes": {
+            "data-zone": "1063080",
+            "data-size": "970x250",
+            "data-mobile-zone": "0000000",
+            "data-mobile-size": "300x250",
+            "data-mobile-max": "767",
+            "data-label": "Sponsored",
+            "data-theme": "light"
+          }
+        }
+      ]
     }
   ]
 }
-
