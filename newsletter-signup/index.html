@@ -1,56 +1,427 @@
-<!-- VPM Newsletter Signup Component -->
-<!-- Copy this HTML into Brightspot CMS -->
+<!--
+  VPM Newsletter Signup V3 - Shadow DOM Component
+  Copy this entire script tag and paste it into your website.
+  Usage: <vpm-newsletter-signup-v3></vpm-newsletter-signup-v3>
+  Note: This component features a bold gradient background optimized to stand out on white backgrounds.
+-->
 
 <!-- EDITABLE: Root Container -->
-<div id="vpm-newsletter-signup-root">
-  <div id="vpm-newsletter-signup">
-    <div class="vpm-newsletter__header">
-      <!-- EDITABLE: Newsletter Header Image -->
-      <!-- Replace src with your newsletter logo URL -->
-      <img src="https://assets.vpm.org/42/0a/e860df4a4251b9004653422ee642/vpm-mm-newsletter-header-150x-100.jpg" alt="VPM News Morning Monitor newsletter logo">
-    </div>
+<div id="vpm-newsletter-signup-v3-root-shadow"></div>
+<script>
+(function() {
+  'use strict';
+  
+  // EDITABLE: Configuration
+  // Change rootId if you need a different root element ID
+  const rootId = 'vpm-newsletter-signup-v3-root-shadow';
+  const host = document.getElementById(rootId);
+  if (!host || host.dataset.initialized === 'true') return;
+  host.dataset.initialized = 'true';
 
-    <div class="vpm-newsletter__content">
-      <!-- EDITABLE: Heading Text -->
-      <!-- Replace heading text below -->
-      <h3><span class="highlight">Your Morning</span> Starts Here. Stay informed on news you care about.</h3>
+  // Detect parent page's root font-size to match typography scale
+  const parentRootFontSize = window.getComputedStyle(document.documentElement).fontSize;
+  const parentFontSizePx = parseFloat(parentRootFontSize) || 16; // Fallback to 16px if detection fails
 
-      <!-- EDITABLE: MailChimp Form Action URL -->
-      <!-- Replace action URL with your MailChimp form action URL -->
-      <form action="https://vpm.us3.list-manage.com/subscribe/post?u=6fe41b3055c403be08140ec95&id=26497cf3ad&f_id=0016c9e1f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self" novalidate>
-        <div class="vpm-newsletter__fields">
-          <div class="vpm-newsletter__field-group">
-            <label for="mce-EMAIL">
-              Email Address
-              <span aria-hidden="true">*</span>
-              <span class="vpm-sr-only">(required)</span>
-            </label>
-            <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required placeholder="your.email@example.com" aria-required="true" aria-describedby="email-description">
-            <span id="email-description" class="vpm-sr-only">Enter your email address to subscribe to the Morning Monitor newsletter</span>
+  const shadowRoot = host.attachShadow({ mode: 'open' });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Global CSS Variables (Reusable tokens) - Hybrid: inherit from parent, fallback to defaults */
+    :host {
+      /* Colors - VPM Brand (inherit from parent if available) */
+      --vpm-color-navy-blue: var(--website-color-navy-blue, var(--site-color-navy-blue, #003865));
+      --vpm-color-light-blue: var(--website-color-light-blue, var(--site-color-light-blue, #6CACE4));
+      --vpm-color-yellow: var(--website-color-yellow, var(--site-color-yellow, #E0E721));
+      --vpm-color-red: var(--website-color-red, var(--site-color-red, #EE2737));
+      --vpm-color-black: var(--website-color-black, var(--site-color-black, #101820));
+      --vpm-color-gray: var(--website-color-gray, var(--site-color-gray, #B2B4B2));
+      
+      /* Colors - Generic (inherit from parent if available) */
+      --vpm-color-primary: var(--website-primary-color, var(--site-primary-color, var(--brand-primary, #005eb8)));
+      --vpm-color-primary-dark: var(--website-primary-dark, var(--site-primary-dark, var(--brand-primary-dark, #004a94)));
+      --vpm-color-primary-light: var(--website-primary-light, var(--site-primary-light, #0066cc));
+      --vpm-color-secondary: var(--website-secondary-color, var(--site-secondary-color, #2ecc71));
+      --vpm-color-secondary-dark: var(--website-secondary-dark, var(--site-secondary-dark, #27ae60));
+      --vpm-color-accent: var(--website-accent-color, var(--site-accent-color, #e74c3c));
+      --vpm-color-text: var(--website-text-color, var(--site-text-color, var(--text-color, #333333)));
+      --vpm-color-text-light: var(--website-text-light, var(--site-text-light, #666666));
+      --vpm-color-text-muted: var(--website-text-muted, var(--site-text-muted, #999999));
+      --vpm-color-bg: var(--website-bg-color, var(--site-bg-color, var(--bg-color, #ffffff)));
+      --vpm-color-bg-light: var(--website-bg-light, var(--site-bg-light, #f5f5f5));
+      --vpm-color-bg-dark: var(--website-bg-dark, var(--site-bg-dark, #1a1a1a));
+      --vpm-color-border: var(--website-border-color, var(--site-border-color, #e0e0e0));
+      --vpm-color-border-dark: var(--website-border-dark, var(--site-border-dark, #333333));
+      
+      /* Spacing (inherit from parent if available) */
+      --vpm-spacing-xs: var(--website-spacing-xs, var(--site-spacing-xs, 0.25rem));
+      --vpm-spacing-sm: var(--website-spacing-sm, var(--site-spacing-sm, 0.5rem));
+      --vpm-spacing-unit: var(--website-spacing-unit, var(--site-spacing-unit, 1rem));
+      --vpm-spacing-md: var(--website-spacing-md, var(--site-spacing-md, 1.5rem));
+      --vpm-spacing-lg: var(--website-spacing-lg, var(--site-spacing-lg, 2rem));
+      --vpm-spacing-xl: var(--website-spacing-xl, var(--site-spacing-xl, 3rem));
+      --vpm-spacing-xxl: var(--website-spacing-xxl, var(--site-spacing-xxl, 4rem));
+      --vpm-spacing-3xl: var(--website-spacing-3xl, var(--site-spacing-3xl, 5rem));
+      --vpm-spacing-4xl: var(--website-spacing-4xl, var(--site-spacing-4xl, 6rem));
+      --vpm-spacing-5xl: var(--website-spacing-5xl, var(--site-spacing-5xl, 7rem));
+      
+      /* Typography (inherit from parent if available) */
+      --vpm-parent-root-font-size: ${parentFontSizePx}px;
+      --vpm-font-family-base: var(--website-font-family, var(--site-font-family, var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)));
+      --vpm-font-family-heading: var(--website-font-family-heading, var(--site-font-family-heading, var(--font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)));
+      --vpm-font-size-base: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, var(--vpm-parent-root-font-size))));
+      --vpm-font-size-sm: var(--website-font-size-sm, var(--site-font-size-sm, var(--font-size-sm, 0.875em)));
+      --vpm-font-size-lg: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.375em)));
+      --vpm-font-size-xl: var(--website-font-size-xl, var(--site-font-size-xl, var(--font-size-xl, 1.5em)));
+      --vpm-font-size-xxl: var(--website-font-size-xxl, var(--site-font-size-xxl, var(--font-size-xxl, 1.875em)));
+      --vpm-font-size-2xl: var(--website-font-size-2xl, var(--site-font-size-2xl, var(--font-size-2xl, 2.25em)));
+      --vpm-font-size-3xl: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2.5em)));
+      --vpm-font-size-4xl: var(--website-font-size-4xl, var(--site-font-size-4xl, var(--font-size-4xl, 3em)));
+      --vpm-font-size-5xl: var(--website-font-size-5xl, var(--site-font-size-5xl, var(--font-size-5xl, 3.75em)));
+      --vpm-font-weight-normal: var(--website-font-weight-normal, var(--site-font-weight-normal, 400));
+      --vpm-font-weight-medium: var(--website-font-weight-medium, var(--site-font-weight-medium, 500));
+      --vpm-font-weight-semibold: var(--website-font-weight-semibold, var(--site-font-weight-semibold, 600));
+      --vpm-font-weight-bold: var(--website-font-weight-bold, var(--site-font-weight-bold, 700));
+      --vpm-line-height-base: var(--website-line-height-base, var(--site-line-height-base, 1.5));
+      --vpm-line-height-tight: var(--website-line-height-tight, var(--site-line-height-tight, 1.25));
+      --vpm-line-height-relaxed: var(--website-line-height-relaxed, var(--site-line-height-relaxed, 1.75));
+      
+      /* Borders & Radius */
+      --vpm-border-width: 1px;
+      --vpm-border-radius: 4px;
+      --vpm-border-radius-sm: 2px;
+      --vpm-border-radius-lg: 8px;
+      --vpm-border-radius-xl: 12px;
+      --vpm-border-radius-2xl: 16px;
+      --vpm-border-radius-3xl: 20px;
+      --vpm-border-radius-4xl: 24px;
+      --vpm-border-radius-full: 9999px;
+      
+      /* Shadows */
+      --vpm-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --vpm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --vpm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --vpm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --vpm-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      
+      /* Transitions */
+      --vpm-transition-speed: 0.3s;
+      --vpm-transition-speed-fast: 0.15s;
+      --vpm-transition-speed-slow: 0.5s;
+      --vpm-transition-easing: ease-in-out;
+    }
+
+    /* Base reset for component containers */
+    :host {
+      display: block;
+      box-sizing: border-box;
+      font-family: var(--vpm-font-family-base);
+      /* Explicit font-size to prevent inheritance issues - uses parent root font-size */
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, var(--vpm-parent-root-font-size))));
+      line-height: var(--vpm-line-height-base);
+      color: #ffffff;
+    }
+
+    :host *,
+    :host *::before,
+    :host *::after {
+      box-sizing: inherit;
+    }
+
+    /* Component: Newsletter Signup V3 (vpm-newsletter-v3-*) */
+    /* ------------------------------------------------------ */
+    .vpm-newsletter-v3 {
+      --vpm-newsletter-v3-primary: var(--vpm-color-primary);
+      --vpm-newsletter-v3-primary-dark: var(--vpm-color-primary-dark);
+      --vpm-newsletter-v3-accent: var(--vpm-color-yellow);
+      --vpm-newsletter-v3-ink: #ffffff;
+    }
+
+    .vpm-newsletter-v3__wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: var(--vpm-spacing-xl) var(--vpm-spacing-md);
+    }
+
+    .vpm-newsletter-v3__card {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: var(--vpm-spacing-md);
+      background: linear-gradient(135deg, #003865 0%, #005eb8 50%, #6CACE4 100%);
+      border-radius: var(--vpm-border-radius-2xl);
+      padding: var(--vpm-spacing-lg);
+      box-shadow: var(--vpm-shadow-2xl);
+      border: 2px solid rgba(224, 231, 33, 0.3);
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vpm-newsletter-v3__card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--vpm-newsletter-v3-accent);
+      z-index: 1;
+    }
+
+    .vpm-newsletter-v3__left {
+      border-radius: var(--vpm-border-radius-xl);
+      padding: var(--vpm-spacing-md);
+      color: var(--vpm-newsletter-v3-ink);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 0;
+    }
+
+    .vpm-newsletter-v3__badge {
+      font-size: var(--website-font-size-sm, var(--site-font-size-sm, var(--font-size-sm, 0.875em)));
+      font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+      padding: var(--vpm-spacing-xs) var(--vpm-spacing-sm);
+      border-radius: var(--vpm-border-radius-full);
+      background: rgba(224, 231, 33, 0.9);
+      color: #384600;
+      display: inline-block;
+      margin-bottom: var(--vpm-spacing-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: var(--vpm-line-height-base);
+    }
+
+    .vpm-newsletter-v3__title {
+      margin: 0 0 var(--vpm-spacing-xs);
+      font-size: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.375em)));
+      font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+      color: var(--vpm-newsletter-v3-ink);
+      line-height: var(--vpm-line-height-base);
+    }
+
+    .vpm-newsletter-v3__list {
+      margin: 0;
+      padding-left: var(--vpm-spacing-md);
+      color: rgba(255, 255, 255, 0.95);
+      line-height: var(--vpm-line-height-base);
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+    }
+
+    .vpm-newsletter-v3__list li {
+      margin-bottom: var(--vpm-spacing-xs);
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+      line-height: var(--vpm-line-height-base);
+    }
+
+    .vpm-newsletter-v3__heading {
+      margin: var(--vpm-spacing-xs) 0 var(--vpm-spacing-xs);
+      font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2.5em)));
+      font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+      color: var(--vpm-newsletter-v3-ink);
+      line-height: var(--vpm-line-height-tight);
+    }
+
+    .vpm-newsletter-v3__sub {
+      margin: 0 0 var(--vpm-spacing-md);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+      line-height: var(--vpm-line-height-base);
+    }
+
+    .vpm-newsletter-v3__row {
+      display: flex;
+      gap: var(--vpm-spacing-sm);
+    }
+
+    .vpm-newsletter-v3__input {
+      flex: 1;
+      padding: var(--vpm-spacing-md);
+      border-radius: var(--vpm-border-radius-xl);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+      font-family: var(--vpm-font-family-base);
+      line-height: var(--vpm-line-height-base);
+      transition: border-color var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                  box-shadow var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                  background-color var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+      color: var(--vpm-color-black);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .vpm-newsletter-v3__input:focus {
+      border-color: var(--vpm-newsletter-v3-accent);
+      box-shadow: 0 0 0 4px rgba(224, 231, 33, 0.35);
+      outline: none;
+      background: #ffffff;
+    }
+
+    .vpm-newsletter-v3__input::placeholder {
+      color: var(--vpm-color-text-muted);
+    }
+
+    .vpm-newsletter-v3__btn {
+      padding: var(--vpm-spacing-md) var(--vpm-spacing-lg);
+      border-radius: var(--vpm-border-radius-xl);
+      border: none;
+      font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+      font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+      color: white;
+      background: linear-gradient(180deg, var(--vpm-newsletter-v3-primary), var(--vpm-newsletter-v3-primary-dark));
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                  box-shadow var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+      font-family: var(--vpm-font-family-base);
+      line-height: var(--vpm-line-height-base);
+    }
+
+    .vpm-newsletter-v3__btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .vpm-newsletter-v3__btn:focus {
+      outline: 3px solid var(--vpm-newsletter-v3-accent);
+      outline-offset: 2px;
+    }
+
+    .vpm-newsletter-v3__btn:active {
+      transform: translateY(0);
+    }
+
+    .vpm-newsletter-v3__response {
+      margin-top: var(--vpm-spacing-md);
+      padding: var(--vpm-spacing-sm);
+      border-radius: var(--vpm-border-radius-lg);
+      text-align: center;
+      font-weight: var(--vpm-font-weight-semibold);
+      display: none;
+    }
+
+    .vpm-newsletter-v3__response--error {
+      background-color: rgba(255, 235, 238, 0.95);
+      color: #c62828;
+      border: var(--vpm-border-width) solid #ef9a9a;
+    }
+
+    .vpm-newsletter-v3__response--success {
+      background-color: rgba(232, 245, 233, 0.95);
+      color: #2e7d32;
+      border: var(--vpm-border-width) solid #81c784;
+    }
+
+    .vpm-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .vpm-newsletter-v3__heading {
+        font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2em)));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .vpm-newsletter-v3__wrap {
+        padding: var(--vpm-spacing-md);
+      }
+      
+      .vpm-newsletter-v3__card {
+        grid-template-columns: 1fr;
+      }
+      
+      .vpm-newsletter-v3__row {
+        flex-direction: column;
+      }
+      
+      .vpm-newsletter-v3__heading {
+        font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 1.75em)));
+      }
+      
+      .vpm-newsletter-v3__title {
+        font-size: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.25em)));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .vpm-newsletter-v3__heading {
+        font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 1.5em)));
+      }
+      
+      .vpm-newsletter-v3__sub {
+        font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1em)));
+      }
+    }
+  `;
+  shadowRoot.appendChild(style);
+
+  const template = document.createElement('template');
+  template.innerHTML = `
+    <div class="vpm-newsletter-v3">
+      <div class="vpm-newsletter-v3__wrap">
+        <div class="vpm-newsletter-v3__card">
+          <aside class="vpm-newsletter-v3__left">
+            <span class="vpm-newsletter-v3__badge">Weekdays</span>
+            <h3 class="vpm-newsletter-v3__title">Morning Monitor</h3>
+            <ul class="vpm-newsletter-v3__list">
+              <li>Top Virginia headlines</li>
+              <li>Fast, curated read</li>
+              <li>Unsubscribe anytime</li>
+            </ul>
+          </aside>
+
+          <div class="vpm-newsletter-v3__right">
+            <!-- EDITABLE: Heading and Subtitle -->
+            <!-- Replace heading and subtitle text below -->
+            <h1 class="vpm-newsletter-v3__heading">Your morning starts here.</h1>
+            <p class="vpm-newsletter-v3__sub">Stay informed on news you care about—delivered daily.</p>
+
+            <!-- EDITABLE: MailChimp Form Action URL -->
+            <!-- Replace action URL with your MailChimp form action URL -->
+            <form action="https://vpm.us3.list-manage.com/subscribe/post?u=6fe41b3055c403be08140ec95&id=26497cf3ad&f_id=0016c9e1f0" method="post" id="mc-embedded-subscribe-form-v3" name="mc-embedded-subscribe-form-v3" class="validate" target="_self" novalidate>
+              <div class="vpm-newsletter-v3__row">
+                <input 
+                  class="vpm-newsletter-v3__input" 
+                  type="email" 
+                  name="EMAIL" 
+                  id="mce-EMAIL-v3" 
+                  placeholder="you@email.com" 
+                  required 
+                  aria-required="true"
+                  aria-describedby="email-description-v3"
+                />
+                <span id="email-description-v3" class="vpm-sr-only">Enter your email address to subscribe to the Morning Monitor newsletter</span>
+                <button type="submit" class="vpm-newsletter-v3__btn" id="mc-embedded-subscribe-v3">Subscribe →</button>
+              </div>
+
+              <div hidden>
+                <input type="hidden" name="tags" value="1620245,1620261">
+              </div>
+
+              <div class="vpm-newsletter-v3__response vpm-newsletter-v3__response--error" id="mce-error-response-v3" role="alert" aria-live="polite"></div>
+              <div class="vpm-newsletter-v3__response vpm-newsletter-v3__response--success" id="mce-success-response-v3" role="alert" aria-live="polite"></div>
+
+              <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                <input type="text" name="b_6fe41b3055c403be08140ec95_26497cf3ad" tabindex="-1" value="">
+              </div>
+            </form>
           </div>
-
-          <div class="vpm-newsletter__submit">
-            <label class="vpm-sr-only" for="mc-embedded-subscribe">Submit subscription</label>
-            <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe">
-          </div>
         </div>
-
-        <div hidden>
-          <input type="hidden" name="tags" value="1620245,1620261">
-        </div>
-
-        <div class="vpm-newsletter__response vpm-newsletter__response--error" id="mce-error-response" role="alert" aria-live="polite"></div>
-        <div class="vpm-newsletter__response vpm-newsletter__response--success" id="mce-success-response" role="alert" aria-live="polite"></div>
-
-        <div aria-hidden="true" style="position: absolute; left: -5000px;">
-          <input type="text" name="b_6fe41b3055c403be08140ec95_26497cf3ad" tabindex="-1" value="">
-        </div>
-
-        <div class="vpm-newsletter__explore-link">
-          <a href="https://www.vpm.org/stay-connected-to-what-matters">Explore More Newsletters</a>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
+  `;
+  shadowRoot.appendChild(template.content.cloneNode(true));
+})();
+</script>
 

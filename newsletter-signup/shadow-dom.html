@@ -1,303 +1,381 @@
 <!--
-  VPM Newsletter Signup - Shadow DOM Component
+  VPM Newsletter Signup V3 - Shadow DOM Component
   Copy this entire script tag and paste it into your website.
-  Usage: <vpm-newsletter-signup></vpm-newsletter-signup>
-  Note: Update the form action URL in the script to match your MailChimp settings.
+  Usage: <vpm-newsletter-signup-v3></vpm-newsletter-signup-v3>
+  Note: This component features a bold gradient background optimized to stand out on white backgrounds.
+  Update the form action URL in the script to match your MailChimp settings.
 -->
 <script>
 (function() {
   'use strict';
   
-  if (customElements.get('vpm-newsletter-signup')) {
+  if (customElements.get('vpm-newsletter-signup-v3')) {
     return;
   }
   
-  class VPMNewsletterSignup extends HTMLElement {
+  class VPMNewsletterSignupV3 extends HTMLElement {
     constructor() {
       super();
       const shadow = this.attachShadow({ mode: 'open' });
       
+      // Detect parent page's root font-size to match typography scale
+      const parentRootFontSize = window.getComputedStyle(document.documentElement).fontSize;
+      const parentFontSizePx = parseFloat(parentRootFontSize) || 16; // Fallback to 16px if detection fails
+      
       const formAction = this.getAttribute('data-form-action') || 'https://vpm.us3.list-manage.com/subscribe/post?u=6fe41b3055c403be08140ec95&id=26497cf3ad&f_id=0016c9e1f0';
-      const headerImage = this.getAttribute('data-header-image') || 'https://assets.vpm.org/42/0a/e860df4a4251b9004653422ee642/vpm-mm-newsletter-header-150x-100.jpg';
-      const heading = this.getAttribute('data-heading') || '<span class="highlight">Your Morning</span> Starts Here. Stay informed on news you care about.';
-      const exploreLink = this.getAttribute('data-explore-link') || 'https://www.vpm.org/stay-connected-to-what-matters';
+      const badgeText = this.getAttribute('data-badge') || 'Weekdays';
+      const title = this.getAttribute('data-title') || 'Morning Monitor';
+      const heading = this.getAttribute('data-heading') || 'Your morning starts here.';
+      const subtitle = this.getAttribute('data-subtitle') || 'Stay informed on news you care about—delivered daily.';
       
       const style = document.createElement('style');
       style.textContent = `
         :host {
           display: block;
-          --vpm-color-primary: #005eb8;
-          --vpm-color-primary-dark: #004a94;
-          --vpm-color-text: #333333;
-          --vpm-color-text-muted: #999999;
-          --vpm-color-bg: #ffffff;
-          --vpm-color-border: #e0e0e0;
-          --vpm-spacing-md: 1.5rem;
-          --vpm-spacing-lg: 2rem;
-          --vpm-spacing-xl: 3rem;
-          --vpm-spacing-sm: 0.5rem;
-          --vpm-font-size-base: 1rem;
-          --vpm-font-size-sm: 0.875rem;
-          --vpm-font-weight-semibold: 600;
-          --vpm-font-weight-bold: 700;
-          --vpm-border-radius: 4px;
-          --vpm-border-radius-lg: 8px;
+          /* Hybrid approach: inherit from parent, fallback to defaults */
+          --vpm-parent-root-font-size: ${parentFontSizePx}px;
+          --vpm-newsletter-v3-primary: var(--website-primary-color, var(--site-primary-color, var(--brand-primary, #005eb8)));
+          --vpm-newsletter-v3-primary-dark: var(--website-primary-dark, var(--site-primary-dark, var(--brand-primary-dark, #004a94)));
+          --vpm-newsletter-v3-accent: var(--website-accent-color, var(--site-accent-color, #E0E721));
+          --vpm-newsletter-v3-ink: #ffffff;
+          --vpm-spacing-xs: var(--website-spacing-xs, var(--site-spacing-xs, 0.25rem));
+          --vpm-spacing-sm: var(--website-spacing-sm, var(--site-spacing-sm, 0.5rem));
+          --vpm-spacing-md: var(--website-spacing-md, var(--site-spacing-md, 1.5rem));
+          --vpm-spacing-lg: var(--website-spacing-lg, var(--site-spacing-lg, 2rem));
+          --vpm-spacing-xl: var(--website-spacing-xl, var(--site-spacing-xl, 3rem));
+          --vpm-font-size-sm: var(--website-font-size-sm, var(--site-font-size-sm, var(--font-size-sm, 0.875em)));
+          --vpm-font-size-base: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, var(--vpm-parent-root-font-size))));
+          --vpm-font-size-lg: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.375em)));
+          --vpm-font-size-2xl: var(--website-font-size-2xl, var(--site-font-size-2xl, var(--font-size-2xl, 2.25em)));
+          --vpm-font-size-3xl: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2.5em)));
+          --vpm-font-weight-bold: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+          --vpm-font-weight-semibold: var(--website-font-weight-semibold, var(--site-font-weight-semibold, var(--font-weight-semibold, 600)));
+          --vpm-font-family-base: var(--website-font-family, var(--site-font-family, var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)));
+          --vpm-border-width: 1px;
+          --vpm-border-radius-xl: 12px;
+          --vpm-border-radius-2xl: 16px;
+          --vpm-border-radius-full: 9999px;
+          --vpm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          --vpm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          --vpm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          --vpm-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
           --vpm-transition-speed-fast: 0.15s;
           --vpm-transition-easing: ease-in-out;
-          --vpm-border-width: 1px;
+          /* Explicit base font-size to prevent inheritance issues - uses parent root font-size */
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, var(--vpm-parent-root-font-size))));
+          font-family: var(--vpm-font-family-base);
+          line-height: 1.5;
+          color: #ffffff;
         }
         
         :host([data-theme="dark"]) {
-          --vpm-color-text: #e0e0e0;
-          --vpm-color-text-muted: #808080;
-          --vpm-color-bg: #1a1a1a;
-          --vpm-color-border: #333333;
+          --vpm-newsletter-v3-ink: #e0e0e0;
         }
         
         * {
           box-sizing: border-box;
         }
         
-        #vpm-newsletter-signup {
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          position: relative;
-        }
-        
-        .vpm-newsletter__header {
-          max-width: 100%;
-          margin: 0 auto var(--vpm-spacing-lg);
-        }
-        
-        .vpm-newsletter__header img {
-          width: 100%;
-          max-width: 280px;
-          height: auto;
-          display: block;
-          border-radius: var(--vpm-border-radius-lg);
+        .vpm-newsletter-v3__wrap {
+          max-width: 980px;
           margin: 0 auto;
+          padding: var(--vpm-spacing-xl) var(--vpm-spacing-md);
         }
         
-        h3 {
-          font-size: 22px;
-          line-height: 1.4;
-          margin: 0 auto var(--vpm-spacing-lg);
-          max-width: 100%;
-          font-weight: var(--vpm-font-weight-bold);
-          text-transform: uppercase;
-          letter-spacing: 0.3px;
-          word-break: break-word;
-          color: var(--vpm-color-text);
-        }
-        
-        h3 .highlight {
-          font-style: italic;
-          display: inline-block;
-        }
-        
-        .vpm-newsletter__content {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        
-        .vpm-newsletter__fields {
-          display: flex;
-          flex-direction: column;
+        .vpm-newsletter-v3__card {
+          display: grid;
+          grid-template-columns: 320px 1fr;
           gap: var(--vpm-spacing-md);
-          margin-bottom: var(--vpm-spacing-md);
-        }
-        
-        .vpm-newsletter__field-group {
-          flex: 1;
-          min-width: 0;
-        }
-        
-        label {
-          display: block;
-          margin-bottom: 6px;
-          font-weight: var(--vpm-font-weight-semibold);
-          font-size: var(--vpm-font-size-sm);
-          text-align: left;
-          color: var(--vpm-color-text);
-        }
-        
-        input[type="email"] {
-          width: 100%;
-          padding: 14px var(--vpm-spacing-md);
-          font-size: var(--vpm-font-size-base);
-          border: 2px solid var(--vpm-color-border);
-          border-radius: var(--vpm-border-radius-lg);
-          transition: border-color var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
-                      box-shadow var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
-          height: 52px;
-          -webkit-appearance: none;
-          appearance: none;
-          color: var(--vpm-color-text);
-          background: var(--vpm-color-bg);
-        }
-        
-        input[type="email"]:focus {
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-          border-color: var(--vpm-color-primary);
-        }
-        
-        input[type="email"]::placeholder {
-          color: var(--vpm-color-text-muted);
-        }
-        
-        .vpm-newsletter__submit {
-          flex-shrink: 0;
-        }
-        
-        .vpm-sr-only {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
+          background: linear-gradient(135deg, #003865 0%, #005eb8 50%, #6CACE4 100%);
+          border-radius: var(--vpm-border-radius-2xl);
+          padding: var(--vpm-spacing-lg);
+          box-shadow: var(--vpm-shadow-2xl);
+          border: 2px solid rgba(224, 231, 33, 0.3);
+          color: #ffffff;
+          position: relative;
           overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
+        }
+
+        .vpm-newsletter-v3__card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 6px;
+          background: var(--vpm-newsletter-v3-accent);
+          z-index: 1;
         }
         
-        input[type="submit"] {
-          border: none;
-          padding: var(--vpm-spacing-md) var(--vpm-spacing-xl);
-          font-size: 17px;
-          font-weight: 900;
+        .vpm-newsletter-v3__left {
+          border-radius: var(--vpm-border-radius-xl);
+          padding: var(--vpm-spacing-md);
+          color: var(--vpm-newsletter-v3-ink);
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          position: relative;
+          z-index: 0;
+        }
+        
+        .vpm-newsletter-v3__badge {
+          font-size: var(--website-font-size-sm, var(--site-font-size-sm, var(--font-size-sm, 0.875em)));
+          font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+          padding: var(--vpm-spacing-xs) var(--vpm-spacing-sm);
+          border-radius: var(--vpm-border-radius-full);
+          background: rgba(224, 231, 33, 0.9);
+          color: #384600;
+          display: inline-block;
+          margin-bottom: var(--vpm-spacing-sm);
           text-transform: uppercase;
-          border-radius: var(--vpm-border-radius-lg);
-          cursor: pointer;
-          transition: all var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
-          width: 100%;
-          height: 52px;
           letter-spacing: 0.5px;
-          -webkit-appearance: none;
-          appearance: none;
-          background: var(--vpm-color-primary);
-          color: var(--vpm-color-bg);
+          line-height: 1.5;
         }
         
-        input[type="submit"]:hover {
-          background: var(--vpm-color-primary-dark);
+        .vpm-newsletter-v3__title {
+          margin: 0 0 var(--vpm-spacing-xs);
+          font-size: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.375em)));
+          font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+          color: var(--vpm-newsletter-v3-ink);
+          line-height: 1.5;
         }
         
-        input[type="submit"]:focus {
-          outline: 3px solid currentColor;
+        .vpm-newsletter-v3__list {
+          margin: 0;
+          padding-left: var(--vpm-spacing-md);
+          color: rgba(255, 255, 255, 0.95);
+          line-height: 1.5;
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+        }
+        
+        .vpm-newsletter-v3__list li {
+          margin-bottom: var(--vpm-spacing-xs);
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+          line-height: 1.5;
+        }
+        
+        .vpm-newsletter-v3__heading {
+          margin: var(--vpm-spacing-xs) 0 var(--vpm-spacing-xs);
+          font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2.5em)));
+          font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+          color: var(--vpm-newsletter-v3-ink);
+          line-height: 1.25;
+        }
+        
+        .vpm-newsletter-v3__sub {
+          margin: 0 0 var(--vpm-spacing-md);
+          color: rgba(255, 255, 255, 0.9);
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+          line-height: 1.5;
+        }
+        
+        .vpm-newsletter-v3__row {
+          display: flex;
+          gap: var(--vpm-spacing-sm);
+        }
+        
+        .vpm-newsletter-v3__input {
+          flex: 1;
+          padding: var(--vpm-spacing-md);
+          border-radius: var(--vpm-border-radius-xl);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+          font-family: var(--vpm-font-family-base);
+          line-height: 1.5;
+          transition: border-color var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                      box-shadow var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                      background-color var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+          color: #101820;
+          background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .vpm-newsletter-v3__input:focus {
+          border-color: var(--vpm-newsletter-v3-accent);
+          box-shadow: 0 0 0 4px rgba(224, 231, 33, 0.35);
+          outline: none;
+          background: #ffffff;
+        }
+        
+        .vpm-newsletter-v3__input::placeholder {
+          color: #999999;
+        }
+        
+        .vpm-newsletter-v3__btn {
+          padding: var(--vpm-spacing-md) var(--vpm-spacing-lg);
+          border-radius: var(--vpm-border-radius-xl);
+          border: none;
+          font-weight: var(--website-font-weight-bold, var(--site-font-weight-bold, var(--font-weight-bold, 700)));
+          font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1.125em)));
+          color: white;
+          background: linear-gradient(180deg, var(--vpm-newsletter-v3-primary), var(--vpm-newsletter-v3-primary-dark));
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          transition: transform var(--vpm-transition-speed-fast) var(--vpm-transition-easing),
+                      box-shadow var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
+          font-family: var(--vpm-font-family-base);
+          line-height: 1.5;
+        }
+        
+        .vpm-newsletter-v3__btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .vpm-newsletter-v3__btn:focus {
+          outline: 3px solid var(--vpm-newsletter-v3-accent);
           outline-offset: 2px;
         }
         
-        .vpm-newsletter__explore-link {
+        .vpm-newsletter-v3__btn:active {
+          transform: translateY(0);
+        }
+        
+        .vpm-newsletter-v3__response {
           margin-top: var(--vpm-spacing-md);
-          font-size: 15px;
-          text-align: center;
-        }
-        
-        .vpm-newsletter__explore-link a {
-          text-decoration: underline;
-          font-weight: var(--vpm-font-weight-semibold);
-          padding: 5px 10px;
-          border-radius: var(--vpm-border-radius);
-          transition: all var(--vpm-transition-speed-fast) var(--vpm-transition-easing);
-          color: var(--vpm-color-primary);
-        }
-        
-        .vpm-newsletter__response {
-          margin-top: 15px;
           padding: var(--vpm-spacing-sm);
-          border-radius: var(--vpm-border-radius-lg);
+          border-radius: 8px;
           text-align: center;
           font-weight: var(--vpm-font-weight-semibold);
           display: none;
         }
         
-        .vpm-newsletter__response--error {
-          background-color: #ffebee;
+        .vpm-newsletter-v3__response--error {
+          background-color: rgba(255, 235, 238, 0.95);
           color: #c62828;
           border: var(--vpm-border-width) solid #ef9a9a;
         }
         
-        .vpm-newsletter__response--success {
-          background-color: #e8f5e9;
+        .vpm-newsletter-v3__response--success {
+          background-color: rgba(232, 245, 233, 0.95);
           color: #2e7d32;
           border: var(--vpm-border-width) solid #81c784;
         }
         
-        @media screen and (min-width: 768px) {
-          .vpm-newsletter__header {
-            max-width: 400px;
-            margin-bottom: var(--vpm-spacing-xl);
+        @media (max-width: 1024px) {
+          .vpm-newsletter-v3__heading {
+            font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 2em)));
           }
-          
-          .vpm-newsletter__header img {
-            max-width: 400px;
-          }
-          
-          h3 {
-            font-size: 28px;
-            line-height: 1.3;
-            margin-bottom: var(--vpm-spacing-xl);
-            letter-spacing: 0.5px;
-          }
-          
-          .vpm-newsletter__fields {
-            flex-direction: row;
-            gap: 15px;
-            align-items: flex-end;
-            margin-bottom: var(--vpm-spacing-lg);
-          }
-          
-          input[type="email"] {
-            height: 54px;
+        }
+
+        @media (max-width: 820px) {
+          .vpm-newsletter-v3__wrap {
             padding: var(--vpm-spacing-md);
           }
           
-          input[type="submit"] {
-            width: auto;
-            height: 54px;
-            padding: var(--vpm-spacing-md) 40px;
-            font-size: 18px;
-            letter-spacing: 1px;
+          .vpm-newsletter-v3__card {
+            grid-template-columns: 1fr;
+          }
+          
+          .vpm-newsletter-v3__row {
+            flex-direction: column;
+          }
+          
+          .vpm-newsletter-v3__heading {
+            font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 1.75em)));
+          }
+          
+          .vpm-newsletter-v3__title {
+            font-size: var(--website-font-size-lg, var(--site-font-size-lg, var(--font-size-lg, 1.25em)));
+          }
+        }
+
+        .vpm-theme-toggle {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          transition: all 0.2s ease;
+          z-index: 1001;
+          padding: 0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(10px);
+        }
+        
+        .vpm-theme-toggle:hover {
+          transform: scale(1.1);
+          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .vpm-theme-toggle:focus {
+          outline: 2px solid rgba(255, 255, 255, 0.8);
+          outline-offset: 2px;
+        }
+        
+        .vpm-theme-toggle:active {
+          transform: scale(0.95);
+        }
+        
+        @media (max-width: 480px) {
+          .vpm-newsletter-v3__heading {
+            font-size: var(--website-font-size-3xl, var(--site-font-size-3xl, var(--font-size-3xl, 1.5em)));
+          }
+          
+          .vpm-newsletter-v3__sub {
+            font-size: var(--website-font-size-base, var(--site-font-size-base, var(--font-size-base, 1em)));
           }
         }
       `;
       
       const template = document.createElement('template');
       template.innerHTML = `
-        <div id="vpm-newsletter-signup">
-          <div class="vpm-newsletter__header">
-            <img src="${headerImage}" alt="VPM News Morning Monitor newsletter logo">
-          </div>
-          <div class="vpm-newsletter__content">
-            <h3>${heading}</h3>
-            <form action="${formAction}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self" novalidate>
-              <div class="vpm-newsletter__fields">
-                <div class="vpm-newsletter__field-group">
-                  <label for="mce-EMAIL">
-                    Email Address
-                    <span aria-hidden="true">*</span>
-                    <span class="vpm-sr-only">(required)</span>
-                  </label>
-                  <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required placeholder="your.email@example.com" aria-required="true">
-                </div>
-                <div class="vpm-newsletter__submit">
-                  <label class="vpm-sr-only" for="mc-embedded-subscribe">Submit subscription</label>
-                  <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe">
-                </div>
+        <div class="vpm-newsletter-v3">
+          <div class="vpm-newsletter-v3__wrap">
+            <div class="vpm-newsletter-v3__card">
+              <aside class="vpm-newsletter-v3__left">
+                <span class="vpm-newsletter-v3__badge">${badgeText}</span>
+                <h3 class="vpm-newsletter-v3__title">${title}</h3>
+                <ul class="vpm-newsletter-v3__list">
+                  <li>Top Virginia headlines</li>
+                  <li>Fast, curated read</li>
+                  <li>Unsubscribe anytime</li>
+                </ul>
+              </aside>
+              
+              <div class="vpm-newsletter-v3__right">
+                <h1 class="vpm-newsletter-v3__heading">${heading}</h1>
+                <p class="vpm-newsletter-v3__sub">${subtitle}</p>
+                
+                <form action="${formAction}" method="post" id="mc-embedded-subscribe-form-v3" name="mc-embedded-subscribe-form-v3" class="validate" target="_self" novalidate>
+                  <div class="vpm-newsletter-v3__row">
+                    <input 
+                      class="vpm-newsletter-v3__input" 
+                      type="email" 
+                      name="EMAIL" 
+                      id="mce-EMAIL-v3" 
+                      placeholder="you@email.com" 
+                      required 
+                      aria-required="true"
+                    />
+                    <button type="submit" class="vpm-newsletter-v3__btn" id="mc-embedded-subscribe-v3">Subscribe →</button>
+                  </div>
+                  
+                  <div hidden>
+                    <input type="hidden" name="tags" value="1620245,1620261">
+                  </div>
+                  
+                  <div class="vpm-newsletter-v3__response vpm-newsletter-v3__response--error" id="mce-error-response-v3" role="alert" aria-live="polite"></div>
+                  <div class="vpm-newsletter-v3__response vpm-newsletter-v3__response--success" id="mce-success-response-v3" role="alert" aria-live="polite"></div>
+                  
+                  <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                    <input type="text" name="b_6fe41b3055c403be08140ec95_26497cf3ad" tabindex="-1" value="">
+                  </div>
+                </form>
               </div>
-              <div hidden>
-                <input type="hidden" name="tags" value="1620245,1620261">
-              </div>
-              <div class="vpm-newsletter__response vpm-newsletter__response--error" id="mce-error-response" role="alert" aria-live="polite"></div>
-              <div class="vpm-newsletter__response vpm-newsletter__response--success" id="mce-success-response" role="alert" aria-live="polite"></div>
-              <div aria-hidden="true" style="position: absolute; left: -5000px;">
-                <input type="text" name="b_6fe41b3055c403be08140ec95_26497cf3ad" tabindex="-1" value="">
-              </div>
-              <div class="vpm-newsletter__explore-link">
-                <a href="${exploreLink}">Explore More Newsletters</a>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       `;
@@ -356,7 +434,7 @@
       button.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
       
       // Add to shadow DOM
-      const container = this.shadow.querySelector('#vpm-newsletter-signup');
+      const container = this.shadow.querySelector('.vpm-newsletter-v3__card');
       if (container) {
         container.appendChild(button);
       }
@@ -392,7 +470,7 @@
     }
   }
   
-  customElements.define('vpm-newsletter-signup', VPMNewsletterSignup);
+  customElements.define('vpm-newsletter-signup-v3', VPMNewsletterSignupV3);
 })();
 </script>
 
